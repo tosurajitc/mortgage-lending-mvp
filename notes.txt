@@ -1,0 +1,281 @@
+create virtual environment: python -m venv .venv
+Activate virtual environment: .venv\Scripts\activate
+How to activate .env file: pip install python-dotenv then from dotenv import load_dotenv then add this function load_dotenv()  # Load variables from .env into the environment
+Run the requirement.txt file: pip install -r requirements.txt
+create requirement.txt file: pip freeze > requirements.txt
+to run the program : streamlit run main.py
+
+GIT PUSH Steps: 
+In the terminal, initialize a new Git repository: git init
+Add all files in your folder to the staging area: git add .
+Commit the files with a message: git commit -m "Initial commit"
+Link your local repository to the GitHub repository you mentioned (first time required): git remote add origin https://github.com/tosurajitc/COBOL_to_Java
+Push the changes to the remote repository: git push -u origin main (or master)
+
+If git hub fails then:
+git remote rename origin old-origin
+git remote add origin https://github.com/tosurajitc/COBOL_to_Java
+
+
+https://tosurajitc-cobol-to-java-app-tv1dnl.streamlit.app/
+https://github.ibm.com/IBM-AI-Automation/COBOL_to_Java
+
+
+
+
+
+
+
+Mortgage Lending Assistant: Folder Structure
+mortgage-lending-mvp/
+│
+├── src/                              # Source code directory
+│   ├── __init__.py
+│   │
+│   ├── agents/                       # Agent implementations
+│   │   ├── __init__.py
+│   │   ├── base_agent.py             # Base class for all agents
+│   │   ├── orchestrator.py           # Orchestrator agent
+│   │   ├── document_agent.py         # Document analysis agent
+│   │   ├── underwriting_agent.py     # Underwriting decision agent
+│   │   ├── compliance_agent.py       # Regulatory compliance agent
+│   │   └── customer_agent.py         # Customer service agent
+│   │
+│   ├── autogen/                      # AutoGen integration
+│   │   ├── __init__.py
+│   │   ├── agent_factory.py          # Creates AutoGen agents
+│   │   ├── reasoning_agents.py       # Specialized reasoning agents
+│   │   └── conversation_manager.py   # Manages agent conversations
+│   │
+│   ├── semantic_kernel/              # Semantic Kernel integration
+│   │   ├── __init__.py
+│   │   ├── kernel_setup.py           # SK initialization
+│   │   ├── plugins/                  # Semantic Kernel plugins
+│   │   │   ├── __init__.py
+│   │   │   ├── document_plugin/      # Document analysis skills
+│   │   │   ├── underwriting_plugin/  # Underwriting skills
+│   │   │   ├── compliance_plugin/    # Compliance checking skills
+│   │   │   └── customer_plugin/      # Customer interaction skills
+│   │   └── prompts/                  # Prompt templates
+│   │
+│   ├── copilot/                      # Copilot Studio integration
+│   │   ├── __init__.py
+│   │   ├── actions/                  # Custom actions for Copilot
+│   │   │   ├── __init__.py
+│   │   │   ├── application_actions.py
+│   │   │   └── document_actions.py
+│   │   ├── conversation_flows/       # Conversation definitions
+│   │   └── entity_mappings.py        # Entity recognition config
+│   │
+│   ├── data/                         # Data handling
+│   │   ├── __init__.py
+│   │   ├── models.py                 # Data models
+│   │   ├── cosmos_manager.py         # Cosmos DB integration
+│   │   └── mock_data_generator.py    # Test data generation
+│   │
+│   ├── security/                     # Security components
+│   │   ├── __init__.py
+│   │   ├── validation.py             # Input validation
+│   │   ├── pii_detector.py           # PII detection & handling
+│   │   ├── access_control.py         # Agent access control
+│   │   └── audit_logger.py           # Security logging
+│   │
+│   ├── workflow/                     # Workflow management
+│   │   ├── __init__.py
+│   │   ├── state_manager.py          # Application state tracking
+│   │   ├── task_router.py            # Routes tasks to agents
+│   │   └── decision_tracker.py       # Tracks decision process
+│   │
+│   ├── utils/                        # Utility functions
+│   │   ├── __init__.py
+│   │   ├── config.py                 # Configuration management
+│   │   ├── exceptions.py             # Custom exceptions
+│   │   └── logging_utils.py          # Logging utilities
+│   │
+│   └── api/                          # API layer
+│       ├── __init__.py
+│       ├── endpoints.py              # REST API endpoints
+│       └── middleware.py             # API middleware
+│
+├── config/                           # Configuration files
+│   ├── app_config.json               # Application configuration
+│   ├── agent_config.json             # Agent configuration
+│   ├── security_config.json          # Security configuration
+│   └── logging_config.json           # Logging configuration - not done
+│
+├── tests/                            # Test suite
+│   ├── __init__.py
+│   ├── mock_data/                    # Test data
+│   ├── unit/                         # Unit tests
+│   │   ├── __init__.py
+│   │   ├── test_agents/
+│   │   ├── test_security/
+│   │   └── test_workflow/
+│   └── integration/                  # Integration tests
+│       ├── __init__.py
+│       ├── test_end_to_end.py
+│       └── test_agent_collaboration.py
+│
+├── docs/                             # Documentation
+│   ├── architecture.md               # Architecture overview
+│   ├── agent_design.md               # Agent design details
+│   ├── security.md                   # Security measures
+│   ├── api_reference.md              # API documentation
+│   └── demo_script.md                # Demonstration script
+│
+├── scripts/                          # Utility scripts
+│   ├── setup_azure.py                # Azure resource setup
+│   ├── generate_test_data.py         # Generate test data
+│   └── run_demo.py                   # Run demonstration
+│
+├── deployment/                       # Deployment configuration
+│   ├── copilot_studio/               # Copilot Studio export files
+│   ├── requirements.txt              # Python dependencies
+│   └── azure_deployment.json         # Azure deployment template
+│
+|__ mock_data/generators/
+├── __init__.py
+├── applicant_generator.py
+├── application_generator.py
+├── bank_document_generator.py
+├── credit_document_generator.py
+├── document_generator.py
+├── income_document_generator.py
+├── loan_generator.py
+├── property_document_generator.py
+├── property_generator.py
+└── tax_document_generator.py
+|
+├── .env.example                      # Example environment variables
+├── requirements.txt                  # Project dependencies
+├── setup.py                          # Package setup script
+└── README.md                         # Project overview
+
+
+Mortgage Lending MVP: Module Functions
+Here's a detailed breakdown of the functions each module in our program structure will handle:
+1. /src/agents/
+base_agent.py
+Define the abstract base Agent class. Implement common functionality for all agents. Handle basic agent lifecycle (init, run, shutdown)
+Provide standard communication interfaces
+
+orchestrator.py
+Coordinate the overall mortgage application workflow. Route tasks to specialized agents. Track application state throughout processing
+Handle exception recovery and workflow restarts. Aggregate results from multiple agents for final decisions
+
+document_agent.py
+Analyze and extract information from mortgage documents. Classify document types (W2, bank statements, etc.)
+Extract key data points from each document. Validate document completeness and authenticity
+Generate structured data from documents
+
+underwriting_agent.py
+Assess financial eligibility for loans. Calculate debt-to-income ratios. Evaluate credit worthiness. Perform risk assessment.
+Generate loan terms recommendations. Make initial approval/decline decisions
+
+compliance_agent.py
+Verify adherence to lending regulations. Check for fair lending practices. Ensure complete documentation requirements
+Verify disclosure requirements are met. Flag potential compliance issues
+
+customer_agent.py
+Generate personalized customer communications. Explain application status and decisions. Handle customer queries
+Request additional information when needed. Provide next steps guidance
+
+2. /src/autogen/
+agent_factory.py
+Create and configure AutoGen agents. Set up agent prompting strategies. Configure LLM parameters for different agent types
+Initialize agent-specific capabilities
+
+reasoning_agents.py
+Implement specialized reasoning for complex decisions. Perform deep financial analysis. Evaluate edge cases in applications
+Generate explanations for decisions. Identify potential fraud signals
+
+conversation_manager.py
+Manage agent-to-agent conversations. Track conversation state and context. Handle message passing between agents
+Implement conversation termination logic. Record conversation history for auditing
+
+3. /src/semantic_kernel/
+kernel_setup.py
+Initialize and configure Semantic Kernel. Register skills and plugins. Set up memory and context management
+Configure AI service connections
+
+plugins/document_plugin/
+Extract key information from documents. Normalize extracted information
+Identify document inconsistencies. Summarize document contents
+
+plugins/underwriting_plugin/
+Analyze income stability. Evaluate debt structures. Assess property valuation. Calculate affordability metrics. Determine risk factors
+
+plugins/compliance_plugin/
+Check against regulatory requirements. Verify required disclosures. Ensure fair lending practices. Validate information completeness
+
+plugins/customer_plugin/
+Generate clear explanations. Create personalized responses. Answer common mortgage questions. Provide status updates
+
+prompts/
+Store templates for agent prompts. Define few-shot examples. Specify prompt structures for different tasks
+Maintain prompt versioning
+
+4. /src/copilot/
+actions/application_actions.py
+Submit new applications. Check application status. Update application information. Withdraw applications
+Retrieve decision explanations
+
+actions/document_actions.py
+Request document lists. Check document status. Submit document information. Verify document receipt. Request document re-submission
+
+conversation_flows/
+Define conversation paths for different scenarios. Configure dialog patterns. Set up response templates. Handle conversation transitions
+
+entity_mappings.py
+Define entity types for mortgage terminology. Configure entity recognition patterns. Map entities to application fields. Handle entity resolution
+
+5. /src/data/
+models.py
+Define data structures for application information. Create document representation models. Define response data models
+Implement serialization/deserialization
+
+cosmos_manager.py
+Handle database connections. Implement CRUD operations. Manage data partitioning. Handle transaction management. Implement query optimization
+
+mock_data_generator.py
+Create realistic test applications. Generate mock documents. Simulate various application scenarios. Create test cases for edge conditions
+
+6. /src/security/
+validation.py
+Validate all input data. Sanitize inputs. Check for injection attempts. Validate data types and ranges
+
+pii_detector.py
+Identify personally identifiable information. Handle PII redaction. Implement secure PII storage. Manage PII access controls
+
+access_control.py
+Define agent permission levels. Control data access between agents. Implement principle of least privilege. Verify agent authentications
+
+audit_logger.py
+Log all security-relevant events. Track sensitive data access. Record decision justifications. Create audit trails for compliance
+
+7. /src/workflow/
+state_manager.py
+Track application processing state. Manage state transitions. Maintain application history. Handle state persistence. 
+
+task_router.py
+Route tasks to appropriate agents. Handle task prioritization. Manage parallel processing. Implement fallback strategies
+
+decision_tracker.py
+Record decision points. Track reasoning chains. Store decision explanations. Maintain decision audit trail
+
+8. /src/utils/
+config.py
+Load configuration settings. Manage environment variables. Handle configuration validation. Support dynamic configuration
+
+exceptions.py
+Define custom exception types. Implement exception handling strategies. Create useful error messages. Support error recovery
+
+logging_utils.py
+Configure application logging. Implement log rotation. Handle different log levels. Support structured logging
+
+9. /src/api/
+endpoints.py
+Define REST API endpoints. Implement request handlers. Handle response formatting. Manage API versioning
+
+middleware.py
+Implement authentication. Handle request validation. Perform rate limiting. Process cross-cutting concerns

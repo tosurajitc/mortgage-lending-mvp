@@ -1,0 +1,55 @@
+{
+    "input_validation": {
+      "max_string_length": 1000,
+      "max_array_length": 100,
+      "allowed_document_extensions": [".pdf", ".jpg", ".png", ".docx", ".xlsx"]
+    },
+    "pii_detection": {
+      "scan_enabled": true,
+      "pii_types": [
+        "SSN",
+        "CREDIT_CARD",
+        "PHONE_NUMBER",
+        "EMAIL",
+        "DRIVER_LICENSE"
+      ],
+      "redaction_enabled": true
+    },
+    "access_control": {
+      "roles": {
+        "admin": {
+          "can_access_all": true
+        },
+        "loan_officer": {
+          "can_view_applications": true,
+          "can_modify_applications": true,
+          "can_access_documents": true,
+          "can_make_decisions": true
+        },
+        "customer": {
+          "can_view_own_application": true,
+          "can_submit_documents": true,
+          "can_update_own_info": true
+        }
+      }
+    },
+    "audit": {
+      "log_all_events": true,
+      "sensitive_events": [
+        "application_submission",
+        "document_access",
+        "decision_made",
+        "pii_accessed"
+      ],
+      "retention_days": 90
+    },
+    "jailbreak_prevention": {
+      "prompt_filtering_enabled": true,
+      "input_scanning_enabled": true,
+      "blocked_patterns": [
+        "ignore previous instructions",
+        "disregard security measures",
+        "bypass system limitations"
+      ]
+    }
+  }

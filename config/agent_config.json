@@ -1,0 +1,44 @@
+{
+    "orchestrator": {
+      "max_retry_attempts": 3,
+      "timeout_seconds": 30,
+      "max_concurrent_tasks": 5
+    },
+    "document_agent": {
+      "supported_document_types": [
+        "w2_form",
+        "bank_statement",
+        "pay_stub",
+        "tax_return",
+        "credit_report"
+      ],
+      "confidence_threshold": 0.75,
+      "extraction_timeout_seconds": 60
+    },
+    "underwriting_agent": {
+      "min_credit_score": 620,
+      "max_dti_ratio": 0.43,
+      "min_ltv_ratio": 0.8,
+      "income_stability_months": 24,
+      "risk_assessment_factors": [
+        "credit_score",
+        "employment_history",
+        "debt_to_income",
+        "loan_to_value",
+        "property_location"
+      ]
+    },
+    "compliance_agent": {
+      "regulation_sets": [
+        "fair_lending",
+        "disclosure_requirements",
+        "income_verification"
+      ],
+      "automated_decision_threshold": 0.9
+    },
+    "customer_agent": {
+      "response_tone": "professional",
+      "max_message_length": 1000,
+      "support_languages": ["en-US"]
+    }
+  }

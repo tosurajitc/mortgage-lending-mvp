@@ -1,0 +1,28 @@
+{
+    "application": {
+      "name": "Mortgage Lending Assistant",
+      "version": "0.1.0",
+      "environment": "development"
+    },
+    "azure": {
+      "openai": {
+        "deployment_name": "gpt-4-turbo",
+        "endpoint": "https://<your-openai-resource>.openai.azure.com/",
+        "api_version": "2023-05-15"
+      },
+      "document_intelligence": {
+        "endpoint": "https://<your-document-intelligence>.cognitiveservices.azure.com/",
+        "api_version": "2023-07-31"
+      },
+      "cosmos_db": {
+        "endpoint": "https://<your-cosmos-db>.documents.azure.com:443/",
+        "database_name": "MortgageLendingDB",
+        "container_name": "Applications"
+      }
+    },
+    "logging": {
+      "level": "INFO",
+      "file_path": "logs/app.log",
+      "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    }
+  }
