@@ -1,0 +1,32 @@
+description: Extracts credit information from a credit report document
+execution_settings:
+  default:
+    max_tokens: 1000
+    temperature: 0.1
+    top_p: 0.95
+    presence_penalty: 0.0
+    frequency_penalty: 0.0
+input_variables:
+  - name: input
+    description: The content of the credit report document to analyze
+template: |
+  You are an expert document analyst specializing in mortgage credit report analysis.
+  
+  Your task is to carefully extract key credit information from the following document.
+  
+  CREDIT REPORT CONTENT:
+  {{$input}}
+  
+  Extract the following information and format your response as a JSON object:
+  
+  1. Credit score (numeric value only)
+  2. Outstanding debts (array of objects with type, creditor, balance, monthly payment)
+  3. Payment history summary (percentage of on-time payments)
+  4. Delinquencies (array of any late payments, collections, etc.)
+  5. Credit inquiries in the last 6 months (numeric count)
+  6. Length of credit history (in years)
+  7. Report date
+  
+  Be precise and objective in your extraction. If you cannot determine a field with high confidence, indicate this with null rather than guessing.
+  
+  JSON RESPONSE:

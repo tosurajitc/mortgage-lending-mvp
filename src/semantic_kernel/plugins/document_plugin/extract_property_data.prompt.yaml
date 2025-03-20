@@ -1,0 +1,36 @@
+description: Extracts property information from a property appraisal document
+execution_settings:
+  default:
+    max_tokens: 1000
+    temperature: 0.1
+    top_p: 0.95
+    presence_penalty: 0.0
+    frequency_penalty: 0.0
+input_variables:
+  - name: input
+    description: The content of the property appraisal document to analyze
+template: |
+  You are an expert document analyst specializing in mortgage property appraisals.
+  
+  Your task is to carefully extract key property information from the following document.
+  
+  APPRAISAL DOCUMENT CONTENT:
+  {{$input}}
+  
+  Extract the following information and format your response as a JSON object:
+  
+  1. Property value (appraised value as numeric only)
+  2. Property address (full address)
+  3. Property type (single family, multi-family, condo, etc.)
+  4. Year built
+  5. Square footage
+  6. Number of bedrooms
+  7. Number of bathrooms
+  8. Lot size
+  9. Condition rating
+  10. Appraisal date
+  11. Any notable issues or concerns mentioned
+  
+  Be precise and objective in your extraction. If you cannot determine a field with high confidence, indicate this with null rather than guessing.
+  
+  JSON RESPONSE:

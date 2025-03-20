@@ -1,0 +1,32 @@
+description: Extracts income and employment information from an income verification document
+execution_settings:
+  default:
+    max_tokens: 1000
+    temperature: 0.1
+    top_p: 0.95
+    presence_penalty: 0.0
+    frequency_penalty: 0.0
+input_variables:
+  - name: input
+    description: The content of the income verification document to analyze
+template: |
+  You are an expert document analyst specializing in mortgage income verification documents.
+  
+  Your task is to carefully extract key income and employment information from the following document.
+  
+  DOCUMENT CONTENT:
+  {{$input}}
+  
+  Extract the following information and format your response as a JSON object:
+  
+  1. Annual income amount (numeric value only)
+  2. Employer name
+  3. Employment duration (in years/months)
+  4. Income type (salary, hourly, self-employed, etc.)
+  5. Pay frequency (weekly, bi-weekly, monthly, etc.)
+  6. Document date 
+  7. Any additional income sources
+  
+  Be precise and objective in your extraction. If you cannot determine a field with high confidence, indicate this with null rather than guessing.
+  
+  JSON RESPONSE:
