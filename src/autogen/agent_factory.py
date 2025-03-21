@@ -5,11 +5,9 @@ Creates and configures AutoGen agents for the mortgage lending system.
 
 import os
 from typing import Any, Dict, List, Optional
-
-import autogen
 from autogen import Agent, AssistantAgent, UserProxyAgent
-from ..utils.config import get_config
-from ..utils.logging_utils import get_logger
+from utils.config import get_config
+from utils.logging_utils import get_logger
 
 logger = get_logger("autogen.agent_factory")
 

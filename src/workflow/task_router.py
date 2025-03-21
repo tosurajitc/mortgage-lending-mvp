@@ -8,15 +8,15 @@ import asyncio
 from datetime import datetime
 import json
 
-from ..agents.orchestrator import OrchestratorAgent
-from ..agents.document_agent import DocumentAnalysisAgent
-from ..agents.underwriting_agent import UnderwritingAgent
-from ..agents.compliance_agent import ComplianceAgent
-from ..agents.customer_agent import CustomerServiceAgent
-from ..autogen.conversation_manager import ConversationManager
+from agents.orchestrator import OrchestratorAgent
+from agents.document_agent import DocumentAnalysisAgent
+from agents.underwriting_agent import UnderwritingAgent
+from agents.compliance_agent import ComplianceAgent
+from agents.customer_agent import CustomerServiceAgent
+from autogen.conversation_manager import ConversationManager
 from .state_manager import StateManager
-from ..utils.logging_utils import get_logger
-from ..data.models import ApplicationState
+from utils.logging_utils import get_logger
+from data.models import ApplicationStatus
 
 logger = get_logger("workflow.task_router")
 
@@ -130,7 +130,7 @@ class TaskRouter:
                 # All documents are complete and valid
                 await self.state_manager.update_application_state(
                     application_id,
-                    ApplicationState.DOCUMENTS_PROCESSED,
+                    ApplicationStatus.DOCUMENTS_PROCESSED,
                     {"document_analysis": result},
                     "Document analysis completed successfully"
                 )
@@ -138,7 +138,7 @@ class TaskRouter:
                 # Documents are incomplete or invalid
                 await self.state_manager.update_application_state(
                     application_id,
-                    ApplicationState.DOCUMENTS_SUBMITTED,
+                    ApplicationStatus.DOCUMENTS_SUBMITTED,
                     {"document_analysis": result, "missing_documents": result.get("missing_documents", [])},
                     "Document analysis identified missing or invalid documents"
                 )
@@ -174,7 +174,7 @@ class TaskRouter:
         application_id = task.get("application_id")
         if application_id:
             # Update state based on underwriting decision
-            new_state = ApplicationState.UNDERWRITING_COMPLETED
+            new_state = ApplicationStatus.UNDERWRITING_COMPLETED
             
             await self.state_manager.update_application_state(
                 application_id,
@@ -217,11 +217,11 @@ class TaskRouter:
         application_id = task.get("application_id")
         if application_id:
             # Determine new state based on compliance check
-            new_state = ApplicationState.COMPLIANCE_CHECKED
+            new_state = ApplicationStatus.COMPLIANCE_CHECKED
             
             # If compliance failed, set appropriate state
             if not result.get("is_compliant", True):
-                new_state = ApplicationState.REJECTED_COMPLIANCE
+                new_state = ApplicationStatus.REJECTED_COMPLIANCE
             
             await self.state_manager.update_application_state(
                 application_id,
@@ -285,7 +285,7 @@ class TaskRouter:
         application_id = task.get("application_id") or application_data.get("application_id")
         if application_id:
             # Determine new state based on decision
-            new_state = ApplicationState.APPROVED if result.get("decision", False) else ApplicationState.REJECTED_UNDERWRITING
+            new_state = ApplicationStatus.APPROVED if result.get("decision", False) else ApplicationStatus.REJECTED_UNDERWRITING
             
             await self.state_manager.update_application_state(
                 application_id,
@@ -359,7 +359,7 @@ class TaskRouter:
         suggested_tasks = []
         
         # Suggest tasks based on current state
-        if current_state == ApplicationState.INITIATED:
+        if current_state == ApplicationStatus.INITIATED:
             # New application, suggest document analysis
             suggested_tasks.append({
                 "task_type": "analyze_documents",
@@ -368,7 +368,7 @@ class TaskRouter:
                 "description": "Analyze submitted documents"
             })
             
-        elif current_state == ApplicationState.DOCUMENTS_SUBMITTED:
+        elif current_state == ApplicationStatus.DOCUMENTS_SUBMITTED:
             # Documents submitted but not processed
             suggested_tasks.append({
                 "task_type": "analyze_documents",
@@ -377,7 +377,7 @@ class TaskRouter:
                 "description": "Analyze submitted documents"
             })
             
-        elif current_state == ApplicationState.DOCUMENTS_PROCESSED:
+        elif current_state == ApplicationStatus.DOCUMENTS_PROCESSED:
             # Documents processed, ready for underwriting
             suggested_tasks.append({
                 "task_type": "evaluate_application",
@@ -386,7 +386,7 @@ class TaskRouter:
                 "description": "Evaluate application for underwriting decision"
             })
             
-        elif current_state == ApplicationState.UNDERWRITING_COMPLETED:
+        elif current_state == ApplicationStatus.UNDERWRITING_COMPLETED:
             # Underwriting completed, ready for compliance check
             suggested_tasks.append({
                 "task_type": "check_compliance",
@@ -395,7 +395,7 @@ class TaskRouter:
                 "description": "Check application for regulatory compliance"
             })
             
-        elif current_state == ApplicationState.COMPLIANCE_CHECKED:
+        elif current_state == ApplicationStatus.COMPLIANCE_CHECKED:
             # If underwriting approved and compliance passed
             underwriting_results = context.get("underwriting_results", {})
             compliance_results = context.get("compliance_results", {})

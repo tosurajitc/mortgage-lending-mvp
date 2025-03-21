@@ -400,3 +400,92 @@ class AccessControlManager:
         logger.info(log_message)
         
         # In a real system, you'd also write this to a secure audit log
+
+def get_agent_role(agent_id):
+    """
+    Get the role assigned to an agent.
+    
+    Args:
+        agent_id (str): ID of the agent
+        
+    Returns:
+        str: Role name
+    """
+    # Agent role mapping - in a real system, this would come from a database
+    role_mapping = {
+        "orchestrator": "admin",
+        "document_agent": "document_processor",
+        "underwriting_agent": "underwriter",
+        "compliance_agent": "compliance_officer",
+        "customer_agent": "customer_service"
+    }
+    
+    return role_mapping.get(agent_id, "limited")
+
+def get_role_permissions(role):
+    """
+    Get the permissions for a specific role.
+    
+    Args:
+        role (str): Role name
+        
+    Returns:
+        set: Set of permitted actions
+    """
+    # Role permissions - in a real system, this would be more granular
+    permission_mapping = {
+        "admin": {"read", "write", "delete", "execute", "delegate", "approve"},
+        "document_processor": {"read", "write", "process_documents"},
+        "underwriter": {"read", "assess_risk", "approve_loans", "deny_loans"},
+        "compliance_officer": {"read", "verify_compliance", "flag_issues"},
+        "customer_service": {"read", "communicate", "request_documents"},
+        "limited": {"read"}
+    }
+    
+    return permission_mapping.get(role, set())
+
+def check_resource_access(agent_id, resource, action):
+    """
+    Check if an agent has access to a specific resource.
+    
+    Args:
+        agent_id (str): ID of the agent
+        resource (str): Resource to access
+        action (str): Action to perform
+        
+    Returns:
+        bool: True if access is allowed, False otherwise
+    """
+    # This is a placeholder for resource-specific access control
+    # In a real system, this would check against a database of resource permissions
+    
+    # By default, allow access if the agent has permission for the action
+    return True
+
+
+def verify_agent_permissions(agent_id, action, resource=None):
+    """
+    Verify that an agent has permissions to perform a specific action.
+    
+    Args:
+        agent_id (str): ID of the agent requesting permission
+        action (str): Action the agent is attempting to perform
+        resource (str, optional): Resource the agent is attempting to access
+        
+    Returns:
+        bool: True if the agent has permission, False otherwise
+    """
+    # This is a simplified implementation - in a production system,
+    # you would likely have a more complex permissions model
+    
+    # Get the agent's role and permissions
+    agent_role = get_agent_role(agent_id)
+    
+    # Check if the agent's role has permission for this action
+    if action in get_role_permissions(agent_role):
+        if resource:
+            # If a resource is specified, check resource-specific permissions
+            return check_resource_access(agent_id, resource, action)
+        return True
+    
+    return False        

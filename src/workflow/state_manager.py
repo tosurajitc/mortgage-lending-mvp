@@ -8,9 +8,9 @@ import asyncio
 from datetime import datetime
 import json
 
-from ..data.models import ApplicationState
-from ..data.cosmos_manager import CosmosManager
-from ..utils.logging_utils import get_logger
+from data.models import ApplicationStatus
+from data.cosmos_manager import CosmosDBManager
+from utils.logging_utils import get_logger
 
 logger = get_logger("workflow.state_manager")
 
@@ -23,12 +23,12 @@ class StateManager:
     
     def __init__(self):
         self.logger = get_logger("state_manager")
-        self.cosmos_manager = CosmosManager()
+        self.cosmos_manager = CosmosDBManager()
         
         # In-memory state cache for faster access
         self.state_cache = {}
         
-    async def create_application_state(self, application_id: str, initial_state: str = ApplicationState.INITIATED,
+    async def create_application_state(self, application_id: str, initial_state: str = ApplicationStatus.INITIATED,
                                       initial_context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Create a new application state record.
@@ -208,7 +208,7 @@ class StateManager:
         if not current_state:
             self.logger.warning(f"Application {application_id} not found, creating new state record")
             return await self.create_application_state(
-                application_id, ApplicationState.INITIATED, context_data
+                application_id, ApplicationStatus.INITIATED, context_data
             )
         
         # Update the context data

@@ -1,0 +1,535 @@
+{
+    "collaboration_patterns": {
+      "mortgage_application_processing": {
+        "description": "Standard workflow for processing a new mortgage application",
+        "workflow_type": "sequential_with_validation",
+        "agents": ["orchestrator", "document_agent", "underwriting_agent", "compliance_agent", "customer_agent"],
+        "initiator": "orchestrator",
+        "steps": [
+          {
+            "name": "document_analysis",
+            "agent": "document_agent",
+            "description": "Analyze all submitted documents",
+            "required": true,
+            "timeout_seconds": 300,
+            "retry_count": 2,
+            "requires_confirmation": false,
+            "outputs": ["document_analysis_results", "missing_documents"]
+          },
+          {
+            "name": "underwriting_evaluation",
+            "agent": "underwriting_agent",
+            "description": "Evaluate application based on financial criteria",
+            "required": true,
+            "timeout_seconds": 180,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "inputs": ["document_analysis_results"],
+            "outputs": ["risk_assessment", "loan_terms"]
+          },
+          {
+            "name": "compliance_check",
+            "agent": "compliance_agent",
+            "description": "Check for regulatory compliance issues",
+            "required": true,
+            "timeout_seconds": 120,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "inputs": ["document_analysis_results", "risk_assessment", "loan_terms"],
+            "outputs": ["compliance_results", "compliance_issues"]
+          },
+          {
+            "name": "final_decision",
+            "agent": "orchestrator",
+            "description": "Make final decision based on all inputs",
+            "required": true,
+            "timeout_seconds": 60,
+            "retry_count": 0,
+            "requires_confirmation": true,
+            "inputs": ["document_analysis_results", "risk_assessment", "loan_terms", "compliance_results"],
+            "outputs": ["application_decision"]
+          },
+          {
+            "name": "customer_notification",
+            "agent": "customer_agent",
+            "description": "Notify customer of decision and next steps",
+            "required": true,
+            "timeout_seconds": 120,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "inputs": ["application_decision", "loan_terms", "compliance_issues"],
+            "outputs": ["notification_status"]
+          }
+        ],
+        "error_handling": {
+          "document_analysis": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 2,
+            "fallback": "manual_intervention"
+          },
+          "underwriting_evaluation": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "conservative_assessment"
+          },
+          "compliance_check": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "flag_for_review"
+          },
+          "final_decision": {
+            "on_timeout": "extend_timeout",
+            "on_error": "notify_orchestrator",
+            "max_retries": 0,
+            "fallback": "manual_review"
+          },
+          "customer_notification": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 2,
+            "fallback": "manual_notification"
+          }
+        }
+      },
+      "document_request_handling": {
+        "description": "Process to request and validate additional documents",
+        "workflow_type": "event_driven",
+        "agents": ["orchestrator", "document_agent", "customer_agent"],
+        "initiator": "document_agent",
+        "steps": [
+          {
+            "name": "identify_missing_documents",
+            "agent": "document_agent",
+            "description": "Identify required documents that are missing",
+            "required": true,
+            "timeout_seconds": 60,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "outputs": ["missing_document_list"]
+          },
+          {
+            "name": "request_documents",
+            "agent": "customer_agent",
+            "description": "Request missing documents from customer",
+            "required": true,
+            "timeout_seconds": 120,
+            "retry_count": 2,
+            "requires_confirmation": false,
+            "inputs": ["missing_document_list"],
+            "outputs": ["document_request_status"]
+          },
+          {
+            "name": "track_document_requests",
+            "agent": "orchestrator",
+            "description": "Track status of document requests",
+            "required": true,
+            "timeout_seconds": 60,
+            "retry_count": 0,
+            "requires_confirmation": false,
+            "inputs": ["document_request_status", "missing_document_list"],
+            "outputs": ["document_tracking_status"]
+          },
+          {
+            "name": "validate_new_documents",
+            "agent": "document_agent",
+            "description": "Validate newly submitted documents",
+            "required": true,
+            "timeout_seconds": 180,
+            "retry_count": 1,
+            "event_triggered": true,
+            "trigger_event": "document_received",
+            "requires_confirmation": false,
+            "inputs": ["received_documents"],
+            "outputs": ["document_validation_results"]
+          },
+          {
+            "name": "update_application_status",
+            "agent": "orchestrator",
+            "description": "Update application status based on new documents",
+            "required": true,
+            "timeout_seconds": 60,
+            "retry_count": 0,
+            "requires_confirmation": false,
+            "inputs": ["document_validation_results", "document_tracking_status"],
+            "outputs": ["updated_application_status"]
+          }
+        ],
+        "error_handling": {
+          "identify_missing_documents": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "conservative_document_list"
+          },
+          "request_documents": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 2,
+            "fallback": "manual_request"
+          },
+          "track_document_requests": {
+            "on_timeout": "extend_timeout",
+            "on_error": "notify_orchestrator",
+            "max_retries": 0,
+            "fallback": "manual_tracking"
+          },
+          "validate_new_documents": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "flag_for_review"
+          },
+          "update_application_status": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 0,
+            "fallback": "manual_update"
+          }
+        }
+      },
+      "complex_decision_making": {
+        "description": "Collaborative decision-making for complex applications",
+        "workflow_type": "consensus",
+        "agents": ["orchestrator", "underwriting_agent", "compliance_agent"],
+        "initiator": "orchestrator",
+        "steps": [
+          {
+            "name": "identify_complex_factors",
+            "agent": "orchestrator",
+            "description": "Identify complex factors requiring special handling",
+            "required": true,
+            "timeout_seconds": 60,
+            "retry_count": 0,
+            "requires_confirmation": false,
+            "outputs": ["complex_factors"]
+          },
+          {
+            "name": "underwriting_assessment",
+            "agent": "underwriting_agent",
+            "description": "Detailed assessment of complex factors",
+            "required": true,
+            "timeout_seconds": 240,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "inputs": ["complex_factors", "document_analysis_results"],
+            "outputs": ["underwriting_recommendation", "risk_details"]
+          },
+          {
+            "name": "compliance_assessment",
+            "agent": "compliance_agent",
+            "description": "Regulatory assessment of complex factors",
+            "required": true,
+            "timeout_seconds": 240,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "inputs": ["complex_factors", "document_analysis_results"],
+            "outputs": ["compliance_recommendation", "compliance_details"]
+          },
+          {
+            "name": "consensus_evaluation",
+            "agent": "orchestrator",
+            "description": "Evaluate recommendations for consensus",
+            "required": true,
+            "timeout_seconds": 120,
+            "retry_count": 0,
+            "requires_confirmation": true,
+            "inputs": ["underwriting_recommendation", "compliance_recommendation", "risk_details", "compliance_details"],
+            "outputs": ["consensus_status", "final_recommendation"]
+          },
+          {
+            "name": "resolve_disagreements",
+            "agent": "orchestrator",
+            "description": "Resolve disagreements between agent recommendations",
+            "required": false,
+            "condition": "consensus_status == 'disagreement'",
+            "timeout_seconds": 180,
+            "retry_count": 1,
+            "requires_confirmation": true,
+            "inputs": ["underwriting_recommendation", "compliance_recommendation", "risk_details", "compliance_details"],
+            "outputs": ["resolved_recommendation"]
+          }
+        ],
+        "error_handling": {
+          "identify_complex_factors": {
+            "on_timeout": "extend_timeout",
+            "on_error": "notify_human",
+            "max_retries": 0,
+            "fallback": "manual_identification"
+          },
+          "underwriting_assessment": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "conservative_assessment"
+          },
+          "compliance_assessment": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "conservative_assessment"
+          },
+          "consensus_evaluation": {
+            "on_timeout": "extend_timeout",
+            "on_error": "notify_human",
+            "max_retries": 0,
+            "fallback": "manual_evaluation"
+          },
+          "resolve_disagreements": {
+            "on_timeout": "retry",
+            "on_error": "notify_human",
+            "max_retries": 1,
+            "fallback": "escalate_to_human"
+          }
+        }
+      },
+      "exception_handling": {
+        "description": "Pattern for handling exceptional cases and errors",
+        "workflow_type": "conditional",
+        "agents": ["orchestrator", "document_agent", "underwriting_agent", "compliance_agent", "customer_agent"],
+        "initiator": "orchestrator",
+        "steps": [
+          {
+            "name": "classify_exception",
+            "agent": "orchestrator",
+            "description": "Classify the type of exception",
+            "required": true,
+            "timeout_seconds": 60,
+            "retry_count": 0,
+            "requires_confirmation": false,
+            "inputs": ["exception_details"],
+            "outputs": ["exception_type", "exception_severity"]
+          },
+          {
+            "name": "document_related_resolution",
+            "agent": "document_agent",
+            "description": "Resolve document-related exceptions",
+            "required": false,
+            "condition": "exception_type == 'document'",
+            "timeout_seconds": 180,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "inputs": ["exception_details"],
+            "outputs": ["resolution_status", "resolution_details"]
+          },
+          {
+            "name": "underwriting_related_resolution",
+            "agent": "underwriting_agent",
+            "description": "Resolve underwriting-related exceptions",
+            "required": false,
+            "condition": "exception_type == 'underwriting'",
+            "timeout_seconds": 180,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "inputs": ["exception_details"],
+            "outputs": ["resolution_status", "resolution_details"]
+          },
+          {
+            "name": "compliance_related_resolution",
+            "agent": "compliance_agent",
+            "description": "Resolve compliance-related exceptions",
+            "required": false,
+            "condition": "exception_type == 'compliance'",
+            "timeout_seconds": 180,
+            "retry_count": 1,
+            "requires_confirmation": false,
+            "inputs": ["exception_details"],
+            "outputs": ["resolution_status", "resolution_details"]
+          },
+          {
+            "name": "customer_communication",
+            "agent": "customer_agent",
+            "description": "Communicate exception status to customer if needed",
+            "required": false,
+            "condition": "exception_severity == 'high' OR resolution_status == 'customer_action_required'",
+            "timeout_seconds": 120,
+            "retry_count": 1,
+            "requires_confirmation": true,
+            "inputs": ["exception_type", "resolution_status", "resolution_details"],
+            "outputs": ["communication_status"]
+          },
+          {
+            "name": "verify_resolution",
+            "agent": "orchestrator",
+            "description": "Verify that the exception has been resolved",
+            "required": true,
+            "timeout_seconds": 60,
+            "retry_count": 0,
+            "requires_confirmation": false,
+            "inputs": ["resolution_status", "resolution_details", "communication_status"],
+            "outputs": ["verification_status"]
+          },
+          {
+            "name": "escalate_unresolved_exception",
+            "agent": "orchestrator",
+            "description": "Escalate exception that could not be resolved",
+            "required": false,
+            "condition": "verification_status == 'unresolved'",
+            "timeout_seconds": 60,
+            "retry_count": 0,
+            "requires_confirmation": true,
+            "inputs": ["exception_details", "resolution_details"],
+            "outputs": ["escalation_status"]
+          }
+        ],
+        "error_handling": {
+          "classify_exception": {
+            "on_timeout": "retry",
+            "on_error": "notify_human",
+            "max_retries": 1,
+            "fallback": "manual_classification"
+          },
+          "document_related_resolution": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "escalate_to_human"
+          },
+          "underwriting_related_resolution": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "escalate_to_human"
+          },
+          "compliance_related_resolution": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "escalate_to_human"
+          },
+          "customer_communication": {
+            "on_timeout": "retry",
+            "on_error": "notify_orchestrator",
+            "max_retries": 1,
+            "fallback": "manual_communication"
+          },
+          "verify_resolution": {
+            "on_timeout": "retry",
+            "on_error": "notify_human",
+            "max_retries": 0,
+            "fallback": "manual_verification"
+          },
+          "escalate_unresolved_exception": {
+            "on_timeout": "extend_timeout",
+            "on_error": "notify_human",
+            "max_retries": 0,
+            "fallback": "forced_escalation"
+          }
+        }
+      }
+    },
+    "agent_capabilities": {
+      "orchestrator": {
+        "can_initiate": true,
+        "can_finalize_decisions": true,
+        "can_resolve_conflicts": true,
+        "can_delegate": true,
+        "can_monitor": true,
+        "priority_level": 1
+      },
+      "document_agent": {
+        "can_initiate": true,
+        "can_finalize_decisions": false,
+        "can_resolve_conflicts": false,
+        "can_delegate": false,
+        "can_monitor": false,
+        "priority_level": 2
+      },
+      "underwriting_agent": {
+        "can_initiate": false,
+        "can_finalize_decisions": false,
+        "can_resolve_conflicts": false,
+        "can_delegate": false,
+        "can_monitor": false,
+        "priority_level": 2
+      },
+      "compliance_agent": {
+        "can_initiate": false,
+        "can_finalize_decisions": false, 
+        "can_resolve_conflicts": false,
+        "can_delegate": false,
+        "can_monitor": false,
+        "priority_level": 2
+      },
+      "customer_agent": {
+        "can_initiate": true,
+        "can_finalize_decisions": false,
+        "can_resolve_conflicts": false,
+        "can_delegate": false,
+        "can_monitor": false,
+        "priority_level": 3
+      }
+    },
+    "communication_protocols": {
+      "agent_messaging": {
+        "format": "json",
+        "required_fields": ["sender", "recipient", "message_id", "timestamp", "message_type", "content"],
+        "optional_fields": ["context_id", "in_response_to", "priority", "ttl"],
+        "message_types": [
+          "request", "response", "notification", "error", "decision", "update"
+        ],
+        "priority_levels": {
+          "high": 1,
+          "medium": 2,
+          "low": 3
+        },
+        "delivery_guarantee": "at-least-once",
+        "retry_policy": {
+          "max_retries": 3,
+          "backoff_factor": 2,
+          "initial_retry_delay_ms": 500
+        }
+      },
+      "human_interaction": {
+        "escalation_levels": [
+          "notification_only",
+          "review_required",
+          "approval_required",
+          "intervention_required"
+        ],
+        "response_timeouts": {
+          "notification_only": 86400,
+          "review_required": 3600,
+          "approval_required": 1800,
+          "intervention_required": 900
+        }
+      }
+    },
+    "decision_governance": {
+      "audit_requirements": {
+        "log_all_decisions": true,
+        "log_decision_factors": true,
+        "include_agent_reasoning": true,
+        "store_input_data": true
+      },
+      "approval_thresholds": {
+        "loan_amount": {
+          "low": {
+            "max_amount": 250000,
+            "required_approvers": ["underwriting_agent", "compliance_agent"]
+          },
+          "medium": {
+            "max_amount": 500000,
+            "required_approvers": ["underwriting_agent", "compliance_agent", "orchestrator"]
+          },
+          "high": {
+            "max_amount": null,
+            "required_approvers": ["underwriting_agent", "compliance_agent", "orchestrator", "human_supervisor"]
+          }
+        },
+        "risk_level": {
+          "low": {
+            "required_approvers": ["underwriting_agent"]
+          },
+          "medium": {
+            "required_approvers": ["underwriting_agent", "compliance_agent"]
+          },
+          "high": {
+            "required_approvers": ["underwriting_agent", "compliance_agent", "orchestrator", "human_supervisor"]
+          }
+        }
+      }
+    }
+  }

@@ -11,8 +11,8 @@ import requests
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-from ..utils.config import get_config
-from ..utils.logging_utils import get_logger
+from utils.config import get_config
+from utils.logging_utils import get_logger
 
 logger = get_logger("services.azure_openai")
 

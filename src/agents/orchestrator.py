@@ -11,10 +11,10 @@ from .document_agent import DocumentAnalysisAgent
 from .underwriting_agent import UnderwritingAgent
 from .compliance_agent import ComplianceAgent
 from .customer_agent import CustomerServiceAgent
-from ..workflow.state_manager import StateManager
-from ..workflow.decision_tracker import DecisionTracker
-from ..security.access_control import verify_agent_permissions
-from ..data.models import ApplicationState
+from workflow.state_manager import StateManager
+from workflow.decision_tracker import DecisionTracker
+from security.access_control import verify_agent_permissions
+from data.models import ApplicationStatus
 
 
 class OrchestratorAgent(BaseAgent):
@@ -86,7 +86,7 @@ class OrchestratorAgent(BaseAgent):
         self.log_processing_step(f"Starting new application processing for {application_id}")
         
         # Initialize application state
-        await self.state_manager.create_application_state(application_id, ApplicationState.INITIATED)
+        await self.state_manager.create_application_state(application_id, ApplicationStatus.INITIATED)
         
         try:
             # Step 1: Document Analysis
@@ -99,7 +99,7 @@ class OrchestratorAgent(BaseAgent):
             # Update application state
             await self.state_manager.update_application_state(
                 application_id, 
-                ApplicationState.DOCUMENTS_PROCESSED,
+                ApplicationStatus.DOCUMENTS_PROCESSED,
                 {"document_analysis": document_results}
             )
             
@@ -136,7 +136,7 @@ class OrchestratorAgent(BaseAgent):
             # Update application state
             await self.state_manager.update_application_state(
                 application_id, 
-                ApplicationState.UNDERWRITING_COMPLETED,
+                ApplicationStatus.UNDERWRITING_COMPLETED,
                 {"underwriting": underwriting_results}
             )
             
@@ -160,7 +160,7 @@ class OrchestratorAgent(BaseAgent):
             # Update application state
             await self.state_manager.update_application_state(
                 application_id, 
-                ApplicationState.COMPLIANCE_CHECKED,
+                ApplicationStatus.COMPLIANCE_CHECKED,
                 {"compliance": compliance_results}
             )
             
@@ -211,7 +211,7 @@ class OrchestratorAgent(BaseAgent):
             self.logger.error(f"Error processing application {application_id}: {str(e)}", exc_info=True)
             await self.state_manager.update_application_state(
                 application_id, 
-                ApplicationState.ERROR,
+                ApplicationStatus.ERROR,
                 {"error": str(e)}
             )
             raise
@@ -288,7 +288,7 @@ class OrchestratorAgent(BaseAgent):
             
             await self.state_manager.update_application_state(
                 application_id, 
-                ApplicationState.DOCUMENTS_UPDATED,
+                ApplicationStatus.DOCUMENTS_UPDATED,
                 current_context
             )
             
@@ -335,9 +335,9 @@ class OrchestratorAgent(BaseAgent):
             Final application status string
         """
         if not compliance_results.get("is_compliant", False):
-            return ApplicationState.REJECTED_COMPLIANCE
+            return ApplicationStatus.REJECTED_COMPLIANCE
         
         if not underwriting_results.get("is_approved", False):
-            return ApplicationState.REJECTED_UNDERWRITING
+            return ApplicationStatus.REJECTED_UNDERWRITING
             
-        return ApplicationState.APPROVED
+        return ApplicationStatus.APPROVED

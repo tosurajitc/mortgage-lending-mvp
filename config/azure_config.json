@@ -1,0 +1,67 @@
+{
+    "subscription_id": "",
+    "resource_group": "mortgage-mvp-rg",
+    "location": "eastus",
+    "cosmos_db": {
+      "account_name": "mortgage-db-account",
+      "database_name": "mortgage_db",
+      "endpoint": "",
+      "key": "",
+      "containers": [
+        {
+          "name": "applications",
+          "partition_key": "/applicationId"
+        },
+        {
+          "name": "documents",
+          "partition_key": "/documentId"
+        },
+        {
+          "name": "applicants",
+          "partition_key": "/applicantId"
+        },
+        {
+          "name": "properties",
+          "partition_key": "/propertyId"
+        },
+        {
+          "name": "audit_logs",
+          "partition_key": "/timestamp"
+        }
+      ]
+    },
+    "openai": {
+      "endpoint": "",
+      "key": "",
+      "deployment_name": "gpt-4",
+      "embeddings_deployment_name": "text-embedding-ada-002",
+      "api_version": "2023-05-15"
+    },
+    "document_intelligence": {
+      "endpoint": "",
+      "key": "",
+      "model_id": "prebuilt-document"
+    },
+    "storage": {
+      "account_name": "mortgagedocuments",
+      "connection_string": "",
+      "containers": {
+        "documents": "mortgage-documents",
+        "applications": "mortgage-applications",
+        "templates": "document-templates"
+      }
+    },
+    "key_vault": {
+      "name": "mortgage-mvp-vault",
+      "uri": ""
+    },
+    "application_insights": {
+      "connection_string": "",
+      "instrumentation_key": ""
+    },
+    "semantic_kernel": {
+      "memory_store_type": "volatile",
+      "max_tokens": 8000,
+      "temperature": 0.7
+    }
+  }

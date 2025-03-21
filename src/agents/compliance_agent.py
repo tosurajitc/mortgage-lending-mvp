@@ -7,9 +7,9 @@ from typing import Any, Dict, List, Optional
 import asyncio
 
 from .base_agent import BaseAgent
-from ..semantic_kernel.kernel_setup import get_kernel
-from ..autogen.reasoning_agents import get_compliance_reasoning_agent
-from ..utils.logging_utils import get_logger
+from semantic_kernel.kernel_setup import get_kernel
+from autogen.reasoning_agents import create_reasoning_agents
+from utils.logging_utils import get_logger
 
 
 class ComplianceAgent(BaseAgent):
@@ -31,7 +31,7 @@ class ComplianceAgent(BaseAgent):
         self.kernel = get_kernel()
         
         # Get compliance reasoning agent from AutoGen
-        self.reasoning_agent = get_compliance_reasoning_agent()
+        self.reasoning_agent = create_reasoning_agents()
         
         # Initialize compliance rule sets
         self._initialize_compliance_rules()

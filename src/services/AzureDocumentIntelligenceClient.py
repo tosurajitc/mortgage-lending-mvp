@@ -12,8 +12,8 @@ import requests
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.formrecognizer import DocumentAnalysisClient
 
-from ..utils.config import get_config
-from ..utils.logging_utils import get_logger
+from utils.config import get_config
+from utils.logging_utils import get_logger
 
 logger = get_logger("services.document_intelligence")
 

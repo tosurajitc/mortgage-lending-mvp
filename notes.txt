@@ -39,6 +39,12 @@ mortgage-lending-mvp/
 │   │   ├── agent_factory.py          # Creates AutoGen agents
 │   │   ├── reasoning_agents.py       # Specialized reasoning agents
 │   │   └── conversation_manager.py   # Manages agent conversations
+│   │   └── collaboration/
+│   │       ├── manager.py            # Collaboration manager (patterns)
+│   │       ├── agent.py              # Collaborative agent interface
+│   │       ├── selection.py          # Dynamic agent selection
+│   │       ├── feedback.py           # Feedback loops
+│   │       └── metrics.py            # Metrics and monitoring
 │   │
 │   ├── semantic_kernel/              # Semantic Kernel integration
 │   │   ├── __init__.py

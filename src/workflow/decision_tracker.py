@@ -8,8 +8,8 @@ import asyncio
 from datetime import datetime
 import json
 
-from ..data.cosmos_manager import CosmosManager
-from ..utils.logging_utils import get_logger
+from data.cosmos_manager import CosmosDBManager
+from utils.logging_utils import get_logger
 
 logger = get_logger("workflow.decision_tracker")
 
@@ -22,7 +22,7 @@ class DecisionTracker:
     
     def __init__(self):
         self.logger = get_logger("decision_tracker")
-        self.cosmos_manager = CosmosManager()
+        self.cosmos_manager = CosmosDBManager()
         
     async def record_decision(self, application_id: str, decision_type: str, 
                              decision: bool, factors: Dict[str, Any], 

@@ -17,6 +17,38 @@ AGENT_CONFIG_PATH = "config/agent_config.json"
 SECURITY_CONFIG_PATH = "config/security_config.json"
 LOGGING_CONFIG_PATH = "config/logging_config.json"
 
+def get_config(section=None):
+    """
+    Get configuration settings. If section is provided, returns only that section.
+    
+    Args:
+        section (str, optional): Configuration section to retrieve
+        
+    Returns:
+        dict: Configuration settings (or section if specified)
+    """
+    config_manager = get_config_manager()
+    app_config = config_manager.get_app_config()
+    
+    if section is not None:
+        # Return specific section if it exists
+        if section in app_config:
+            return app_config[section]
+        # Try special section getters
+        if section == "agent":
+            return config_manager.get_agent_config()
+        elif section == "security":
+            return config_manager.get_security_config()
+        elif section == "logging":
+            return config_manager.get_logging_config()
+        elif section == "azure":
+            return config_manager.get_azure_config()
+        else:
+            logger.warning(f"Configuration section '{section}' not found")
+            return {}
+    
+    return app_config
+
 
 class ConfigurationError(Exception):
     """Exception raised for configuration errors."""

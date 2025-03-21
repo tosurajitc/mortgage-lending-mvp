@@ -1,0 +1,153 @@
+# Azure Resources Setup for Mortgage Lending Assistant MVP
+
+This guide outlines the steps to set up the required Azure resources for the Mortgage Lending Assistant MVP project.
+
+## Prerequisites
+
+- An Azure account with an active subscription
+- Azure CLI installed locally
+- Python 3.8 or higher
+- Required Python packages: `azure-identity`, `azure-mgmt-resource`, `azure-mgmt-cosmosdb`, `azure-mgmt-storage`, `azure-mgmt-cognitiveservices`, `azure-mgmt-keyvault`, `azure-cosmos`, `azure-storage-blob`, `azure-ai-formrecognizer`, `azure-ai-openai`
+
+## Setup Options
+
+There are two ways to set up the required Azure resources:
+
+### 1. Automated Setup
+
+The project includes a setup script that automates the creation of most resources:
+
+```bash
+# Navigate to the project scripts directory
+cd scripts
+
+# Run the setup script
+python setup_azure.py --subscription YOUR_SUBSCRIPTION_ID
+```
+
+For interactive login (recommended for first-time setup):
+
+```bash
+python setup_azure.py --subscription YOUR_SUBSCRIPTION_ID --interactive
+```
+
+Note: The script may not be able to create all resources automatically, especially Azure OpenAI, which requires special approval. Manual steps may be required as outlined in the script output.
+
+### 2. Manual Setup
+
+If you prefer to create resources manually through the Azure Portal:
+
+1. **Resource Group**: Create a resource group named `mortgage-mvp-rg` (or your preferred name)
+
+2. **Cosmos DB**:
+   - Create a Cosmos DB account with SQL API (serverless recommended for dev/test)
+   - Create a database named `mortgage_db`
+   - Create the following containers:
+     - `applications` with partition key `/applicationId`
+     - `documents` with partition key `/documentId`
+     - `applicants` with partition key `/applicantId`
+     - `properties` with partition key `/propertyId`
+     - `audit_logs` with partition key `/timestamp`
+
+3. **Storage Account**:
+   - Create a new Storage Account
+   - Create blob containers:
+     - `mortgage-documents`
+     - `mortgage-applications`
+     - `document-templates`
+
+4. **Azure OpenAI**:
+   - Create an Azure OpenAI resource (requires approval)
+   - Deploy models:
+     - GPT-4 with deployment name `gpt-4`
+     - text-embedding-ada-002 with deployment name `text-embedding-ada-002`
+
+5. **Document Intelligence**:
+   - Create a Document Intelligence resource
+   - Note the endpoint and key
+
+6. **Key Vault**:
+   - Create a Key Vault resource for storing secrets
+   - Configure access policies for your application
+
+7. **Application Insights** (optional but recommended):
+   - Create an Application Insights resource for monitoring
+   - Note the connection string
+
+## Configuration
+
+After creating the resources, update the configuration in `config/azure_config.json` with the appropriate values:
+
+```json
+{
+  "subscription_id": "your-subscription-id",
+  "resource_group": "mortgage-mvp-rg",
+  "location": "eastus",
+  "cosmos_db": {
+    "account_name": "your-cosmos-account-name",
+    "database_name": "mortgage_db",
+    "endpoint": "https://your-cosmos-account-name.documents.azure.com:443/",
+    "key": "your-cosmos-primary-key"
+  },
+  "openai": {
+    "endpoint": "https://your-openai-resource.openai.azure.com/",
+    "key": "your-openai-key",
+    "deployment_name": "gpt-4"
+  },
+  ...
+}
+```
+
+Alternatively, you can use environment variables to provide these values. See `.env.example` for the expected format.
+
+## Validating Setup
+
+To validate that your Azure resources are properly configured:
+
+```bash
+# From the project root
+python -m src.utils.initialize
+```
+
+This will attempt to connect to all required resources and report any issues.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Missing Configuration**:
+   - Ensure all required values are set in `azure_config.json` or as environment variables
+   - Check the logs for specific missing values
+
+2. **Authentication Errors**:
+   - Run `az login` to authenticate with Azure
+   - Ensure your account has appropriate permissions for all resources
+
+3. **Cosmos DB Throughput Limits**:
+   - If using a provisioned throughput Cosmos DB account, you may hit RU/s limits
+   - Consider using serverless for development
+
+4. **Azure OpenAI Availability**:
+   - Azure OpenAI is currently limited to approved subscriptions and regions
+   - Check Azure status if deployments are failing
+
+### Getting Help
+
+If you encounter issues not covered here:
+- Check the Azure documentation for specific resources
+- Review the application logs in the `logs/` directory
+- Consult with your team or Azure support
+
+## Security Considerations
+
+- Never commit secrets (keys, connection strings) to source control
+- Use Key Vault or environment variables for sensitive information
+- Review Azure resource network settings to restrict access as needed
+- Enable diagnostic logging on all resources for auditing
+
+## Next Steps
+
+After successfully setting up the Azure resources:
+1. Run the initialization module to create required containers
+2. Proceed with developing the core agent functionality
+3. Configure secure agent-to-agent communication with the established resources
