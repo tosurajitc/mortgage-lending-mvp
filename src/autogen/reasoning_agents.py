@@ -640,3 +640,17 @@ def get_document_reasoning_agent(collaboration_manager=None, llm_config=None):
     """
     agents = create_reasoning_agents(collaboration_manager, llm_config)
     return agents["document_reasoning"]
+
+def get_underwriting_reasoning_agent(collaboration_manager=None, llm_config=None):
+    """
+    Create an underwriting reasoning agent.
+    
+    Args:
+        collaboration_manager: Optional reference to the collaboration manager
+        llm_config (Dict[str, Any], optional): LLM configuration for the agent
+        
+    Returns:
+        UnderwritingReasoningAgent: The underwriting reasoning agent
+    """
+    agents = create_reasoning_agents(collaboration_manager, llm_config)
+    return agents["underwriting_reasoning"]
