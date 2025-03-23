@@ -1,12 +1,10 @@
-# src/semantic_kernel/plugins/compliance_plugin/compliance_checker.py
-
 import json
 import datetime
 from typing import Dict, List, Any, Optional, Tuple
 import semantic_kernel as sk
 from semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 
-from utils.logging_utils import get_logger
+from src.utils.logging_utils import get_logger
 
 logger = get_logger("semantic_kernel.plugins.compliance")
 
@@ -638,7 +636,7 @@ class ComplianceCheckerPlugin:
     def _calculate_monthly_payment(self, loan_amount: float, annual_interest_rate: float, loan_term_years: int) -> float:
         """Calculate the monthly mortgage payment."""
         # Convert annual rate to monthly rate
-        monthly_rate = annual_interest_rate / 12
+        monthly_rate = annual_interest_rate / 100 / 12
         
         # Convert years to number of monthly payments
         num_payments = loan_term_years * 12
@@ -897,188 +895,232 @@ class ComplianceCheckerPlugin:
         elif "primary_applicant" in data and "marital_status" in data["primary_applicant"]:
             return data["primary_applicant"]["marital_status"]
         elif "demographics" in data and "marital_status" in data["demographics"]:
-            return# src/semantic_kernel/plugins/compliance_plugin/compliance_checker.py
-
-import json
-import datetime
-from typing import Dict, List, Any, Optional, Tuple
-import semantic_kernel as sk
-from semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
-
-from utils.logging_utils import get_logger
-
-logger = get_logger("semantic_kernel.plugins.compliance")
-
-class ComplianceCheckerPlugin:
-    """
-    Plugin for checking mortgage applications against regulatory requirements.
-    Provides functions for validating compliance with lending regulations,
-    fair lending requirements, and disclosure obligations.
-    """
+            return data["demographics"]["marital_status"]
+        else:
+            return None
     
-    def __init__(self, kernel: Optional[sk.Kernel] = None):
+    def _extract_dti_ratio(self, data: Dict[str, Any]) -> float:
+        """Extract debt-to-income ratio from application data."""
+        # Try different possible paths to DTI
+        if "dti_ratio" in data:
+            return float(data["dti_ratio"])
+        elif "financial_analysis" in data and "debt_to_income_ratio" in data["financial_analysis"]:
+            return float(data["financial_analysis"]["debt_to_income_ratio"])
+        else:
+            # Calculate DTI from monthly debts and income
+            monthly_income = self._extract_monthly_income(data)
+            monthly_debts = self._extract_monthly_debts(data)
+            
+            if monthly_income > 0:
+                return (monthly_debts / monthly_income) * 100
+            else:
+                return 100  # Default to maximum if income is zero
+    
+    def _extract_ltv_ratio(self, data: Dict[str, Any]) -> float:
+        """Extract loan-to-value ratio from application data."""
+        # Try different possible paths to LTV
+        if "ltv_ratio" in data:
+            return float(data["ltv_ratio"])
+        elif "financial_analysis" in data and "loan_to_value_ratio" in data["financial_analysis"]:
+            return float(data["financial_analysis"]["loan_to_value_ratio"])
+        else:
+            # Calculate LTV from loan amount and property value
+            loan_amount = self._extract_loan_amount(data)
+            property_value = self._extract_property_value(data)
+            
+            if property_value > 0:
+                return (loan_amount / property_value) * 100
+            else:
+                return 100  # Default to maximum if property value is zero
+    
+    def _extract_property_type(self, data: Dict[str, Any]) -> Optional[str]:
+        """Extract property type from application data."""
+        # Try different possible paths to property type
+        if "property_type" in data:
+            return data["property_type"]
+        elif "property_info" in data and "property_type" in data["property_info"]:
+            return data["property_info"]["property_type"]
+        else:
+            return None
+    
+    def _extract_property_location(self, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Extract property location information from application data."""
+        # Try different possible paths to property location
+        if "property_location" in data:
+            return data["property_location"]
+        elif "property_info" in data and "location" in data["property_info"]:
+            return data["property_info"]["location"]
+        elif "property_address" in data:
+            return {"address": data["property_address"]}
+        else:
+            return None
+    
+    def _extract_application_date(self, data: Dict[str, Any]) -> Optional[str]:
+        """Extract application date from application data."""
+        # Try different possible paths to application date
+        if "application_date" in data:
+            return data["application_date"]
+        elif "timeline" in data and "application_date" in data["timeline"]:
+            return data["timeline"]["application_date"]
+        else:
+            return None
+    
+    def _extract_loan_estimate_date(self, data: Dict[str, Any]) -> Optional[str]:
+        """Extract loan estimate date from application data."""
+        # Try different possible paths to loan estimate date
+        if "loan_estimate_date" in data:
+            return data["loan_estimate_date"]
+        elif "timeline" in data and "loan_estimate_date" in data["timeline"]:
+            return data["timeline"]["loan_estimate_date"]
+        elif "disclosures" in data and "loan_estimate_date" in data["disclosures"]:
+            return data["disclosures"]["loan_estimate_date"]
+        else:
+            return None
+    
+    def _extract_closing_disclosure_date(self, data: Dict[str, Any]) -> Optional[str]:
+        """Extract closing disclosure date from application data."""
+        # Try different possible paths to closing disclosure date
+        if "closing_disclosure_date" in data:
+            return data["closing_disclosure_date"]
+        elif "timeline" in data and "closing_disclosure_date" in data["timeline"]:
+            return data["timeline"]["closing_disclosure_date"]
+        elif "disclosures" in data and "closing_disclosure_date" in data["disclosures"]:
+            return data["disclosures"]["closing_disclosure_date"]
+        else:
+            return None
+    
+    def _extract_closing_date(self, data: Dict[str, Any]) -> Optional[str]:
+        """Extract closing date from application data."""
+        # Try different possible paths to closing date
+        if "closing_date" in data:
+            return data["closing_date"]
+        elif "timeline" in data and "closing_date" in data["timeline"]:
+            return data["timeline"]["closing_date"]
+        else:
+            return None
+    
+    def _extract_disclosed_apr(self, data: Dict[str, Any]) -> Optional[float]:
+        """Extract disclosed APR from application data."""
+        # Try different possible paths to disclosed APR
+        if "disclosed_apr" in data:
+            return float(data["disclosed_apr"])
+        elif "disclosures" in data and "apr" in data["disclosures"]:
+            return float(data["disclosures"]["apr"])
+        elif "loan_estimate" in data and "apr" in data["loan_estimate"]:
+            return float(data["loan_estimate"]["apr"])
+        else:
+            return None
+    
+    def _extract_actual_apr(self, data: Dict[str, Any]) -> Optional[float]:
+        """Extract actual APR from application data."""
+        # Try different possible paths to actual APR
+        if "actual_apr" in data:
+            return float(data["actual_apr"])
+        elif "closing_disclosure" in data and "apr" in data["closing_disclosure"]:
+            return float(data["closing_disclosure"]["apr"])
+        else:
+            return None
+    
+    def _extract_disclosed_fees(self, data: Dict[str, Any]) -> Optional[float]:
+        """Extract disclosed fees from application data."""
+        # Try different possible paths to disclosed fees
+        if "disclosed_fees" in data:
+            return float(data["disclosed_fees"])
+        elif "disclosures" in data and "total_fees" in data["disclosures"]:
+            return float(data["disclosures"]["total_fees"])
+        elif "loan_estimate" in data and "total_fees" in data["loan_estimate"]:
+            return float(data["loan_estimate"]["total_fees"])
+        else:
+            return None
+    
+    def _extract_actual_fees(self, data: Dict[str, Any]) -> Optional[float]:
+        """Extract actual fees from application data."""
+        # Try different possible paths to actual fees
+        if "actual_fees" in data:
+            return float(data["actual_fees"])
+        elif "closing_disclosure" in data and "total_fees" in data["closing_disclosure"]:
+            return float(data["closing_disclosure"]["total_fees"])
+        else:
+            return None
+    
+    def _is_adjustable_rate(self, data: Dict[str, Any]) -> bool:
+        """Determine if the loan is an adjustable-rate mortgage."""
+        # Try different possible paths to determine if the loan is adjustable
+        if "is_adjustable_rate" in data:
+            return bool(data["is_adjustable_rate"])
+        elif "loan_details" in data and "is_adjustable_rate" in data["loan_details"]:
+            return bool(data["loan_details"]["is_adjustable_rate"])
+        elif "loan_type" in data:
+            loan_type = data["loan_type"].lower()
+            return "arm" in loan_type or "adjustable" in loan_type
+        elif "loan_details" in data and "loan_type" in data["loan_details"]:
+            loan_type = data["loan_details"]["loan_type"].lower()
+            return "arm" in loan_type or "adjustable" in loan_type
+        else:
+            return False
+    
+    def _calculate_business_days(self, start_date: str, end_date: str) -> int:
         """
-        Initialize the compliance checker plugin.
+        Calculate the number of business days between two dates.
         
         Args:
-            kernel: Optional Semantic Kernel instance
-        """
-        self.kernel = kernel
-        self.logger = logger
-        
-        # Load regulation definitions
-        self.regulations = self._load_regulations()
-    
-    def _load_regulations(self) -> Dict[str, Any]:
-        """Load regulation definitions for compliance checking."""
-        # In a production system, these would be loaded from a database or API
-        # For now, we'll hardcode some key regulations for the MVP
-        return {
-            "TILA_RESPA": {
-                "name": "TILA-RESPA Integrated Disclosure Rule",
-                "description": "Requires lenders to provide loan estimates and closing disclosures.",
-                "requirements": [
-                    "Loan Estimate must be provided within 3 business days of application",
-                    "Closing Disclosure must be provided at least 3 business days before closing",
-                    "APR must be accurately disclosed within tolerance limits"
-                ]
-            },
-            "ATR_QM": {
-                "name": "Ability-to-Repay/Qualified Mortgage Rule",
-                "description": "Requires lenders to verify borrower's ability to repay mortgage loans.",
-                "requirements": [
-                    "Verify income and assets used to qualify for the loan",
-                    "Debt-to-income ratio generally cannot exceed 43% for Qualified Mortgages",
-                    "Points and fees cannot exceed 3% of the loan amount for most loans"
-                ]
-            },
-            "ECOA": {
-                "name": "Equal Credit Opportunity Act",
-                "description": "Prohibits discrimination in credit transactions.",
-                "requirements": [
-                    "Cannot discriminate based on race, color, religion, national origin, sex, marital status, age, or public assistance status",
-                    "Must provide specific reasons for credit denial",
-                    "Must consider income from alimony, child support, or separate maintenance payments"
-                ]
-            },
-            "FHA": {
-                "name": "Fair Housing Act",
-                "description": "Prohibits discrimination in housing-related transactions.",
-                "requirements": [
-                    "Cannot discriminate based on race, color, national origin, religion, sex, familial status, or disability",
-                    "Must provide reasonable accommodations for persons with disabilities",
-                    "Cannot engage in steering or redlining practices"
-                ]
-            },
-            "HMDA": {
-                "name": "Home Mortgage Disclosure Act",
-                "description": "Requires collection and reporting of mortgage lending data.",
-                "requirements": [
-                    "Must collect demographic information on mortgage applicants",
-                    "Must report lending activity data annually",
-                    "Must maintain records for monitoring and examination"
-                ]
-            }
-        }
-    
-    @sk_function(
-        description="Check mortgage application for Ability-to-Repay compliance",
-        name="checkAbilityToRepay"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the mortgage application data"
-    )
-    def check_ability_to_repay(self, context: sk.SKContext) -> str:
-        """
-        Check mortgage application for compliance with Ability-to-Repay (ATR) requirements.
-        
-        Args:
-            context: Semantic Kernel context with application data
+            start_date: Start date in MM/DD/YYYY format
+            end_date: End date in MM/DD/YYYY format
             
         Returns:
-            JSON string with ATR compliance results
+            Number of business days between the dates
         """
-        application_data = json.loads(context["application_data"])
+        try:
+            # Parse dates
+            start = datetime.datetime.strptime(start_date, "%m/%d/%Y")
+            end = datetime.datetime.strptime(end_date, "%m/%d/%Y")
+            
+            # Ensure end date is after start date
+            if end < start:
+                return 0
+            
+            # Count business days (Monday = 0, Sunday = 6)
+            business_days = 0
+            current_date = start
+            
+            while current_date <= end:
+                # Check if current day is a weekday (0-4 are Monday to Friday)
+                if current_date.weekday() < 5:
+                    business_days += 1
+                
+                # Move to next day
+                current_date += datetime.timedelta(days=1)
+            
+            return business_days
+            
+        except Exception as e:
+            self.logger.error(f"Error calculating business days: {str(e)}")
+            return 0
+    
+    def _requires_hmda_reporting(self, data: Dict[str, Any]) -> bool:
+        """Determine if the loan requires HMDA reporting."""
+        # Simplified check for MVP
+        # In a real implementation, would check against regulatory requirements
+        loan_purpose = data.get("loan_purpose", "").lower()
+        loan_amount = self._extract_loan_amount(data)
         
-        # Extract key data for ATR evaluation
-        loan_amount = self._extract_loan_amount(application_data)
-        loan_term_years = self._extract_loan_term(application_data)
-        interest_rate = self._extract_interest_rate(application_data)
-        monthly_income = self._extract_monthly_income(application_data)
-        monthly_debts = self._extract_monthly_debts(application_data)
+        # Basic check: Most residential mortgage loans for purchase, refinance,
+        # or home improvement over certain thresholds require reporting
+        reportable_purposes = ["purchase", "refinance", "home improvement"]
         
-        # Calculate DTI
-        if monthly_income > 0:
-            dti_ratio = (monthly_debts / monthly_income) * 100
-        else:
-            dti_ratio = 100  # Cannot calculate, default to maximum
+        return any(purpose in loan_purpose for purpose in reportable_purposes) and loan_amount > 0
+    
+    def _has_hmda_data(self, data: Dict[str, Any]) -> bool:
+        """Check if application has required HMDA demographic data."""
+        # Check for key HMDA data elements
+        has_race = self._extract_race(data) is not None
+        has_ethnicity = self._extract_ethnicity(data) is not None
+        has_gender = self._extract_gender(data) is not None
         
-        # Calculate monthly payment (P&I only)
-        monthly_payment = self._calculate_monthly_payment(loan_amount, interest_rate, loan_term_years)
+        # In HMDA, applicant can choose to not provide this information
+        # but the fact that they were asked must be documented
+        if "hmda" in data:
+            if "info_not_provided" in data["hmda"] and data["hmda"]["info_not_provided"]:
+                return True
         
-        # Add estimated taxes, insurance, and other housing expenses
-        property_value = self._extract_property_value(application_data)
-        tax_insurance = property_value * 0.015 / 12  # Rough estimate: 1.5% of property value annually
-        total_housing_payment = monthly_payment + tax_insurance
-        
-        # Calculate housing ratio (Front-end DTI)
-        if monthly_income > 0:
-            housing_ratio = (total_housing_payment / monthly_income) * 100
-        else:
-            housing_ratio = 100  # Cannot calculate, default to maximum
-        
-        # Check verification of income and assets
-        income_verified = self._extract_income_verified(application_data)
-        assets_verified = self._extract_assets_verified(application_data)
-        employment_verified = self._extract_employment_verified(application_data)
-        
-        # Check if loan is a Qualified Mortgage (QM)
-        # For the MVP, we'll use a simplified check
-        is_qm = self._is_qualified_mortgage(application_data, dti_ratio)
-        
-        # Prepare compliance findings
-        findings = []
-        compliance_issues = []
-        
-        # Check income verification
-        if income_verified:
-            findings.append("Income has been appropriately verified")
-        else:
-            compliance_issues.append("Income verification is required for ATR compliance")
-        
-        # Check employment verification
-        if employment_verified:
-            findings.append("Employment has been appropriately verified")
-        else:
-            compliance_issues.append("Employment verification is required for ATR compliance")
-        
-        # Check assets verification if applicable
-        if assets_verified:
-            findings.append("Assets have been appropriately verified")
-        
-        # Check DTI ratio
-        if is_qm and dti_ratio > 43:
-            compliance_issues.append("DTI exceeds 43%, which is generally the maximum for a Qualified Mortgage")
-        elif dti_ratio > 50:
-            compliance_issues.append("DTI exceeds 50%, making ability to repay questionable")
-        else:
-            findings.append(f"DTI ratio of {dti_ratio:.1f}% is within acceptable limits")
-        
-        # Check housing ratio
-        if housing_ratio > 31:
-            findings.append(f"Housing ratio of {housing_ratio:.1f}% exceeds 31% guideline, but may be acceptable with compensating factors")
-        else:
-            findings.append(f"Housing ratio of {housing_ratio:.1f}% is within acceptable limits")
-        
-        # Compile results
-        compliance_status = "Compliant" if not compliance_issues else "Non-Compliant"
-        
-        result = {
-            "regulation": "Ability-to-Repay (ATR)",
-            "compliance_status": compliance_status,
-            "compliance_issues": compliance_issues,
-            "findings": findings,
-            "key_metrics": {
-                "dti_ratio": round(dti
-                                   
+        return has_race and has_ethnicity and has_gender

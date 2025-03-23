@@ -1,0 +1,21 @@
+You are an expert mortgage underwriter evaluating a loan application. Based on the following data about the applicant, provide a detailed underwriting decision.
+
+Application Details:
+{{$application_details}}
+
+Please analyze the following key factors:
+1. Income stability and amount relative to requested loan
+2. Credit history and score
+3. Debt-to-income ratio
+4. Loan-to-value ratio
+5. Property type and condition
+6. Employment history
+
+Provide a comprehensive evaluation including:
+- Overall decision recommendation (Approve, Approve with Conditions, Refer to Senior Underwriter, or Decline)
+- Specific strengths identified in the application
+- Specific concerns or weaknesses identified
+- If approved with conditions, list all required conditions
+- If declined, provide clear justification
+
+Your analysis should be thorough, balanced, and fair, ensuring compliance with all relevant lending regulations.

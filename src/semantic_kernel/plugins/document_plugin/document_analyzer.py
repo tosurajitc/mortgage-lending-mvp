@@ -1,15 +1,12 @@
-# src/semantic_kernel/plugins/document_plugin/document_analyzer.py
-
 import os
 import json
 import datetime
 from typing import Dict, List, Any, Optional, Tuple
 import semantic_kernel as sk
-from semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 import re
 
-from utils.logging_utils import get_logger
-from data.models import Document, DocumentType
+from src.utils.logging_utils import get_logger
+from src.data.models import Document, DocumentType
 
 logger = get_logger("semantic_kernel.plugins.document")
 
@@ -30,14 +27,6 @@ class DocumentAnalyzerPlugin:
         self.kernel = kernel
         self.logger = logger
     
-    @sk_function(
-        description="Extract key information from a W-2 tax form",
-        name="extractW2Information"
-    )
-    @sk_function_context_parameter(
-        name="document_text",
-        description="The text content of the W-2 form"
-    )
     def extract_w2_information(self, context: sk.SKContext) -> str:
         """
         Extract key information from a W-2 tax form.
@@ -96,14 +85,6 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Extract key information from a pay stub",
-        name="extractPayStubInformation"
-    )
-    @sk_function_context_parameter(
-        name="document_text",
-        description="The text content of the pay stub"
-    )
     def extract_pay_stub_information(self, context: sk.SKContext) -> str:
         """
         Extract key information from a pay stub.
@@ -164,14 +145,6 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Extract key information from a bank statement",
-        name="extractBankStatementInformation"
-    )
-    @sk_function_context_parameter(
-        name="document_text",
-        description="The text content of the bank statement"
-    )
     def extract_bank_statement_information(self, context: sk.SKContext) -> str:
         """
         Extract key information from a bank statement.
@@ -231,18 +204,6 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Validate document completeness and identify missing information",
-        name="validateDocumentCompleteness"
-    )
-    @sk_function_context_parameter(
-        name="document_type",
-        description="The type of document being validated"
-    )
-    @sk_function_context_parameter(
-        name="extracted_data",
-        description="JSON string of data extracted from the document"
-    )
     def validate_document_completeness(self, context: sk.SKContext) -> str:
         """
         Validate the completeness of a document and identify missing information.
@@ -358,14 +319,6 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Verify consistency between multiple documents",
-        name="verifyDocumentConsistency"
-    )
-    @sk_function_context_parameter(
-        name="documents_data",
-        description="JSON string containing data from multiple documents"
-    )
     def verify_document_consistency(self, context: sk.SKContext) -> str:
         """
         Verify consistency between multiple documents.
@@ -456,18 +409,6 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Summarize key information from a document for human review",
-        name="summarizeDocumentForReview"
-    )
-    @sk_function_context_parameter(
-        name="document_type",
-        description="The type of document being summarized"
-    )
-    @sk_function_context_parameter(
-        name="extracted_data",
-        description="JSON string of data extracted from the document"
-    )
     def summarize_document_for_review(self, context: sk.SKContext) -> str:
         """
         Create a human-readable summary of a document for review.
@@ -573,18 +514,6 @@ class DocumentAnalyzerPlugin:
         
         return summary
     
-    @sk_function(
-        description="Detect potential fraud indicators in documents",
-        name="detectFraudIndicators"
-    )
-    @sk_function_context_parameter(
-        name="document_type",
-        description="The type of document being analyzed"
-    )
-    @sk_function_context_parameter(
-        name="extracted_data",
-        description="JSON string of data extracted from the document"
-    )
     def detect_fraud_indicators(self, context: sk.SKContext) -> str:
         """
         Detect potential indicators of fraud in a document.

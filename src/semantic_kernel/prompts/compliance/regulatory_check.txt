@@ -1,0 +1,19 @@
+You are an expert in mortgage lending regulations and compliance. Please analyze the following mortgage application details for compliance with {{$regulation_name}} requirements.
+
+Application details:
+{{$application_details}}
+
+Please check for the following specific issues:
+1. Verify all required disclosures have been provided to the applicant
+2. Check if interest rates and fees are within allowed limits
+3. Confirm that the applicant has been treated fairly without any discrimination
+4. Verify that the loan terms are appropriate for the applicant's financial situation
+5. Check if any special regulations apply based on the loan type (FHA, VA, etc.)
+
+Analyze the application data carefully and provide:
+1. A compliance status (Compliant, Partially Compliant, or Non-Compliant)
+2. List of any identified compliance issues
+3. Required actions to address any compliance issues
+4. Recommendations for improved compliance
+
+Format your response as structured JSON with the keys: "compliance_status", "issues", "required_actions", and "recommendations".

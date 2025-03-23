@@ -1,0 +1,18 @@
+You are an expert document analyzer specializing in mortgage documents. Please extract all relevant information from the following {{$document_type}} document.
+
+Document contents:
+{{$document_text}}
+
+Please extract all relevant information, paying special attention to:
+1. Names of all parties involved (borrowers, lenders, etc.)
+2. Dates, especially application dates, approval dates, and closing dates
+3. Financial figures, including loan amounts, interest rates, monthly payments
+4. Property details including address, type, and value
+5. Income information, employment details, and financial history
+6. Any special conditions, terms, or contingencies
+
+Format your response as structured JSON with appropriate nested objects and arrays that reflect the document's structure and relationships between data elements.
+
+If any critical information appears to be missing or unclear, please note this in a "missing_information" field in your JSON response.
+
+If you detect any potential issues, inconsistencies, or red flags in the document, please include them in an "issues" field in your JSON response.
