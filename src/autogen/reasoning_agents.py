@@ -548,25 +548,25 @@ def create_reasoning_agents(collaboration_manager=None, llm_config=None) -> Dict
         }
     
     # Create AutoGen agents
-    document_analysis_agent = autogen.AssistantAgent(
+    document_analysis_agent = src.autogen.AssistantAgent(
         name="DocumentAnalysisAssistant",
         system_message="You are a specialist in analyzing mortgage documents. You excel at extracting information, identifying inconsistencies, and verifying document authenticity.",
         llm_config=llm_config
     )
     
-    underwriting_agent = autogen.AssistantAgent(
+    underwriting_agent = src.autogen.AssistantAgent(
         name="UnderwritingAssistant",
         system_message="You are a mortgage underwriting specialist. You excel at risk assessment, evaluating creditworthiness, and determining appropriate loan terms.",
         llm_config=llm_config
     )
     
-    compliance_agent = autogen.AssistantAgent(
+    compliance_agent = src.autogen.AssistantAgent(
         name="ComplianceAssistant",
         system_message="You are a mortgage compliance expert. You excel at verifying regulatory compliance, validating disclosures, and assessing legal risks.",
         llm_config=llm_config
     )
     
-    customer_agent = autogen.AssistantAgent(
+    customer_agent = src.autogen.AssistantAgent(
         name="CustomerExplanationAssistant",
         system_message="You are a mortgage communication specialist. You excel at translating technical mortgage concepts into clear, customer-friendly language.",
         llm_config=llm_config

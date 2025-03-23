@@ -8,7 +8,7 @@ import asyncio
 from datetime import datetime
 import json
 
-from data.cosmos_manager import CosmosDBManager
+from src.data.cosmos_manager import CosmosDBManager
 from utils.logging_utils import get_logger
 
 logger = get_logger("workflow.decision_tracker")

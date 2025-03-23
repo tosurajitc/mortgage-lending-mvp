@@ -489,3 +489,19 @@ def verify_agent_permissions(agent_id, action, resource=None):
         return True
     
     return False        
+
+# src/security/access_control.py
+
+def check_permissions(request=None):
+    """
+    Check if the request has appropriate permissions
+    
+    Args:
+        request: The FastAPI request object
+        
+    Returns:
+        bool: True if the request has appropriate permissions, False otherwise
+    """
+    # For now, just return True to allow all requests
+    # In a real implementation, you would add permission checking logic here
+    return True

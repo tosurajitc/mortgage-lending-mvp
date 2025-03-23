@@ -14,7 +14,7 @@ from .customer_agent import CustomerServiceAgent
 from src.workflow.state_manager import StateManager
 from src.workflow.decision_tracker import DecisionTracker
 from security.access_control import verify_agent_permissions
-from data.models import ApplicationStatus
+from src.data.models import ApplicationStatus
 
 
 class OrchestratorAgent(BaseAgent):

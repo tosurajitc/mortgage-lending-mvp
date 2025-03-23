@@ -14,6 +14,7 @@ import uuid
 
 class ApplicationStatus(str, Enum):
     """Status of a mortgage application."""
+    INITIATED = "initiated"
     DRAFT = "draft"
     SUBMITTED = "submitted"
     DOCUMENT_REVIEW = "document_review"
