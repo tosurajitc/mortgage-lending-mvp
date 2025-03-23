@@ -5,7 +5,7 @@ Manages multi-agent conversations and decision-making for the mortgage process.
 
 from typing import Any, Dict, List, Optional, Tuple
 import json
-import autogen
+import src.autogen
 import asyncio
 
 from .agent_factory import (

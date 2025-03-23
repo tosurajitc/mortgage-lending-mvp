@@ -19,7 +19,7 @@ import uuid
 from typing import Dict, Any, List, Tuple, Optional
 
 # Import specialized document generators
-from .generators import (
+from generators import (
     income_document_generator,
     bank_document_generator, 
     tax_document_generator,

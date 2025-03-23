@@ -2,7 +2,7 @@ import os
 import json
 import datetime
 from typing import Dict, List, Any, Optional, Tuple
-import semantic_kernel as sk
+import src.semantic_kernel as sk
 import re
 
 from src.utils.logging_utils import get_logger

@@ -1,0 +1,678 @@
+[
+  {
+    "primary_applicant": {
+      "first_name": "Sarah",
+      "last_name": "Moore",
+      "email": "sarah.m@gmail.com",
+      "phone": "(697) 412-5413",
+      "date_of_birth": "1973-12-28",
+      "ssn_last_four": "3825",
+      "address": {
+        "street": "4713 River Way",
+        "city": "Georgetown",
+        "state": "MT",
+        "zip_code": "28284",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 67528,
+      "credit_score": 702,
+      "employer_name": "TechCorp Inc.",
+      "years_at_current_job": 14.9
+    },
+    "co_applicant": {
+      "first_name": "Patricia",
+      "last_name": "Lewis",
+      "email": "patricia_lewis@icloud.com",
+      "phone": "(412) 987-6130",
+      "date_of_birth": "1974-11-20",
+      "ssn_last_four": "8394",
+      "address": {
+        "street": "4713 River Way",
+        "city": "Georgetown",
+        "state": "MT",
+        "zip_code": "28284",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 69196,
+      "credit_score": 689,
+      "employer_name": "State University",
+      "years_at_current_job": 3.0
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Kevin",
+      "last_name": "Roberts",
+      "email": "kevin.roberts68@hotmail.com",
+      "phone": "(562) 977-8280",
+      "date_of_birth": "1977-09-04",
+      "ssn_last_four": "4650",
+      "address": {
+        "street": "9231 Lake Rd",
+        "city": "Georgetown",
+        "state": "AR",
+        "zip_code": "91735",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 149191,
+      "credit_score": 736,
+      "employer_name": "Metro Retail Chain",
+      "years_at_current_job": 16.1
+    },
+    "co_applicant": {
+      "first_name": "Steven",
+      "last_name": "Roberts",
+      "email": "steven.r@outlook.com",
+      "phone": "(352) 532-3615",
+      "date_of_birth": "1975-07-26",
+      "ssn_last_four": "9419",
+      "address": {
+        "street": "9231 Lake Rd",
+        "city": "Georgetown",
+        "state": "AR",
+        "zip_code": "91735",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 104901,
+      "credit_score": 688,
+      "employer_name": "National Education System",
+      "years_at_current_job": 11.9
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Dorothy",
+      "last_name": "Green",
+      "email": "dorothy.green69@yahoo.com",
+      "phone": "(855) 950-6453",
+      "date_of_birth": "1971-08-13",
+      "ssn_last_four": "0676",
+      "address": {
+        "street": "341 Oak Ct",
+        "city": "Clinton",
+        "state": "NH",
+        "zip_code": "22542",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 130975,
+      "credit_score": 733,
+      "employer_name": "State University",
+      "years_at_current_job": 13.2
+    },
+    "co_applicant": {
+      "first_name": "John",
+      "last_name": "Green",
+      "email": "johng@icloud.com",
+      "phone": "(839) 856-1042",
+      "date_of_birth": "1966-12-10",
+      "ssn_last_four": "8575",
+      "address": {
+        "street": "341 Oak Ct",
+        "city": "Clinton",
+        "state": "NH",
+        "zip_code": "22542",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 71699,
+      "credit_score": 707,
+      "employer_name": "National Education System",
+      "years_at_current_job": 16.7
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Kimberly",
+      "last_name": "Carter",
+      "email": "kimberly.carter22@outlook.com",
+      "phone": "(321) 720-9985",
+      "date_of_birth": "1977-04-16",
+      "ssn_last_four": "4680",
+      "address": {
+        "street": "4151 Sunset Pl",
+        "city": "Clinton",
+        "state": "AK",
+        "zip_code": "95349",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 139609,
+      "credit_score": 693,
+      "employer_name": "National Education System",
+      "years_at_current_job": 4.3
+    },
+    "co_applicant": {
+      "first_name": "Paul",
+      "last_name": "Carter",
+      "email": "paul_c@icloud.com",
+      "phone": "(554) 484-4056",
+      "date_of_birth": "1977-02-21",
+      "ssn_last_four": "4544",
+      "address": {
+        "street": "4151 Sunset Pl",
+        "city": "Clinton",
+        "state": "AK",
+        "zip_code": "95349",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 108438,
+      "credit_score": 736,
+      "employer_name": "National Education System",
+      "years_at_current_job": 13.2
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "William",
+      "last_name": "Evans",
+      "email": "wevans@yahoo.com",
+      "phone": "(922) 447-2624",
+      "date_of_birth": "1984-08-31",
+      "ssn_last_four": "7624",
+      "address": {
+        "street": "2680 Park Blvd",
+        "city": "Milton",
+        "state": "WY",
+        "zip_code": "45394",
+        "country": "USA"
+      },
+      "employment_status": "Self-Employed",
+      "annual_income": 106895,
+      "credit_score": 727,
+      "employer_name": "Self Employed",
+      "years_at_current_job": 10.2
+    },
+    "co_applicant": {
+      "first_name": "Karen",
+      "last_name": "Evans",
+      "email": "karen.evans10@gmail.com",
+      "phone": "(497) 342-5934",
+      "date_of_birth": "1980-10-22",
+      "ssn_last_four": "8143",
+      "address": {
+        "street": "2680 Park Blvd",
+        "city": "Milton",
+        "state": "WY",
+        "zip_code": "45394",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 82504,
+      "credit_score": 632,
+      "employer_name": "Self Employed",
+      "years_at_current_job": 7.8
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "George",
+      "last_name": "Perez",
+      "email": "g.perez@hotmail.com",
+      "phone": "(224) 768-3665",
+      "date_of_birth": "1978-05-12",
+      "ssn_last_four": "2426",
+      "address": {
+        "street": "6125 Sunset St",
+        "city": "Manchester",
+        "state": "NY",
+        "zip_code": "72586",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 121171,
+      "credit_score": 684,
+      "employer_name": "Global Finance Group",
+      "years_at_current_job": 9.3
+    },
+    "co_applicant": {
+      "first_name": "George",
+      "last_name": "Perez",
+      "email": "george.perez@gmail.com",
+      "phone": "(600) 675-4728",
+      "date_of_birth": "1982-08-17",
+      "ssn_last_four": "6721",
+      "address": {
+        "street": "6125 Sunset St",
+        "city": "Manchester",
+        "state": "NY",
+        "zip_code": "72586",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 112634,
+      "credit_score": 724,
+      "employer_name": "State University",
+      "years_at_current_job": 5.0
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Joseph",
+      "last_name": "Walker",
+      "email": "josephwalker@hotmail.com",
+      "phone": "(889) 787-1667",
+      "date_of_birth": "1992-07-12",
+      "ssn_last_four": "1556",
+      "address": {
+        "street": "176 Elm Ave",
+        "city": "Springfield",
+        "state": "AZ",
+        "zip_code": "29411",
+        "country": "USA"
+      },
+      "employment_status": "Unemployed",
+      "annual_income": 66024,
+      "credit_score": 672
+    },
+    "co_applicant": {
+      "first_name": "Karen",
+      "last_name": "Walker",
+      "email": "k.walker@outlook.com",
+      "phone": "(313) 836-6336",
+      "date_of_birth": "2000-03-05",
+      "ssn_last_four": "4598",
+      "address": {
+        "street": "176 Elm Ave",
+        "city": "Springfield",
+        "state": "AZ",
+        "zip_code": "29411",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 38844,
+      "credit_score": 556,
+      "employer_name": "National Education System",
+      "years_at_current_job": 1.0
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Matthew",
+      "last_name": "Hernandez",
+      "email": "mhernandez@gmail.com",
+      "phone": "(554) 490-3556",
+      "date_of_birth": "1966-12-07",
+      "ssn_last_four": "6870",
+      "address": {
+        "street": "4183 Pine Ave",
+        "city": "Springfield",
+        "state": "NE",
+        "zip_code": "55338",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 119473,
+      "credit_score": 739,
+      "employer_name": "Metro Retail Chain",
+      "years_at_current_job": 18.6
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "John",
+      "last_name": "Green",
+      "email": "johng@gmail.com",
+      "phone": "(498) 653-2123",
+      "date_of_birth": "1943-02-24",
+      "ssn_last_four": "6126",
+      "address": {
+        "street": "6620 Meadow Rd",
+        "city": "Franklin",
+        "state": "NV",
+        "zip_code": "71753",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 146047,
+      "credit_score": 708,
+      "employer_name": "Global Finance Group",
+      "years_at_current_job": 10.6
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Michael",
+      "last_name": "King",
+      "email": "michael.k@icloud.com",
+      "phone": "(952) 992-3498",
+      "date_of_birth": "1998-04-04",
+      "ssn_last_four": "3197",
+      "address": {
+        "street": "6502 River Ln",
+        "city": "Bristol",
+        "state": "NJ",
+        "zip_code": "72215",
+        "country": "USA"
+      },
+      "employment_status": "Self-Employed",
+      "annual_income": 140153,
+      "credit_score": 712,
+      "employer_name": "Self Employed",
+      "years_at_current_job": 7.3
+    },
+    "co_applicant": {
+      "first_name": "Andrew",
+      "last_name": "King",
+      "email": "andrew.king83@gmail.com",
+      "phone": "(609) 676-3967",
+      "date_of_birth": "1991-05-04",
+      "ssn_last_four": "2633",
+      "address": {
+        "street": "6502 River Ln",
+        "city": "Bristol",
+        "state": "NJ",
+        "zip_code": "72215",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 84983,
+      "credit_score": 723,
+      "employer_name": "Metro Retail Chain",
+      "years_at_current_job": 13.2
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Carol",
+      "last_name": "Harris",
+      "email": "carol.h@gmail.com",
+      "phone": "(397) 526-8670",
+      "date_of_birth": "1954-04-13",
+      "ssn_last_four": "4767",
+      "address": {
+        "street": "510 Sunset Rd",
+        "city": "Oxford",
+        "state": "TN",
+        "zip_code": "81314",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 68730,
+      "credit_score": 718,
+      "employer_name": "City Hospital",
+      "years_at_current_job": 2.5
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Christopher",
+      "last_name": "Davis",
+      "email": "christopher.davis88@icloud.com",
+      "phone": "(359) 436-2214",
+      "date_of_birth": "1952-08-09",
+      "ssn_last_four": "1081",
+      "address": {
+        "street": "9715 Hill Way",
+        "city": "Milton",
+        "state": "WI",
+        "zip_code": "25459",
+        "country": "USA"
+      },
+      "employment_status": "Unemployed",
+      "annual_income": 65945,
+      "credit_score": 627
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "David",
+      "last_name": "Parker",
+      "email": "david.parker@gmail.com",
+      "phone": "(865) 828-7668",
+      "date_of_birth": "1940-09-20",
+      "ssn_last_four": "7220",
+      "address": {
+        "street": "1015 Maple Rd",
+        "city": "Clinton",
+        "state": "AZ",
+        "zip_code": "55754",
+        "country": "USA"
+      },
+      "employment_status": "Self-Employed",
+      "annual_income": 42161,
+      "credit_score": 608,
+      "employer_name": "Self Employed",
+      "years_at_current_job": 4.7
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Brian",
+      "last_name": "Harris",
+      "email": "brian.harris@icloud.com",
+      "phone": "(786) 689-4011",
+      "date_of_birth": "1955-10-15",
+      "ssn_last_four": "5154",
+      "address": {
+        "street": "8635 Maple Ave",
+        "city": "Oxford",
+        "state": "DE",
+        "zip_code": "98049",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 79015,
+      "credit_score": 732,
+      "employer_name": "TechCorp Inc.",
+      "years_at_current_job": 17.0
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Donna",
+      "last_name": "Williams",
+      "email": "donna.williams46@yahoo.com",
+      "phone": "(830) 721-8125",
+      "date_of_birth": "1999-06-07",
+      "ssn_last_four": "7620",
+      "address": {
+        "street": "2762 Cedar Dr",
+        "city": "Arlington",
+        "state": "HI",
+        "zip_code": "49235",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 76554,
+      "credit_score": 631,
+      "employer_name": "Government Agency",
+      "years_at_current_job": 4.7
+    },
+    "co_applicant": {
+      "first_name": "Donald",
+      "last_name": "Williams",
+      "email": "donald.williams32@outlook.com",
+      "phone": "(524) 525-7613",
+      "date_of_birth": "1996-10-13",
+      "ssn_last_four": "7645",
+      "address": {
+        "street": "2762 Cedar Dr",
+        "city": "Arlington",
+        "state": "HI",
+        "zip_code": "49235",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 61491,
+      "credit_score": 657,
+      "employer_name": "Healthcare Associates",
+      "years_at_current_job": 7.4
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Jessica",
+      "last_name": "Jones",
+      "email": "jessica_j@gmail.com",
+      "phone": "(518) 543-7670",
+      "date_of_birth": "1990-07-04",
+      "ssn_last_four": "7691",
+      "address": {
+        "street": "1488 Spring Ln",
+        "city": "Franklin",
+        "state": "DE",
+        "zip_code": "70016",
+        "country": "USA"
+      },
+      "employment_status": "Self-Employed",
+      "annual_income": 123467,
+      "credit_score": 719,
+      "employer_name": "Self Employed",
+      "years_at_current_job": 3.3
+    },
+    "co_applicant": {
+      "first_name": "Daniel",
+      "last_name": "Turner",
+      "email": "daniel_t@outlook.com",
+      "phone": "(688) 512-3911",
+      "date_of_birth": "1995-04-03",
+      "ssn_last_four": "6656",
+      "address": {
+        "street": "1488 Spring Ln",
+        "city": "Franklin",
+        "state": "DE",
+        "zip_code": "70016",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 75931,
+      "credit_score": 682,
+      "employer_name": "Manufacturing Industries",
+      "years_at_current_job": 16.3
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Melissa",
+      "last_name": "Phillips",
+      "email": "melissaphillips@icloud.com",
+      "phone": "(553) 525-7373",
+      "date_of_birth": "1986-04-26",
+      "ssn_last_four": "0330",
+      "address": {
+        "street": "7867 Elm Ln",
+        "city": "Georgetown",
+        "state": "KS",
+        "zip_code": "40785",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 140746,
+      "credit_score": 700,
+      "employer_name": "City Hospital",
+      "years_at_current_job": 15.7
+    },
+    "co_applicant": {
+      "first_name": "Kevin",
+      "last_name": "Phillips",
+      "email": "kevin_phillips@hotmail.com",
+      "phone": "(580) 957-9042",
+      "date_of_birth": "1986-09-05",
+      "ssn_last_four": "1297",
+      "address": {
+        "street": "7867 Elm Ln",
+        "city": "Georgetown",
+        "state": "KS",
+        "zip_code": "40785",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 82578,
+      "credit_score": 624,
+      "employer_name": "Manufacturing Industries",
+      "years_at_current_job": 6.4
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Brian",
+      "last_name": "Nelson",
+      "email": "bnelson@icloud.com",
+      "phone": "(620) 255-6973",
+      "date_of_birth": "1986-04-03",
+      "ssn_last_four": "9959",
+      "address": {
+        "street": "174 Valley St",
+        "city": "Clinton",
+        "state": "NV",
+        "zip_code": "26927",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 90908,
+      "credit_score": 720,
+      "employer_name": "Metro Retail Chain",
+      "years_at_current_job": 9.1
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Kevin",
+      "last_name": "Smith",
+      "email": "kevin.smith4@outlook.com",
+      "phone": "(452) 425-3408",
+      "date_of_birth": "1994-10-24",
+      "ssn_last_four": "2328",
+      "address": {
+        "street": "2136 Elm Way",
+        "city": "Franklin",
+        "state": "DE",
+        "zip_code": "61450",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 112751,
+      "credit_score": 695,
+      "employer_name": "TechCorp Inc.",
+      "years_at_current_job": 7.8
+    },
+    "co_applicant": {
+      "first_name": "Mary",
+      "last_name": "Smith",
+      "email": "marys@hotmail.com",
+      "phone": "(903) 402-7426",
+      "date_of_birth": "1995-07-08",
+      "ssn_last_four": "4895",
+      "address": {
+        "street": "2136 Elm Way",
+        "city": "Franklin",
+        "state": "DE",
+        "zip_code": "61450",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 82408,
+      "credit_score": 631,
+      "employer_name": "City Hospital",
+      "years_at_current_job": 2.3
+    }
+  },
+  {
+    "primary_applicant": {
+      "first_name": "Dorothy",
+      "last_name": "Wilson",
+      "email": "dorothy.wilson9@yahoo.com",
+      "phone": "(450) 655-1724",
+      "date_of_birth": "1945-08-08",
+      "ssn_last_four": "6743",
+      "address": {
+        "street": "3189 Washington Ln",
+        "city": "Salem",
+        "state": "NC",
+        "zip_code": "48789",
+        "country": "USA"
+      },
+      "employment_status": "Employed",
+      "annual_income": 126686,
+      "credit_score": 683,
+      "employer_name": "Manufacturing Industries",
+      "years_at_current_job": 3.5
+    }
+  }
+]

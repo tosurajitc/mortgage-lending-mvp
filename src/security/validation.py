@@ -676,3 +676,33 @@ def validate_api_request(request_data: Dict[str, Any], endpoint: str) -> Dict[st
         # Generic validation for unknown endpoints
         logger.warning(f"No specific validation logic for endpoint: {endpoint}")
         return request_data
+    
+# src/security/validation.py
+
+def validate_input(data):
+    """
+    Validate input data for security purposes
+    
+    Args:
+        data: The data to validate
+        
+    Returns:
+        bool: True if the data is valid, False otherwise
+    """
+    # For now, just return True
+    # In a real implementation, you would add validation logic here
+    return True
+
+def validate_request(request=None):
+    """
+    Validate a FastAPI request
+    
+    Args:
+        request: The FastAPI request object
+        
+    Returns:
+        bool: True if the request is valid, False otherwise
+    """
+    # For now, just return True
+    # In a real implementation, you would add validation logic here
+    return True    

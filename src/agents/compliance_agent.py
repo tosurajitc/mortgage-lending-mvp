@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional
 import asyncio
 
 from .base_agent import BaseAgent
-from semantic_kernel.kernel_setup import get_kernel
-from autogen.reasoning_agents import create_reasoning_agents
+from src.semantic_kernel.kernel_setup import get_kernel
+from src.autogen.reasoning_agents import create_reasoning_agents
 from utils.logging_utils import get_logger
 
 

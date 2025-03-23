@@ -8,7 +8,7 @@ creating status updates, and explaining mortgage concepts.
 import json
 from typing import Dict, List, Any, Optional
 
-import semantic_kernel as sk
+import src.semantic_kernel as sk
 
 from src.utils.logging_utils import get_logger
 

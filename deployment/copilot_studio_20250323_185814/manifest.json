@@ -1,0 +1,44 @@
+{
+    "schemaVersion": "1.0",
+    "id": "mortgage-lending-assistant",
+    "name": "Mortgage Lending Assistant",
+    "version": "1.0.0",
+    "description": "Plugin to process mortgage applications and handle customer inquiries",
+    "publisher": "Your Company",
+    "privacyUrl": "https://www.example.com/privacy",
+    "termsOfUseUrl": "https://www.example.com/terms",
+    "endpoints": [
+        {
+            "name": "submitApplication",
+            "description": "Submit a new mortgage application",
+            "url": "https://your-api-url.com/api/applications/new",
+            "authentication": "apiKey",
+            "apiKeyLocation": "header",
+            "apiKeyName": "X-API-Key"
+        },
+        {
+            "name": "checkApplicationStatus",
+            "description": "Check the status of an existing application",
+            "url": "https://your-api-url.com/api/applications/status",
+            "authentication": "apiKey",
+            "apiKeyLocation": "header",
+            "apiKeyName": "X-API-Key"
+        },
+        {
+            "name": "validateDocument",
+            "description": "Validate a document before submission",
+            "url": "https://your-api-url.com/api/documents/validate",
+            "authentication": "apiKey",
+            "apiKeyLocation": "header",
+            "apiKeyName": "X-API-Key"
+        },
+        {
+            "name": "explainDocumentRequirements",
+            "description": "Explain the requirements for a specific document type",
+            "url": "https://your-api-url.com/api/documents/requirements",
+            "authentication": "apiKey",
+            "apiKeyLocation": "header",
+            "apiKeyName": "X-API-Key"
+        }
+    ]
+}

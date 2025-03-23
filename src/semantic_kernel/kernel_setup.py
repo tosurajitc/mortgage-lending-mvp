@@ -6,11 +6,11 @@ Initializes and configures the Semantic Kernel integration for the mortgage syst
 import os
 import asyncio
 from typing import Optional, Dict, Any, List
-import semantic_kernel as sk
-from semantic_kernel.connectors.ai.open_ai import AzureOpenAITextCompletion, AzureChatCompletion
+import src.semantic_kernel as sk
+from src.semantic_kernel.connectors.ai.open_ai import AzureOpenAITextCompletion, AzureChatCompletion
 
-from ..utils.config import get_config
-from ..utils.logging_utils import get_logger
+from src.utils.config import get_config
+from src.utils.logging_utils import get_logger
 
 logger = get_logger("semantic_kernel.setup")
 

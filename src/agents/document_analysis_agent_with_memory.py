@@ -8,8 +8,8 @@ import asyncio
 import uuid
 
 from .base_agent import BaseAgent
-from semantic_kernel.kernel_setup import get_kernel
-from autogen.reasoning_agents import get_document_reasoning_agent
+from src.semantic_kernel.kernel_setup import get_kernel
+from src.autogen.reasoning_agents import get_document_reasoning_agent
 from utils.logging_utils import get_logger
 from .document_memory_integration import DocumentMemoryManager
 

@@ -1,0 +1,8 @@
+{
+  "document_type": "W2",
+  "description": "Annual wage and tax statement from your employer",
+  "requirements": [
+    "Must be from the past 2 years",
+    "Must show full tax year information"
+  ]
+}

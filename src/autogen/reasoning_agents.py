@@ -3,7 +3,7 @@
 import logging
 import json
 from typing import Dict, List, Any, Optional, Tuple, Union
-import autogen
+import src.autogen
 from src.autogen.collaboration.agent import BaseCollaborativeAgent
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class ReasoningAgent(BaseCollaborativeAgent):
     
     def __init__(self, 
                 agent_id: str, 
-                autogen_agent: autogen.Agent, 
+                autogen_agent: src.autogen.collaboration.agent, 
                 collaboration_manager=None,
                 capabilities: List[str] = None):
         """
@@ -434,7 +434,7 @@ class DocumentReasoningAgent(ReasoningAgent):
     Specialized reasoning agent for document analysis and verification.
     """
     
-    def __init__(self, agent_id: str, autogen_agent: autogen.Agent, collaboration_manager=None):
+    def __init__(self, agent_id: str, autogen_agent: src.autogen.collaboration.agent, collaboration_manager=None):
         """Initialize document reasoning agent."""
         capabilities = [
             ReasoningCapability.DOCUMENT_ANALYSIS,
@@ -459,7 +459,7 @@ class UnderwritingReasoningAgent(ReasoningAgent):
     Specialized reasoning agent for underwriting and risk assessment.
     """
     
-    def __init__(self, agent_id: str, autogen_agent: autogen.Agent, collaboration_manager=None):
+    def __init__(self, agent_id: str, autogen_agent: src.autogen.collaboration.agent, collaboration_manager=None):
         """Initialize underwriting reasoning agent."""
         capabilities = [
             ReasoningCapability.RISK_ASSESSMENT,
@@ -484,7 +484,7 @@ class ComplianceReasoningAgent(ReasoningAgent):
     Specialized reasoning agent for regulatory compliance verification.
     """
     
-    def __init__(self, agent_id: str, autogen_agent: autogen.Agent, collaboration_manager=None):
+    def __init__(self, agent_id: str, autogen_agent: src.autogen.collaboration.agent, collaboration_manager=None):
         """Initialize compliance reasoning agent."""
         capabilities = [
             ReasoningCapability.COMPLIANCE_VERIFICATION,
@@ -509,7 +509,7 @@ class CustomerExplanationAgent(ReasoningAgent):
     Specialized reasoning agent for creating customer-friendly explanations.
     """
     
-    def __init__(self, agent_id: str, autogen_agent: autogen.Agent, collaboration_manager=None):
+    def __init__(self, agent_id: str, autogen_agent: src.autogen.collaboration.agent, collaboration_manager=None):
         """Initialize customer explanation agent."""
         capabilities = [
             ReasoningCapability.CUSTOMER_EXPLANATION

@@ -8,8 +8,8 @@ import asyncio
 from datetime import datetime
 import json
 
-from data.models import ApplicationStatus
-from data.cosmos_manager import CosmosDBManager
+from src.data.models import ApplicationStatus
+from src.data.cosmos_manager import CosmosDBManager
 from utils.logging_utils import get_logger
 
 logger = get_logger("workflow.state_manager")

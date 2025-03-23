@@ -3,8 +3,8 @@
 import json
 import datetime
 from typing import Dict, List, Any, Optional, Tuple
-import semantic_kernel as sk
-from semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
+import src.semantic_kernel as sk
+from src.semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 
 from utils.logging_utils import get_logger
 

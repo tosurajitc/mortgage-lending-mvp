@@ -7,7 +7,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
-from utils.logging_utils import get_logger
+from src.utils.logging_utils import get_logger
 from security.validation import validate_input
 from security.pii_detector import detect_and_mask_pii
 

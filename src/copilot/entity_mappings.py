@@ -1,0 +1,73 @@
+
+class EntityMappings:
+    @staticmethod
+    def get_entity_definitions():
+        return {
+            "applicant.name": {
+                "type": "string",
+                "examples": ["John Smith", "Jane Doe"]
+            },
+            "applicant.email": {
+                "type": "string",
+                "format": "email",
+                "examples": ["john@example.com"]
+            },
+            "applicant.phone": {
+                "type": "string",
+                "examples": ["555-123-4567", "(555) 123-4567"]
+            },
+            "applicant.income": {
+                "type": "number",
+                "examples": ["75000", "I make $85,000 per year"]
+            },
+            "applicant.employment": {
+                "type": "object",
+                "properties": {
+                    "employer": {"type": "string"},
+                    "position": {"type": "string"},
+                    "years": {"type": "number"}
+                },
+                "examples": ["I work at ABC Corp as a manager for 5 years"]
+            },
+            "loan.type": {
+                "type": "string",
+                "enum": ["Conventional", "FHA", "VA", "USDA"],
+                "examples": ["I need a conventional loan", "FHA loan please"]
+            },
+            "loan.purpose": {
+                "type": "string",
+                "enum": ["Purchase", "Refinance"],
+                "examples": ["I'm purchasing a new home", "I want to refinance"]
+            },
+            "loan.amount": {
+                "type": "number",
+                "examples": ["350000", "I need to borrow $400,000"]
+            },
+            "loan.term": {
+                "type": "number",
+                "enum": [15, 30],
+                "examples": ["30-year mortgage", "15 year term"]
+            },
+            "property.address": {
+                "type": "string",
+                "examples": ["123 Main St, New York, NY 10001"]
+            },
+            "property.type": {
+                "type": "string",
+                "enum": ["Single Family", "Condominium", "Townhouse", "Multi-Family"],
+                "examples": ["It's a single family home", "condo purchase"]
+            },
+            "property.value": {
+                "type": "number",
+                "examples": ["450000", "The property is valued at $500,000"]
+            },
+            "application.id": {
+                "type": "string",
+                "examples": ["APP-12345", "a1b2c3d4-e5f6"]
+            },
+            "document.type": {
+                "type": "string",
+                "enum": ["W2", "Paystub", "Bank Statement", "Tax Return", "ID"],
+                "examples": ["I need to upload my W2", "Send my tax returns"]
+            }
+        }

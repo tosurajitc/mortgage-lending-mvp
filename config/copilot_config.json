@@ -1,0 +1,17 @@
+
+{
+    "api_base_url": "https://your-api-url.com/api",
+    "api_definition_url": "https://your-api-url.com/openapi.json",
+    "webhook_secret": "your_webhook_secret",
+    "allowed_origins": ["https://web.powerva.microsoft.com"],
+    "conversation_flows": [
+      "new_application_flow",
+      "application_status_flow",
+      "document_upload_flow",
+      "inquiry_flow"
+    ],
+    "models": {
+      "default": "gpt-4",
+      "fallback": "gpt-35-turbo"
+    }
+  }

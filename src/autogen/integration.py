@@ -4,7 +4,7 @@ import os
 import json
 import logging
 from typing import Dict, List, Any, Optional, Tuple, Union, Callable
-import autogen
+import src.autogen
 
 from src.autogen.collaboration.agent import BaseCollaborativeAgent
 from src.autogen.collaboration.manager import CollaborationManager

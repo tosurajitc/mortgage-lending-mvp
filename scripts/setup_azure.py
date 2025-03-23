@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# scripts/setup_azure.py
+
 
 import os
 import sys

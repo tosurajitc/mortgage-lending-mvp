@@ -11,8 +11,8 @@ from .document_agent import DocumentAnalysisAgent
 from .underwriting_agent import UnderwritingAgent
 from .compliance_agent import ComplianceAgent
 from .customer_agent import CustomerServiceAgent
-from workflow.state_manager import StateManager
-from workflow.decision_tracker import DecisionTracker
+from src.workflow.state_manager import StateManager
+from src.workflow.decision_tracker import DecisionTracker
 from security.access_control import verify_agent_permissions
 from data.models import ApplicationStatus
 

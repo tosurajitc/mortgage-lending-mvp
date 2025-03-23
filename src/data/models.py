@@ -96,13 +96,12 @@ class LoanDetails:
 
 @dataclass
 class Document:
-    """A document associated with a mortgage application."""
-    document_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     document_type: DocumentType
     file_name: str
-    upload_date: datetime = field(default_factory=datetime.utcnow)
     content_type: str
     file_size: int
+    document_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    upload_date: datetime = field(default_factory=datetime.utcnow)
     status: str = "pending_review"
     metadata: Dict[str, Any] = field(default_factory=dict)
     extracted_data: Dict[str, Any] = field(default_factory=dict)

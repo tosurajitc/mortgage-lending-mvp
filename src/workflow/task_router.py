@@ -13,7 +13,7 @@ from agents.document_agent import DocumentAnalysisAgent
 from agents.underwriting_agent import UnderwritingAgent
 from agents.compliance_agent import ComplianceAgent
 from agents.customer_agent import CustomerServiceAgent
-from autogen.conversation_manager import ConversationManager
+from src.autogen.conversation_manager import ConversationManager
 from .state_manager import StateManager
 from utils.logging_utils import get_logger
 from data.models import ApplicationStatus
