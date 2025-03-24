@@ -38,13 +38,14 @@ mortgage-lending-mvp/
 │   │   ├── __init__.py
 │   │   ├── agent_factory.py          # Creates AutoGen agents
 │   │   ├── reasoning_agents.py       # Specialized reasoning agents
-│   │   └── conversation_manager.py   # Manages agent conversations
-│   │   └── collaboration/
-│   │       ├── manager.py            # Collaboration manager (patterns)
+│   │   ├── conversation_manager.py   # Manages agent conversations
+│   │   └── collaboration/            # Collaboration components
+│   │       ├── __init__.py
+│   │       ├── manager.py            # Collaboration manager
 │   │       ├── agent.py              # Collaborative agent interface
 │   │       ├── selection.py          # Dynamic agent selection
 │   │       ├── feedback.py           # Feedback loops
-│   │       └── metrics.py            # Metrics and monitoring
+│   │       └── metrics.py            # Collaboration metrics
 │   │
 │   ├── semantic_kernel/              # Semantic Kernel integration
 │   │   ├── __init__.py
@@ -52,10 +53,26 @@ mortgage-lending-mvp/
 │   │   ├── plugins/                  # Semantic Kernel plugins
 │   │   │   ├── __init__.py
 │   │   │   ├── document_plugin/      # Document analysis skills
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── parser.py
+│   │   │   │   └── validator.py
 │   │   │   ├── underwriting_plugin/  # Underwriting skills
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── calculator.py
+│   │   │   │   └── evaluator.py
 │   │   │   ├── compliance_plugin/    # Compliance checking skills
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── rules.py
+│   │   │   │   └── validator.py
 │   │   │   └── customer_plugin/      # Customer interaction skills
+│   │   │       ├── __init__.py
+│   │   │       ├── explainer.py
+│   │   │       └── responder.py
 │   │   └── prompts/                  # Prompt templates
+│   │       ├── document_prompts.json
+│   │       ├── underwriting_prompts.json
+│   │       ├── compliance_prompts.json
+│   │       └── customer_prompts.json
 │   │
 │   ├── copilot/                      # Copilot Studio integration
 │   │   ├── __init__.py
@@ -64,12 +81,16 @@ mortgage-lending-mvp/
 │   │   │   ├── application_actions.py
 │   │   │   └── document_actions.py
 │   │   ├── conversation_flows/       # Conversation definitions
+│   │   │   ├── __init__.py
+│   │   │   ├── application_flow.py
+│   │   │   └── status_flow.py
 │   │   └── entity_mappings.py        # Entity recognition config
 │   │
 │   ├── data/                         # Data handling
 │   │   ├── __init__.py
 │   │   ├── models.py                 # Data models
 │   │   ├── cosmos_manager.py         # Cosmos DB integration
+│   │   ├── blob_storage.py           # Blob storage for documents
 │   │   └── mock_data_generator.py    # Test data generation
 │   │
 │   ├── security/                     # Security components
@@ -83,7 +104,11 @@ mortgage-lending-mvp/
 │   │   ├── __init__.py
 │   │   ├── state_manager.py          # Application state tracking
 │   │   ├── task_router.py            # Routes tasks to agents
-│   │   └── decision_tracker.py       # Tracks decision process
+│   │   ├── decision_tracker.py       # Tracks decision process
+│   │   ├── workflow_manager.py       # Manages application workflow
+│   │   ├── orchestration_manager.py  # High-level orchestration
+│   │   ├── error_recovery.py         # Error handling mechanisms
+│   │   └── monitoring.py             # Logging and monitoring
 │   │
 │   ├── utils/                        # Utility functions
 │   │   ├── __init__.py
@@ -93,59 +118,81 @@ mortgage-lending-mvp/
 │   │
 │   └── api/                          # API layer
 │       ├── __init__.py
+│       ├── app.py                    # FastAPI application
 │       ├── endpoints.py              # REST API endpoints
-│       └── middleware.py             # API middleware
+│       ├── middleware.py             # API middleware
+│       └── schemas.py                # API request/response schemas
 │
 ├── config/                           # Configuration files
 │   ├── app_config.json               # Application configuration
 │   ├── agent_config.json             # Agent configuration
 │   ├── security_config.json          # Security configuration
-│   └── logging_config.json           # Logging configuration - not done
+│   └── logging_config.json           # Logging configuration
 │
 ├── tests/                            # Test suite
 │   ├── __init__.py
 │   ├── mock_data/                    # Test data
+│   │   ├── applications/             # Sample applications
+│   │   ├── documents/                # Sample documents
+│   │   └── responses/                # Sample responses
 │   ├── unit/                         # Unit tests
 │   │   ├── __init__.py
-│   │   ├── test_agents/
-│   │   ├── test_security/
-│   │   └── test_workflow/
+│   │   ├── test_agents/              # Tests for agents
+│   │   ├── test_security/            # Tests for security
+│   │   └── test_workflow/            # Tests for workflow
 │   └── integration/                  # Integration tests
 │       ├── __init__.py
-│       ├── test_end_to_end.py
-│       └── test_agent_collaboration.py
+│       ├── test_end_to_end.py        # End-to-end tests
+│       └── test_agent_collaboration.py  # Agent collaboration tests
 │
 ├── docs/                             # Documentation
 │   ├── architecture.md               # Architecture overview
 │   ├── agent_design.md               # Agent design details
 │   ├── security.md                   # Security measures
 │   ├── api_reference.md              # API documentation
+│   ├── copilot_integration.md        # Copilot Studio integration guide
 │   └── demo_script.md                # Demonstration script
 │
 ├── scripts/                          # Utility scripts
 │   ├── setup_azure.py                # Azure resource setup
+│   ├── setup_env.py                  # Environment setup
+│   ├── test_env.py                   # Environment testing
 │   ├── generate_test_data.py         # Generate test data
 │   └── run_demo.py                   # Run demonstration
 │
 ├── deployment/                       # Deployment configuration
 │   ├── copilot_studio/               # Copilot Studio export files
-│   ├── requirements.txt              # Python dependencies
-│   └── azure_deployment.json         # Azure deployment template
+│   │   ├── bot_definition.json
+│   │   └── flows/
+│   ├── azure/                        # Azure deployment templates
+│   │   ├── main.bicep
+│   │   └── parameters.json
+│   └── docker/                       # Docker configuration
+│       ├── Dockerfile
+│       └── docker-compose.yml
 │
-|__ mock_data/generators/
-├── __init__.py
-├── applicant_generator.py
-├── application_generator.py
-├── bank_document_generator.py
-├── credit_document_generator.py
-├── document_generator.py
-├── income_document_generator.py
-├── loan_generator.py
-├── property_document_generator.py
-├── property_generator.py
-└── tax_document_generator.py
-|
+├── mock_data/                        # Mock data generators
+│   ├── __init__.py
+│   ├── generators/
+│   │   ├── __init__.py
+│   │   ├── applicant_generator.py
+│   │   ├── application_generator.py
+│   │   ├── bank_document_generator.py
+│   │   ├── credit_document_generator.py
+│   │   ├── document_generator.py
+│   │   ├── income_document_generator.py
+│   │   ├── loan_generator.py
+│   │   ├── property_document_generator.py
+│   │   ├── property_generator.py
+│   │   └── tax_document_generator.py
+│   └── templates/                    # Templates for mock data
+│       ├── bank_statement.json
+│       ├── credit_report.json
+│       └── tax_return.json
+│
 ├── .env.example                      # Example environment variables
+├── .env                              # Actual environment variables (not in git)
+├── .gitignore                        # Git ignore file
 ├── requirements.txt                  # Project dependencies
 ├── setup.py                          # Package setup script
 └── README.md                         # Project overview
