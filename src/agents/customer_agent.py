@@ -5,11 +5,11 @@ Handles customer-facing interactions and generates explanations for the mortgage
 
 from typing import Any, Dict, List, Optional
 import asyncio
-
+from src.data.cosmos_manager import CosmosDBManager
 from .base_agent import BaseAgent
 from src.semantic_kernel.kernel_setup import get_kernel
 from src.autogen.reasoning_agents import get_customer_service_reasoning_agent
-from utils.logging_utils import get_logger
+from src.utils.logging_utils import get_logger
 
 
 class CustomerServiceAgent(BaseAgent):
@@ -29,9 +29,15 @@ class CustomerServiceAgent(BaseAgent):
         
         # Initialize Semantic Kernel
         self.kernel = get_kernel()
+        cosmos_manager = CosmosDBManager()
+        prompt_manager = None
         
         # Get customer service reasoning agent from AutoGen
-        self.reasoning_agent = get_customer_service_reasoning_agent()
+        self.reasoning_agent = get_customer_service_reasoning_agent(
+            kernel=self.kernel,
+            cosmos_manager=cosmos_manager,
+            prompt_manager=prompt_manager
+        )
         
         self.logger.info("Customer service agent initialized")
     

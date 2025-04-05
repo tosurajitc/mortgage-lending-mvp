@@ -18,13 +18,19 @@ class ApplicationStatus(str, Enum):
     DRAFT = "draft"
     SUBMITTED = "submitted"
     DOCUMENT_REVIEW = "document_review"
+    DOCUMENTS_PROCESSED = "documents_processed"
+    DOCUMENTS_UPDATED = "documents_updated"  
     UNDERWRITING = "underwriting"
+    UNDERWRITING_COMPLETED = "underwriting_completed"
     COMPLIANCE_REVIEW = "compliance_review"
+    COMPLIANCE_CHECKED = "compliance_checked"
     DECISION_PENDING = "decision_pending"
     APPROVED = "approved"
+    REJECTED_UNDERWRITING = "rejected_underwriting"
+    REJECTED_COMPLIANCE = "rejected_compliance"
     DENIED = "denied"
     CANCELLED = "cancelled"
-
+    ERROR = "error"
 
 class DocumentType(str, Enum):
     """Types of documents that can be submitted with a mortgage application."""

@@ -6,6 +6,9 @@ from src.copilot.actions.application_actions import ApplicationActions
 from src.copilot.actions.document_actions import DocumentActions
 from src.data.mock_data_generator import MockDataGenerator
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 async def test_submit_application():
     """Test submit application action"""
     app_actions = ApplicationActions()
@@ -23,7 +26,20 @@ async def test_submit_application():
     
     # Call action
     result = await app_actions.submit_application(
-        applicant_data, loan_details, property_info
+    applicant_data,  # existing argument
+    loan_details,    # existing argument
+    property_info,   # existing argument
+    applicantAddress=f"{property_info['address']}, {property_info['city']}, {property_info['state']} {property_info['zip']}",
+    applicantSSN=applicant_data['ssn'],
+    propertyType=property_info['type'],
+    propertyAddress=f"{property_info['address']}, {property_info['city']}, {property_info['state']} {property_info['zip']}",
+    propertyValue=property_info['value'],
+    loanAmount=loan_details['amount'],
+    employmentStatus="EMPLOYED",  # You may need to derive this
+    employmentType="FULL_TIME",   # You may need to derive this
+    employmentLength=str(applicant_data['employment']['years']),
+    annualIncome=applicant_data['income'],
+    creditScoreRange=f"{applicant_data['credit_score'] - 50}-{applicant_data['credit_score'] + 50}"
     )
     
     print("\nResult:")

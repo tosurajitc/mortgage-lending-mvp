@@ -9,7 +9,7 @@ import asyncio
 from .base_agent import BaseAgent
 from src.semantic_kernel.kernel_setup import get_kernel
 from src.autogen.reasoning_agents import get_document_reasoning_agent
-from utils.logging_utils import get_logger
+from src.utils.logging_utils import get_logger
 
 
 class DocumentAnalysisAgent(BaseAgent):
@@ -34,6 +34,22 @@ class DocumentAnalysisAgent(BaseAgent):
         self.reasoning_agent = get_document_reasoning_agent()
         
         self.logger.info("Document analysis agent initialized")
+
+
+    async def process(self, input_data):
+        # Upload incoming documents
+        uploaded_documents = []
+        for document in input_data.get('documents', []):
+            blob_name = f"{document['type']}_{document['filename']}"
+            url = self.storage_service.upload_document(
+                document['file_path'], 
+                blob_name
+            )
+            uploaded_documents.append({
+                'url': url,
+                'type': document['type'],
+                'name': blob_name
+            })        
     
     async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -89,6 +105,142 @@ class DocumentAnalysisAgent(BaseAgent):
             "overall_confidence": self._calculate_overall_confidence(document_results)
         }
     
+    async def validate_document(self, document_type: str, document_content: Any) -> Dict[str, Any]:
+        """
+        Validate a document before processing.
+        
+        Args:
+            document_type: Type of document to validate
+            document_content: Content of the document
+            
+        Returns:
+            Dict with validation results
+        """
+        try:
+            # Use existing document analysis logic
+            document = {
+                "document_type": document_type,
+                "content": document_content
+            }
+            
+            # Call existing _analyze_document method
+            analysis_result = await self._analyze_document(document)
+            
+            # Prepare validation response
+            return {
+                "is_valid": analysis_result.get("status", "") == "PROCESSED",
+                "document_type": document_type,
+                "confidence": analysis_result.get("confidence", 0),
+                "issues": analysis_result.get("error_message", [])
+            }
+        
+        except Exception as e:
+            self.logger.error(f"Error validating document: {str(e)}", exc_info=True)
+            return {
+                "is_valid": False,
+                "document_type": document_type,
+                "error": str(e)
+            }
+
+    async def get_document_requirements(self, document_type: str) -> Dict[str, Any]:
+        """
+        Provide detailed requirements for a specific document type.
+        
+        Args:
+            document_type: Type of document to get requirements for
+            
+        Returns:
+            Dict with document requirements and guidance
+        """
+        # Mapping of document types to their specific requirements
+        document_requirements = {
+            "W2_FORM": {
+                "name": "W-2 Form",
+                "description": "Wage and Tax Statement",
+                "required_fields": [
+                    "Employer's name and address",
+                    "Employee's full name and address",
+                    "Employee's Social Security Number",
+                    "Total wages earned",
+                    "Federal income tax withheld",
+                    "State and local income tax withheld"
+                ],
+                "acceptance_criteria": [
+                    "Must be from the most recent tax year",
+                    "Must show complete employment information",
+                    "Must be signed or have employer's official stamp"
+                ],
+                "recommended_format": ["PDF", "High-resolution image"],
+                "maximum_file_size": "5MB"
+            },
+            "PAY_STUB": {
+                "name": "Pay Stub",
+                "description": "Recent proof of income",
+                "required_fields": [
+                    "Employee name",
+                    "Employer name",
+                    "Pay period",
+                    "Gross earnings",
+                    "Net earnings",
+                    "Year-to-date earnings"
+                ],
+                "acceptance_criteria": [
+                    "Must be from within the last 30 days",
+                    "Must show complete pay breakdown",
+                    "Must include employer contact information"
+                ],
+                "recommended_format": ["PDF", "High-resolution image"],
+                "maximum_file_size": "3MB"
+            },
+            "BANK_STATEMENT": {
+                "name": "Bank Statement",
+                "description": "Proof of financial assets and income",
+                "required_fields": [
+                    "Bank name and account information",
+                    "Account holder's name",
+                    "Statement period",
+                    "Starting and ending balance",
+                    "Transaction history"
+                ],
+                "acceptance_criteria": [
+                    "Must be from within the last 3 months",
+                    "Must show full account number (last 4 digits visible)",
+                    "Must include bank logo or official letterhead"
+                ],
+                "recommended_format": ["PDF", "High-resolution image"],
+                "maximum_file_size": "5MB"
+            },
+            # Add more document types as needed
+        }
+        
+        # Normalize document type input
+        normalized_type = document_type.upper().replace(" ", "_")
+        
+        # Check if document type exists in requirements
+        if normalized_type not in document_requirements:
+            return {
+                "error": f"No requirements found for document type: {document_type}",
+                "available_types": list(document_requirements.keys())
+            }
+        
+        # Prepare response with additional guidance
+        requirements = document_requirements[normalized_type]
+        
+        return {
+            "document_type": normalized_type,
+            "name": requirements["name"],
+            "description": requirements["description"],
+            "required_fields": requirements["required_fields"],
+            "acceptance_criteria": requirements["acceptance_criteria"],
+            "recommended_format": requirements["recommended_format"],
+            "maximum_file_size": requirements["maximum_file_size"],
+            "submission_guidance": [
+                "Ensure document is clear and legible",
+                "Remove any sensitive information not required",
+                "Use high-resolution scan or clear photo"
+            ]
+        }
+
     async def _analyze_document(self, document: Dict[str, Any]) -> Dict[str, Any]:
         """
         Analyze a single document using the appropriate method based on document type.

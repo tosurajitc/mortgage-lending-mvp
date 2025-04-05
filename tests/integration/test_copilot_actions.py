@@ -5,7 +5,8 @@ import json
 import os
 import sys
 from datetime import datetime
-import uuid
+from dotenv import load_dotenv
+load_dotenv()
 
 # Add mock implementations for testing
 class MockOrchestratorAgent:

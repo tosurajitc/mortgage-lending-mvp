@@ -10,6 +10,7 @@ import json
 import logging
 from typing import Any, Dict, List, Optional, Union, Set, Tuple, Type, Callable
 import os
+import cerberus  # Optional: For schema-based validation, add to requirements.txt if used
 
 logger = logging.getLogger(__name__)
 
@@ -31,321 +32,82 @@ except Exception as e:
 
 class ValidationError(Exception):
     """Exception raised for validation errors."""
-    pass
+    def __init__(self, message: str, field: Optional[str] = None, details: Optional[Dict[str, Any]] = None):
+        self.message = message
+        self.field = field
+        self.details = details or {}
+        super().__init__(self.message)
 
-
-def validate_string(value: str, 
-                   field_name: str, 
-                   min_length: int = 1, 
-                   max_length: Optional[int] = None,
-                   pattern: Optional[str] = None) -> str:
+# Main validation function - preserving your existing interface
+def validate_input(input_data, agent_name=None):
     """
-    Validate a string value.
+    Validate input data for security and format correctness.
     
     Args:
-        value: String to validate
-        field_name: Name of the field (for error messages)
-        min_length: Minimum allowed length
-        max_length: Maximum allowed length (defaults to MAX_STRING_LENGTH)
-        pattern: Optional regex pattern the string must match
+        input_data: The data to validate
+        agent_name: Optional name of the agent performing validation
         
     Returns:
-        The validated string
-        
-    Raises:
-        ValidationError: If validation fails
+        True if valid, raises exception otherwise
     """
-    if not isinstance(value, str):
-        raise ValidationError(f"{field_name} must be a string")
+    # Perform basic validation checks
+    if not isinstance(input_data, dict):
+        raise ValidationError(f"Input must be a dictionary, got {type(input_data)}")
     
-    # Set default max length if not provided
-    if max_length is None:
-        max_length = MAX_STRING_LENGTH
+    # Agent-specific validation logic
+    if agent_name:
+        # Agent-specific validation logic
+        if agent_name == "document_analysis":
+            return validate_document_agent_input(input_data)
+        elif agent_name == "underwriting":
+            return validate_underwriting_agent_input(input_data)
+        elif agent_name == "compliance":
+            return validate_compliance_agent_input(input_data)
+        elif agent_name == "customer_service":
+            return validate_customer_service_agent_input(input_data)
+        elif agent_name == "orchestrator":
+            return validate_orchestrator_agent_input(input_data)
     
-    # Check length constraints
-    if len(value) < min_length:
-        raise ValidationError(f"{field_name} must be at least {min_length} characters")
+    # Basic security checks for all inputs
+    for key, value in input_data.items():
+        if isinstance(value, str):
+            # Check for potential injection or malicious content
+            if len(value) > MAX_STRING_LENGTH:
+                raise ValidationError(f"Input too large for key {key}", key)
+            
+            # Sanitize string inputs
+            input_data[key] = sanitize_string(value)
+        elif isinstance(value, dict):
+            # Recursively validate nested dictionaries
+            validate_input(value)
+        elif isinstance(value, list):
+            # Validate lists
+            if len(value) > MAX_ARRAY_LENGTH:
+                raise ValidationError(f"Array too large for key {key}", key)
+            
+            # Validate list items
+            for i, item in enumerate(value):
+                if isinstance(item, dict):
+                    validate_input(item)
+                elif isinstance(item, str):
+                    # Sanitize string items
+                    value[i] = sanitize_string(item)
     
-    if len(value) > max_length:
-        raise ValidationError(f"{field_name} exceeds maximum length of {max_length} characters")
-    
-    # Check pattern if provided
-    if pattern and not re.match(pattern, value):
-        raise ValidationError(f"{field_name} does not match required format")
-    
-    # Sanitize the string (remove potential XSS characters)
-    sanitized = sanitize_string(value)
-    
-    return sanitized
+    return True
 
-
-def validate_number(value: Union[int, float], 
-                   field_name: str,
-                   min_value: Optional[Union[int, float]] = None,
-                   max_value: Optional[Union[int, float]] = None,
-                   allow_zero: bool = True) -> Union[int, float]:
+def validate_request(request=None):
     """
-    Validate a numeric value.
+    Validate a FastAPI request
     
     Args:
-        value: Number to validate
-        field_name: Name of the field (for error messages)
-        min_value: Minimum allowed value
-        max_value: Maximum allowed value
-        allow_zero: Whether zero is allowed
+        request: The FastAPI request object
         
     Returns:
-        The validated number
-        
-    Raises:
-        ValidationError: If validation fails
+        bool: True if the request is valid, False otherwise
     """
-    if not isinstance(value, (int, float)):
-        raise ValidationError(f"{field_name} must be a number")
-    
-    # Check if zero is allowed
-    if not allow_zero and value == 0:
-        raise ValidationError(f"{field_name} cannot be zero")
-    
-    # Check min value if provided
-    if min_value is not None and value < min_value:
-        raise ValidationError(f"{field_name} must be at least {min_value}")
-    
-    # Check max value if provided
-    if max_value is not None and value > max_value:
-        raise ValidationError(f"{field_name} must be at most {max_value}")
-    
-    return value
-
-
-def validate_array(value: List[Any], 
-                  field_name: str,
-                  min_length: int = 0,
-                  max_length: Optional[int] = None,
-                  item_validator: Optional[Callable[[Any, str], Any]] = None) -> List[Any]:
-    """
-    Validate an array/list of values.
-    
-    Args:
-        value: List to validate
-        field_name: Name of the field (for error messages)
-        min_length: Minimum allowed length
-        max_length: Maximum allowed length (defaults to MAX_ARRAY_LENGTH)
-        item_validator: Optional function to validate each item
-        
-    Returns:
-        The validated list
-        
-    Raises:
-        ValidationError: If validation fails
-    """
-    if not isinstance(value, list):
-        raise ValidationError(f"{field_name} must be a list")
-    
-    # Set default max length if not provided
-    if max_length is None:
-        max_length = MAX_ARRAY_LENGTH
-    
-    # Check length constraints
-    if len(value) < min_length:
-        raise ValidationError(f"{field_name} must contain at least {min_length} items")
-    
-    if len(value) > max_length:
-        raise ValidationError(f"{field_name} exceeds maximum length of {max_length} items")
-    
-    # Validate each item if validator provided
-    if item_validator:
-        validated_items = []
-        for i, item in enumerate(value):
-            try:
-                validated_item = item_validator(item, f"{field_name}[{i}]")
-                validated_items.append(validated_item)
-            except ValidationError as e:
-                raise ValidationError(f"Invalid item at index {i} in {field_name}: {str(e)}")
-        return validated_items
-    
-    return value
-
-
-def validate_dict(value: Dict[str, Any], 
-                 field_name: str,
-                 required_keys: Optional[Set[str]] = None,
-                 optional_keys: Optional[Set[str]] = None,
-                 value_validators: Optional[Dict[str, Callable[[Any, str], Any]]] = None) -> Dict[str, Any]:
-    """
-    Validate a dictionary.
-    
-    Args:
-        value: Dictionary to validate
-        field_name: Name of the field (for error messages)
-        required_keys: Set of keys that must be present
-        optional_keys: Set of keys that may be present
-        value_validators: Dictionary mapping keys to validation functions
-        
-    Returns:
-        The validated dictionary
-        
-    Raises:
-        ValidationError: If validation fails
-    """
-    if not isinstance(value, dict):
-        raise ValidationError(f"{field_name} must be an object")
-    
-    # Check required keys
-    if required_keys:
-        missing_keys = required_keys - value.keys()
-        if missing_keys:
-            raise ValidationError(f"{field_name} is missing required keys: {', '.join(missing_keys)}")
-    
-    # Check for unexpected keys
-    if required_keys and optional_keys:
-        allowed_keys = required_keys | optional_keys
-        unexpected_keys = value.keys() - allowed_keys
-        if unexpected_keys:
-            raise ValidationError(f"{field_name} contains unexpected keys: {', '.join(unexpected_keys)}")
-    
-    # Validate values
-    if value_validators:
-        validated_dict = {}
-        for key, val in value.items():
-            if key in value_validators:
-                try:
-                    validated_val = value_validators[key](val, f"{field_name}.{key}")
-                    validated_dict[key] = validated_val
-                except ValidationError as e:
-                    raise ValidationError(f"Invalid value for {key} in {field_name}: {str(e)}")
-            else:
-                validated_dict[key] = val
-        return validated_dict
-    
-    return value
-
-
-def validate_email(value: str, field_name: str) -> str:
-    """
-    Validate an email address.
-    
-    Args:
-        value: Email to validate
-        field_name: Name of the field (for error messages)
-        
-    Returns:
-        The validated email
-        
-    Raises:
-        ValidationError: If validation fails
-    """
-    # Basic email pattern
-    email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    
-    return validate_string(value, field_name, pattern=email_pattern)
-
-
-def validate_phone(value: str, field_name: str) -> str:
-    """
-    Validate a phone number.
-    
-    Args:
-        value: Phone number to validate
-        field_name: Name of the field (for error messages)
-        
-    Returns:
-        The validated phone number
-        
-    Raises:
-        ValidationError: If validation fails
-    """
-    # Strip any non-digit characters
-    digits_only = re.sub(r'\D', '', value)
-    
-    # Check if we have a valid number of digits (assuming US numbers)
-    if len(digits_only) < 10 or len(digits_only) > 15:
-        raise ValidationError(f"{field_name} is not a valid phone number")
-    
-    # Format as (XXX) XXX-XXXX for US numbers
-    if len(digits_only) == 10:
-        formatted = f"({digits_only[0:3]}) {digits_only[3:6]}-{digits_only[6:]}"
-        return formatted
-    
-    return value
-
-
-def validate_ssn_last_four(value: str, field_name: str) -> str:
-    """
-    Validate the last four digits of a Social Security Number.
-    
-    Args:
-        value: SSN last four to validate
-        field_name: Name of the field (for error messages)
-        
-    Returns:
-        The validated SSN last four
-        
-    Raises:
-        ValidationError: If validation fails
-    """
-    # Strip any non-digit characters
-    digits_only = re.sub(r'\D', '', value)
-    
-    # Check if we have exactly 4 digits
-    if len(digits_only) != 4:
-        raise ValidationError(f"{field_name} must be exactly 4 digits")
-    
-    # Check if all characters are digits
-    if not digits_only.isdigit():
-        raise ValidationError(f"{field_name} must contain only digits")
-    
-    return digits_only
-
-
-def validate_date(value: str, field_name: str, format_pattern: str = r'^\d{4}-\d{2}-\d{2}$') -> str:
-    """
-    Validate a date string.
-    
-    Args:
-        value: Date string to validate
-        field_name: Name of the field (for error messages)
-        format_pattern: Expected date format pattern
-        
-    Returns:
-        The validated date string
-        
-    Raises:
-        ValidationError: If validation fails
-    """
-    # Check pattern
-    if not re.match(format_pattern, value):
-        raise ValidationError(f"{field_name} must be in the format YYYY-MM-DD")
-    
-    # Further validation could check if it's a valid date
-    # This is simplistic for MVP purposes
-    
-    return value
-
-
-def validate_file_extension(filename: str, field_name: str) -> str:
-    """
-    Validate a file's extension against allowed types.
-    
-    Args:
-        filename: Filename to validate
-        field_name: Name of the field (for error messages)
-        
-    Returns:
-        The validated filename
-        
-    Raises:
-        ValidationError: If validation fails
-    """
-    _, extension = os.path.splitext(filename.lower())
-    
-    if extension not in ALLOWED_DOCUMENT_EXTENSIONS:
-        raise ValidationError(
-            f"{field_name} has an invalid file extension. Allowed: {', '.join(ALLOWED_DOCUMENT_EXTENSIONS)}"
-        )
-    
-    return filename
-
+    # For now, just return True
+    # In a real implementation, you would add validation logic here
+    return True
 
 def sanitize_string(value: str) -> str:
     """
@@ -365,10 +127,464 @@ def sanitize_string(value: str) -> str:
     sanitized = sanitized.replace("\"", "&quot;")
     sanitized = sanitized.replace("'", "&#x27;")
     
-    # Additional sanitization could be performed here
+    # Remove any potential SQL injection patterns
+    sql_patterns = [
+        r'(?i)(\b|_)(SELECT|INSERT|UPDATE|DELETE|DROP|ALTER)(\b|_)',
+        r'(?i)(\b|_)(UNION|JOIN|OR|AND)(\b|_).*?(\b|_)(SELECT|INSERT|UPDATE|DELETE|DROP|ALTER)(\b|_)',
+        r'--',
+        r';.*?$',
+        r'\/\*.*?\*\/',
+        r'xp_.*?'
+    ]
+    
+    for pattern in sql_patterns:
+        sanitized = re.sub(pattern, '[FILTERED]', sanitized)
     
     return sanitized
 
+# Enhanced validation functions for specific types
+
+def validate_string(value: str, field_name: str, min_length: int = 1, 
+                  max_length: int = MAX_STRING_LENGTH, pattern: Optional[str] = None) -> str:
+    """
+    Validate a string field.
+    
+    Args:
+        value: String to validate
+        field_name: Name of the field (for error messages)
+        min_length: Minimum allowed length
+        max_length: Maximum allowed length
+        pattern: Optional regex pattern to match
+        
+    Returns:
+        Validated string or raises ValidationError
+    """
+    if not isinstance(value, str):
+        raise ValidationError(f"{field_name} must be a string", field_name)
+    
+    if len(value) < min_length:
+        raise ValidationError(f"{field_name} must be at least {min_length} characters", field_name)
+    
+    if len(value) > max_length:
+        raise ValidationError(f"{field_name} cannot exceed {max_length} characters", field_name)
+    
+    if pattern and not re.match(pattern, value):
+        raise ValidationError(f"{field_name} has invalid format", field_name)
+    
+    # Sanitize string input
+    value = sanitize_string(value)
+    
+    return value
+
+def validate_numeric(value: Union[int, float], field_name: str, 
+                    min_value: Optional[Union[int, float]] = None, 
+                    max_value: Optional[Union[int, float]] = None) -> Union[int, float]:
+    """
+    Validate a numeric field.
+    
+    Args:
+        value: Number to validate
+        field_name: Name of the field (for error messages)
+        min_value: Minimum allowed value
+        max_value: Maximum allowed value
+        
+    Returns:
+        Validated number or raises ValidationError
+    """
+    if not isinstance(value, (int, float)):
+        raise ValidationError(f"{field_name} must be a number", field_name)
+    
+    if min_value is not None and value < min_value:
+        raise ValidationError(f"{field_name} must be at least {min_value}", field_name)
+    
+    if max_value is not None and value > max_value:
+        raise ValidationError(f"{field_name} cannot exceed {max_value}", field_name)
+    
+    return value
+
+def validate_date_string(value: str, field_name: str, 
+                        format_str: str = "%Y-%m-%d") -> str:
+    """
+    Validate a date string.
+    
+    Args:
+        value: Date string to validate
+        field_name: Name of the field (for error messages)
+        format_str: Expected date format
+        
+    Returns:
+        Validated date string or raises ValidationError
+    """
+    if not isinstance(value, str):
+        raise ValidationError(f"{field_name} must be a string", field_name)
+    
+    # Check if string matches a date pattern
+    date_pattern = r'^\d{4}-\d{2}-\d{2}$'
+    if not re.match(date_pattern, value):
+        raise ValidationError(f"{field_name} must be in format YYYY-MM-DD", field_name)
+    
+    # Further validation could check if it's a valid date
+    # using datetime.strptime(value, format_str)
+    
+    return value
+
+def validate_email(value: str, field_name: str = "email") -> str:
+    """
+    Validate an email address.
+    
+    Args:
+        value: Email to validate
+        field_name: Name of the field (for error messages)
+        
+    Returns:
+        Validated email or raises ValidationError
+    """
+    email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    
+    if not isinstance(value, str):
+        raise ValidationError(f"{field_name} must be a string", field_name)
+    
+    if not re.match(email_pattern, value):
+        raise ValidationError(f"{field_name} is not a valid email address", field_name)
+    
+    return value.lower()
+
+def validate_phone(value: str, field_name: str = "phone") -> str:
+    """
+    Validate a phone number.
+    
+    Args:
+        value: Phone number to validate
+        field_name: Name of the field (for error messages)
+        
+    Returns:
+        Validated phone number or raises ValidationError
+    """
+    # Accept formats: XXX-XXX-XXXX, (XXX) XXX-XXXX, XXXXXXXXXX
+    phone_pattern = r'^(?:\d{3}-\d{3}-\d{4}|\(\d{3}\)\s\d{3}-\d{4}|\d{10})$'
+    
+    if not isinstance(value, str):
+        raise ValidationError(f"{field_name} must be a string", field_name)
+    
+    # Strip any non-digit characters for simplified validation
+    digits_only = re.sub(r'\D', '', value)
+    
+    # Check if we have a valid number of digits (assuming US numbers)
+    if len(digits_only) < 10 or len(digits_only) > 15:
+        raise ValidationError(f"{field_name} is not a valid phone number", field_name)
+    
+    return value
+
+def validate_ssn(value: str, field_name: str = "ssn") -> str:
+    """
+    Validate a Social Security Number.
+    
+    Args:
+        value: SSN to validate
+        field_name: Name of the field (for error messages)
+        
+    Returns:
+        Validated SSN or raises ValidationError
+    """
+    # Accept formats: XXX-XX-XXXX or XXXXXXXXX
+    ssn_pattern = r'^(?:\d{3}-\d{2}-\d{4}|\d{9})$'
+    
+    if not isinstance(value, str):
+        raise ValidationError(f"{field_name} must be a string", field_name)
+    
+    if not re.match(ssn_pattern, value):
+        raise ValidationError(f"{field_name} must be in format XXX-XX-XXXX or XXXXXXXXX", field_name)
+    
+    # Validate that SSN is not using invalid patterns
+    if value.replace('-', '') in ['000000000', '111111111', '999999999']:
+        raise ValidationError(f"{field_name} contains an invalid pattern", field_name)
+    
+    return value
+
+def validate_file_extension(filename: str, field_name: str = "file") -> str:
+    """
+    Validate a file's extension against allowed types.
+    
+    Args:
+        filename: Filename to validate
+        field_name: Name of the field (for error messages)
+        
+    Returns:
+        The validated filename
+    """
+    _, extension = os.path.splitext(filename.lower())
+    
+    if extension not in ALLOWED_DOCUMENT_EXTENSIONS:
+        raise ValidationError(
+            f"{field_name} has an invalid file extension. Allowed: {', '.join(ALLOWED_DOCUMENT_EXTENSIONS)}",
+            field_name
+        )
+    
+    return filename
+
+def validate_enum(value: Any, field_name: str, allowed_values: Set[Any]) -> Any:
+    """
+    Validate that a value is one of an allowed set.
+    
+    Args:
+        value: Value to validate
+        field_name: Name of the field (for error messages)
+        allowed_values: Set of allowed values
+        
+    Returns:
+        Validated value or raises ValidationError
+    """
+    if value not in allowed_values:
+        allowed_str = ", ".join(str(v) for v in allowed_values)
+        raise ValidationError(
+            f"{field_name} must be one of: {allowed_str}", 
+            field_name
+        )
+    
+    return value
+
+# Agent-specific validation functions
+
+def validate_document_agent_input(input_data: Dict[str, Any]) -> bool:
+    """
+    Validate input data for document analysis agent.
+    
+    Args:
+        input_data: Data to validate
+        
+    Returns:
+        True if valid, raises ValidationError otherwise
+    """
+    # Validate required fields
+    if "application_id" not in input_data:
+        raise ValidationError("Missing required field: application_id", "application_id")
+    
+    validate_string(input_data["application_id"], "application_id", max_length=50)
+    
+    # Validate documents array if present
+    if "documents" in input_data:
+        if not isinstance(input_data["documents"], list):
+            raise ValidationError("documents must be an array", "documents")
+        
+        for i, doc in enumerate(input_data["documents"]):
+            if not isinstance(doc, dict):
+                raise ValidationError(f"Document at index {i} must be an object", f"documents[{i}]")
+            
+            if "document_type" not in doc:
+                raise ValidationError(f"Document at index {i} is missing document_type", f"documents[{i}].document_type")
+            
+            validate_string(doc["document_type"], f"documents[{i}].document_type")
+            
+            if "content" in doc:
+                # Basic content validation - could be expanded based on document type
+                if not isinstance(doc["content"], str) and not isinstance(doc["content"], dict):
+                    raise ValidationError(f"Document content at index {i} must be a string or object", f"documents[{i}].content")
+    
+    # Validate is_update flag if present
+    if "is_update" in input_data:
+        if not isinstance(input_data["is_update"], bool):
+            raise ValidationError("is_update must be a boolean", "is_update")
+    
+    return True
+
+def validate_underwriting_agent_input(input_data: Dict[str, Any]) -> bool:
+    """
+    Validate input data for underwriting agent.
+    
+    Args:
+        input_data: Data to validate
+        
+    Returns:
+        True if valid, raises ValidationError otherwise
+    """
+    # Validate required fields
+    if "application_id" not in input_data:
+        raise ValidationError("Missing required field: application_id", "application_id")
+    
+    validate_string(input_data["application_id"], "application_id", max_length=50)
+    
+    # Validate application_data if present
+    if "application_data" in input_data:
+        if not isinstance(input_data["application_data"], dict):
+            raise ValidationError("application_data must be an object", "application_data")
+        
+        app_data = input_data["application_data"]
+        
+        # Validate financial fields
+        if "loan_amount" in app_data:
+            validate_numeric(app_data["loan_amount"], "application_data.loan_amount", min_value=0)
+        
+        if "loan_term_years" in app_data:
+            validate_numeric(app_data["loan_term_years"], "application_data.loan_term_years", min_value=1, max_value=50)
+        
+        if "interest_rate" in app_data:
+            validate_numeric(app_data["interest_rate"], "application_data.interest_rate", min_value=0, max_value=30)
+        
+        if "loan_type" in app_data:
+            validate_enum(
+                app_data["loan_type"], 
+                "application_data.loan_type", 
+                {"CONVENTIONAL", "FHA", "VA", "USDA", "JUMBO"}
+            )
+    
+    # Validate document_analysis if present
+    if "document_analysis" in input_data:
+        if not isinstance(input_data["document_analysis"], dict):
+            raise ValidationError("document_analysis must be an object", "document_analysis")
+    
+    return True
+
+def validate_compliance_agent_input(input_data: Dict[str, Any]) -> bool:
+    """
+    Validate input data for compliance agent.
+    
+    Args:
+        input_data: Data to validate
+        
+    Returns:
+        True if valid, raises ValidationError otherwise
+    """
+    # Validate required fields
+    if "application_id" not in input_data:
+        raise ValidationError("Missing required field: application_id", "application_id")
+    
+    validate_string(input_data["application_id"], "application_id", max_length=50)
+    
+    # Similar validations as for underwriting agent
+    if "application_data" in input_data:
+        if not isinstance(input_data["application_data"], dict):
+            raise ValidationError("application_data must be an object", "application_data")
+    
+    if "document_analysis" in input_data:
+        if not isinstance(input_data["document_analysis"], dict):
+            raise ValidationError("document_analysis must be an object", "document_analysis")
+    
+    if "underwriting_results" in input_data:
+        if not isinstance(input_data["underwriting_results"], dict):
+            raise ValidationError("underwriting_results must be an object", "underwriting_results")
+    
+    return True
+
+def validate_customer_service_agent_input(input_data: Dict[str, Any]) -> bool:
+    """
+    Validate input data for customer service agent.
+    
+    Args:
+        input_data: Data to validate
+        
+    Returns:
+        True if valid, raises ValidationError otherwise
+    """
+    # Validate required fields
+    if "application_id" not in input_data:
+        raise ValidationError("Missing required field: application_id", "application_id")
+    
+    validate_string(input_data["application_id"], "application_id", max_length=50)
+    
+    if "request_type" not in input_data:
+        raise ValidationError("Missing required field: request_type", "request_type")
+    
+    validate_string(input_data["request_type"], "request_type", max_length=50)
+    
+    # Validate request-specific fields
+    request_type = input_data["request_type"]
+    
+    if request_type == "missing_documents":
+        if "missing_documents" not in input_data:
+            raise ValidationError("Missing required field for missing_documents request: missing_documents", "missing_documents")
+        
+        if not isinstance(input_data["missing_documents"], list):
+            raise ValidationError("missing_documents must be an array", "missing_documents")
+    
+    elif request_type == "application_decision":
+        if "underwriting_results" not in input_data:
+            raise ValidationError("Missing required field for application_decision request: underwriting_results", "underwriting_results")
+        
+        if not isinstance(input_data["underwriting_results"], dict):
+            raise ValidationError("underwriting_results must be an object", "underwriting_results")
+    
+    elif request_type == "customer_inquiry":
+        if "inquiry_text" not in input_data:
+            raise ValidationError("Missing required field for customer_inquiry request: inquiry_text", "inquiry_text")
+        
+        validate_string(input_data["inquiry_text"], "inquiry_text", max_length=5000)
+    
+    elif request_type == "document_explanation":
+        if "document_type" not in input_data:
+            raise ValidationError("Missing required field for document_explanation request: document_type", "document_type")
+        
+        validate_string(input_data["document_type"], "document_type", max_length=50)
+    
+    return True
+
+def validate_orchestrator_agent_input(input_data: Dict[str, Any]) -> bool:
+    """
+    Validate input data for orchestrator agent.
+    
+    Args:
+        input_data: Data to validate
+        
+    Returns:
+        True if valid, raises ValidationError otherwise
+    """
+    # Validate required fields
+    if "application_id" not in input_data:
+        raise ValidationError("Missing required field: application_id", "application_id")
+    
+    validate_string(input_data["application_id"], "application_id", max_length=50)
+    
+    # Validate action if present
+    if "action" in input_data:
+        validate_enum(
+            input_data["action"], 
+            "action", 
+            {"process_application", "handle_customer_inquiry", "update_application"}
+        )
+    
+    # Further validation based on the action
+    action = input_data.get("action", "process_application")
+    
+    if action == "process_application":
+        # Validate application data for new applications
+        if "application_data" not in input_data:
+            raise ValidationError("Missing required field for process_application action: application_data", "application_data")
+        
+        if not isinstance(input_data["application_data"], dict):
+            raise ValidationError("application_data must be an object", "application_data")
+        
+        # Validate basic applicant data if present
+        if "applicant" in input_data["application_data"]:
+            applicant = input_data["application_data"]["applicant"]
+            
+            if not isinstance(applicant, dict):
+                raise ValidationError("applicant must be an object", "application_data.applicant")
+            
+            if "name" in applicant:
+                validate_string(applicant["name"], "application_data.applicant.name", max_length=100)
+            
+            if "email" in applicant:
+                validate_email(applicant["email"], "application_data.applicant.email")
+            
+            if "phone" in applicant:
+                validate_phone(applicant["phone"], "application_data.applicant.phone")
+    
+    elif action == "handle_customer_inquiry":
+        if "inquiry_text" not in input_data:
+            raise ValidationError("Missing required field for handle_customer_inquiry action: inquiry_text", "inquiry_text")
+        
+        validate_string(input_data["inquiry_text"], "inquiry_text", max_length=5000)
+    
+    elif action == "update_application":
+        if "update_type" not in input_data:
+            raise ValidationError("Missing required field for update_application action: update_type", "update_type")
+        
+        validate_enum(
+            input_data["update_type"], 
+            "update_type", 
+            {"new_documents", "application_data"}
+        )
+    
+    return True
 
 def detect_jailbreak_attempts(value: str) -> Tuple[bool, Optional[str]]:
     """
@@ -399,310 +615,40 @@ def detect_jailbreak_attempts(value: str) -> Tuple[bool, Optional[str]]:
     
     return False, None
 
-
-def validate_mortgage_application(application_data: Dict[str, Any]) -> Dict[str, Any]:
+def validate_json_string(json_string: str) -> Dict[str, Any]:
     """
-    Validate a complete mortgage application.
+    Validate and parse a JSON string.
     
     Args:
-        application_data: Application data to validate
+        json_string: JSON string to validate
         
     Returns:
-        Validated application data
-        
-    Raises:
-        ValidationError: If validation fails
+        Parsed JSON object or raises ValidationError
     """
-    # Define required and optional top-level keys
-    required_keys = {"primary_applicant", "property_info", "loan_details"}
-    optional_keys = {"co_applicant", "documents", "notes"}
-    
-    # Validate the overall structure
-    validated_data = validate_dict(
-        application_data, 
-        "application", 
-        required_keys=required_keys,
-        optional_keys=optional_keys
-    )
-    
-    # Validate primary applicant
-    if "primary_applicant" in validated_data:
-        primary_applicant_validators = {
-            "first_name": lambda v, f: validate_string(v, f, min_length=2),
-            "last_name": lambda v, f: validate_string(v, f, min_length=2),
-            "email": validate_email,
-            "phone": validate_phone,
-            "date_of_birth": validate_date,
-            "ssn_last_four": validate_ssn_last_four,
-            "employment_status": lambda v, f: validate_string(v, f),
-            "annual_income": lambda v, f: validate_number(v, f, min_value=0),
-            "years_at_current_job": lambda v, f: validate_number(v, f, min_value=0),
-            "credit_score": lambda v, f: validate_number(v, f, min_value=300, max_value=850),
-        }
-        
-        validated_data["primary_applicant"] = validate_dict(
-            validated_data["primary_applicant"],
-            "primary_applicant",
-            required_keys={"first_name", "last_name", "email", "phone", "date_of_birth", "ssn_last_four"},
-            optional_keys={"employment_status", "annual_income", "years_at_current_job", "credit_score", "address"},
-            value_validators=primary_applicant_validators
-        )
-        
-        # Validate address if present
-        if "address" in validated_data["primary_applicant"]:
-            address_validators = {
-                "street": lambda v, f: validate_string(v, f),
-                "city": lambda v, f: validate_string(v, f),
-                "state": lambda v, f: validate_string(v, f, min_length=2, max_length=2),
-                "zip_code": lambda v, f: validate_string(v, f, pattern=r'^\d{5}(-\d{4})?$'),
-                "country": lambda v, f: validate_string(v, f),
-            }
-            
-            validated_data["primary_applicant"]["address"] = validate_dict(
-                validated_data["primary_applicant"]["address"],
-                "primary_applicant.address",
-                required_keys={"street", "city", "state", "zip_code"},
-                optional_keys={"country"},
-                value_validators=address_validators
-            )
-    
-    # Validate co-applicant if present
-    if "co_applicant" in validated_data:
-        co_applicant_validators = {
-            "first_name": lambda v, f: validate_string(v, f, min_length=2),
-            "last_name": lambda v, f: validate_string(v, f, min_length=2),
-            "email": validate_email,
-            "phone": validate_phone,
-            "date_of_birth": validate_date,
-            "ssn_last_four": validate_ssn_last_four,
-            "employment_status": lambda v, f: validate_string(v, f),
-            "annual_income": lambda v, f: validate_number(v, f, min_value=0),
-            "years_at_current_job": lambda v, f: validate_number(v, f, min_value=0),
-            "credit_score": lambda v, f: validate_number(v, f, min_value=300, max_value=850),
-        }
-        
-        validated_data["co_applicant"] = validate_dict(
-            validated_data["co_applicant"],
-            "co_applicant",
-            required_keys={"first_name", "last_name", "email", "phone", "date_of_birth", "ssn_last_four"},
-            optional_keys={"employment_status", "annual_income", "years_at_current_job", "credit_score", "address"},
-            value_validators=co_applicant_validators
-        )
-        
-        # Validate address if present
-        if "address" in validated_data["co_applicant"]:
-            address_validators = {
-                "street": lambda v, f: validate_string(v, f),
-                "city": lambda v, f: validate_string(v, f),
-                "state": lambda v, f: validate_string(v, f, min_length=2, max_length=2),
-                "zip_code": lambda v, f: validate_string(v, f, pattern=r'^\d{5}(-\d{4})?$'),
-                "country": lambda v, f: validate_string(v, f),
-            }
-            
-            validated_data["co_applicant"]["address"] = validate_dict(
-                validated_data["co_applicant"]["address"],
-                "co_applicant.address",
-                required_keys={"street", "city", "state", "zip_code"},
-                optional_keys={"country"},
-                value_validators=address_validators
-            )
-    
-    # Validate property info
-    if "property_info" in validated_data:
-        property_validators = {
-            "property_type": lambda v, f: validate_string(v, f),
-            "estimated_value": lambda v, f: validate_number(v, f, min_value=0),
-            "year_built": lambda v, f: validate_number(v, f, min_value=1800, max_value=2100),
-            "square_footage": lambda v, f: validate_number(v, f, min_value=0),
-        }
-        
-        validated_data["property_info"] = validate_dict(
-            validated_data["property_info"],
-            "property_info",
-            required_keys={"address", "property_type", "estimated_value"},
-            optional_keys={"year_built", "square_footage"},
-            value_validators=property_validators
-        )
-        
-        # Validate property address
-        address_validators = {
-            "street": lambda v, f: validate_string(v, f),
-            "city": lambda v, f: validate_string(v, f),
-            "state": lambda v, f: validate_string(v, f, min_length=2, max_length=2),
-            "zip_code": lambda v, f: validate_string(v, f, pattern=r'^\d{5}(-\d{4})?$'),
-            "country": lambda v, f: validate_string(v, f),
-        }
-        
-        validated_data["property_info"]["address"] = validate_dict(
-            validated_data["property_info"]["address"],
-            "property_info.address",
-            required_keys={"street", "city", "state", "zip_code"},
-            optional_keys={"country"},
-            value_validators=address_validators
-        )
-    
-    # Validate loan details
-    if "loan_details" in validated_data:
-        loan_validators = {
-            "loan_amount": lambda v, f: validate_number(v, f, min_value=1),
-            "loan_term_years": lambda v, f: validate_number(v, f, min_value=1, max_value=50),
-            "interest_rate": lambda v, f: validate_number(v, f, min_value=0, max_value=30),
-            "loan_type": lambda v, f: validate_string(v, f),
-            "down_payment": lambda v, f: validate_number(v, f, min_value=0),
-            "is_first_time_homebuyer": lambda v, f: isinstance(v, bool) or ValidationError(f"{f} must be a boolean")
-        }
-        
-        validated_data["loan_details"] = validate_dict(
-            validated_data["loan_details"],
-            "loan_details",
-            required_keys={"loan_amount", "loan_term_years"},
-            optional_keys={"interest_rate", "loan_type", "down_payment", "is_first_time_homebuyer"},
-            value_validators=loan_validators
-        )
-    
-    # Validate documents if present
-    if "documents" in validated_data:
-        def validate_document(doc, field_name):
-            document_validators = {
-                "document_type": lambda v, f: validate_string(v, f),
-                "file_name": lambda v, f: validate_file_extension(v, f),
-                "content_type": lambda v, f: validate_string(v, f),
-                "file_size": lambda v, f: validate_number(v, f, min_value=1),
-                "status": lambda v, f: validate_string(v, f)
-            }
-            
-            return validate_dict(
-                doc,
-                field_name,
-                required_keys={"document_type", "file_name", "content_type", "file_size"},
-                optional_keys={"status", "metadata", "document_id", "upload_date", "extracted_data"},
-                value_validators=document_validators
-            )
-        
-        validated_data["documents"] = validate_array(
-            validated_data["documents"],
-            "documents",
-            item_validator=validate_document
-        )
-    
-    # Validate notes if present
-    if "notes" in validated_data:
-        def validate_note(note, field_name):
-            note_validators = {
-                "author": lambda v, f: validate_string(v, f),
-                "content": lambda v, f: validate_string(v, f),
-                "timestamp": lambda v, f: validate_string(v, f)
-            }
-            
-            return validate_dict(
-                note,
-                field_name,
-                required_keys={"author", "content"},
-                optional_keys={"timestamp"},
-                value_validators=note_validators
-            )
-        
-        validated_data["notes"] = validate_array(
-            validated_data["notes"],
-            "notes",
-            item_validator=validate_note
-        )
-    
-    return validated_data
+    try:
+        parsed = json.loads(json_string)
+        return parsed
+    except json.JSONDecodeError as e:
+        raise ValidationError(f"Invalid JSON format: {str(e)}")
 
-
-def validate_api_request(request_data: Dict[str, Any], endpoint: str) -> Dict[str, Any]:
+def validate_schema(data: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Validate an API request.
+    Validate data against a schema using Cerberus.
     
     Args:
-        request_data: Request data to validate
-        endpoint: API endpoint
+        data: Data to validate
+        schema: Schema definition
         
     Returns:
-        Validated request data
-        
-    Raises:
-        ValidationError: If validation fails
+        Validated data or raises ValidationError
     """
-    # Different validation logic based on the endpoint
-    if endpoint == "submit_application":
-        return validate_mortgage_application(request_data)
-    
-    elif endpoint == "upload_document":
-        document_validators = {
-            "application_id": lambda v, f: validate_string(v, f),
-            "document_type": lambda v, f: validate_string(v, f),
-            "file_name": lambda v, f: validate_file_extension(v, f),
-            "content_type": lambda v, f: validate_string(v, f),
-            "file_size": lambda v, f: validate_number(v, f, min_value=1),
-            "file_content": lambda v, f: validate_string(v, f)  # Base64 encoded
-        }
-        
-        return validate_dict(
-            request_data,
-            "document_upload",
-            required_keys={"application_id", "document_type", "file_name", "content_type", "file_size", "file_content"},
-            value_validators=document_validators
+    v = cerberus.Validator(schema)
+    if not v.validate(data):
+        errors = v.errors
+        error_details = {field: msgs for field, msgs in errors.items()}
+        raise ValidationError(
+            "Schema validation failed", 
+            details=error_details
         )
     
-    elif endpoint == "check_status":
-        status_validators = {
-            "application_id": lambda v, f: validate_string(v, f)
-        }
-        
-        return validate_dict(
-            request_data,
-            "status_check",
-            required_keys={"application_id"},
-            value_validators=status_validators
-        )
-    
-    elif endpoint == "add_note":
-        note_validators = {
-            "application_id": lambda v, f: validate_string(v, f),
-            "author": lambda v, f: validate_string(v, f),
-            "content": lambda v, f: validate_string(v, f)
-        }
-        
-        return validate_dict(
-            request_data,
-            "add_note",
-            required_keys={"application_id", "author", "content"},
-            value_validators=note_validators
-        )
-    
-    else:
-        # Generic validation for unknown endpoints
-        logger.warning(f"No specific validation logic for endpoint: {endpoint}")
-        return request_data
-    
-# src/security/validation.py
-
-def validate_input(data):
-    """
-    Validate input data for security purposes
-    
-    Args:
-        data: The data to validate
-        
-    Returns:
-        bool: True if the data is valid, False otherwise
-    """
-    # For now, just return True
-    # In a real implementation, you would add validation logic here
-    return True
-
-def validate_request(request=None):
-    """
-    Validate a FastAPI request
-    
-    Args:
-        request: The FastAPI request object
-        
-    Returns:
-        bool: True if the request is valid, False otherwise
-    """
-    # For now, just return True
-    # In a real implementation, you would add validation logic here
-    return True    
+    return data

@@ -9,8 +9,8 @@ import asyncio
 from .base_agent import BaseAgent
 from src.semantic_kernel.kernel_setup import get_kernel
 from src.autogen.reasoning_agents import create_reasoning_agents
-from utils.logging_utils import get_logger
-
+from src.utils.logging_utils import get_logger
+from src.data.cosmos_manager import CosmosDBManager
 
 class ComplianceAgent(BaseAgent):
     """
@@ -25,13 +25,19 @@ class ComplianceAgent(BaseAgent):
         Args:
             agent_config: Configuration for the agent
         """
-        super().__init__("compliance", agent_config)
+        super().__init__("compliance")
         
         # Initialize Semantic Kernel
         self.kernel = get_kernel()
+        cosmos_manager = CosmosDBManager()
+        prompt_manager = None
         
         # Get compliance reasoning agent from AutoGen
-        self.reasoning_agent = create_reasoning_agents()
+        self.reasoning_agent = create_reasoning_agents(
+            kernel=self.kernel,
+            cosmos_manager=cosmos_manager,
+            prompt_manager=prompt_manager
+        )
         
         # Initialize compliance rule sets
         self._initialize_compliance_rules()

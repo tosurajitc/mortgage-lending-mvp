@@ -40,6 +40,21 @@ class DocumentAnalysisAgent(BaseAgent):
         self.memory_manager = DocumentMemoryManager()
         
         self.logger.info("Document analysis agent initialized with memory management")
+
+    async def process(self, input_data):
+        # Upload incoming documents
+        uploaded_documents = []
+        for document in input_data.get('documents', []):
+            blob_name = f"{document['type']}_{document['filename']}"
+            url = self.storage_service.upload_document(
+                document['file_path'], 
+                blob_name
+            )
+            uploaded_documents.append({
+                'url': url,
+                'type': document['type'],
+                'name': blob_name
+            })
     
     async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """

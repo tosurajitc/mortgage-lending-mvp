@@ -1,0 +1,144 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/skills/v2.1/skill-manifest.json",
+    "$id": "MortgageLendingSkill",
+    "name": "Mortgage Lending Skill",
+    "version": "1.0",
+    "description": "A skill for mortgage lending processes including application submission, status checking, and document handling",
+    "publisherName": "IBM",
+    "privacyUrl": "https://yourcompany.com/privacy",
+    "copyright": "Copyright (c) 2025",
+    "license": "All rights reserved",
+    "tags": [
+      "mortgage",
+      "lending",
+      "financial",
+      "banking"
+    ],
+    "endpoints": [
+      {
+        "name": "default",
+        "protocol": "BotFrameworkV3",
+        "description": "Mortgage Lending Skill endpoint",
+        "endpointUrl": "https://yourmortgageapi.com/api/messages",
+        "msAppId": "a3646621-a64d-449c-97a0-0c1f70edf81e"
+      }
+    ],
+    "dispatchModels": {
+      "languages": {
+        "en-us": [
+          {
+            "id": "MortgageLendingDispatch",
+            "name": "Mortgage Lending Skill",
+            "contentType": "application/lu",
+            "url": "https://yourmortgageapi.com/manifests/mortgage-lending-dispatch-en.lu",
+            "description": "Dispatch model for Mortgage Lending Skill"
+          }
+        ]
+      }
+    },
+    "activities": {
+      "submitMortgageApplication": {
+        "description": "Submit a new mortgage application",
+        "type": "event",
+        "name": "SubmitMortgageApplication",
+        "value": {
+          "applicationData": {}
+        },
+        "resultValue": {
+          "applicationId": "string",
+          "applicationStatus": "string",
+          "nextSteps": ["string"]
+        }
+      },
+      "checkApplicationStatus": {
+        "description": "Check the status of an existing mortgage application",
+        "type": "event",
+        "name": "CheckApplicationStatus",
+        "value": {
+          "applicationId": "string",
+          "applicantName": "string"
+        },
+        "resultValue": {
+          "applicationStatus": "string",
+          "currentStage": "string",
+          "pendingItems": ["string"],
+          "estimatedCompletion": "string"
+        }
+      },
+      "uploadDocuments": {
+        "description": "Upload documents for a mortgage application",
+        "type": "event",
+        "name": "UploadDocuments",
+        "value": {
+          "applicationId": "string",
+          "documentType": "string",
+          "documentYear": "string",
+          "documentDescription": "string",
+          "documentFormat": "string"
+        },
+        "resultValue": {
+          "uploadStatus": "string",
+          "message": "string",
+          "nextSteps": ["string"]
+        }
+      },
+      "getPreApprovalEstimate": {
+        "description": "Get an estimated pre-approval amount",
+        "type": "event",
+        "name": "GetPreApprovalEstimate",
+        "value": {
+          "annualIncome": "number",
+          "creditScoreRange": "string",
+          "monthlyDebts": "number",
+          "employmentStatus": "string",
+          "downPaymentAmount": "number",
+          "loanTermYears": "number",
+          "propertyType": "string",
+          "propertyLocation": "string"
+        },
+        "resultValue": {
+          "estimatedAmount": "number",
+          "interestRateRange": "string",
+          "loanOptions": ["string"],
+          "nextSteps": ["string"]
+        }
+      },
+      "loanTypeRecommendation": {
+        "description": "Get recommendations for suitable loan types",
+        "type": "event",
+        "name": "LoanTypeRecommendation",
+        "value": {
+          "annualIncome": "number",
+          "creditScoreRange": "string",
+          "downPaymentPercentage": "number",
+          "propertyType": "string",
+          "homeOwnershipPlans": "string",
+          "militaryService": "string",
+          "propertyLocation": "string",
+          "financialPriority": "string"
+        },
+        "resultValue": {
+          "recommendedLoanTypes": ["string"],
+          "explanation": "string",
+          "eligibility": {}
+        }
+      },
+      "resolveMortgageIssues": {
+        "description": "Help resolve issues with mortgage applications",
+        "type": "event",
+        "name": "ResolveMortgageIssues",
+        "value": {
+          "applicationId": "string",
+          "issueType": "string",
+          "issueDescription": "string",
+          "contactPreference": "string",
+          "urgencyLevel": "string"
+        },
+        "resultValue": {
+          "resolutionSteps": ["string"],
+          "estimatedResolutionTime": "string",
+          "caseNumber": "string"
+        }
+      }
+    }
+  }

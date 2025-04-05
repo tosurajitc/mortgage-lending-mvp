@@ -1,2 +1,57 @@
 # Environment variables
-.env
+# Application configuration
+APP_ENV=development  # development, testing, production
+LOG_LEVEL=INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+PORT=8000
+
+# Azure OpenAI Service
+AZURE_OPENAI_API_KEY=5kB2wiDU0lB29j3qXJkekOherOEDiH0D76TMUC0vEX1IuXSB03dvJQQJ99BCACYeBjFXJ3w3AAABACOGPtcd
+AZURE_OPENAI_ENDPOINT=https://surajit-openai.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2023-12-01-preview
+AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-ada-002
+
+# Azure Document Intelligence
+AZURE_DOCUMENT_INTELLIGENCE_KEY=8362ioYsQarAdgEl5DhTFcPGDdwee1sxEoIzGH1QaatnzJDOBfj0JQQJ99BCACYeBjFXJ3w3AAALACOGIR1c
+AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT=https://mvp-document-intelligence.cognitiveservices.azure.com/
+
+# Azure Cosmos DB
+COSMOS_URI=https://surajit-cosmosdb.documents.azure.com:443/
+COSMOS_KEY=CnL0s6Pgwof0ecRoxZO1VF4O5QPCNSYCY48VMm9Qz2INUoTYm9E87REZX5bgZ0vDKl3GRySaEW0VACDbbo3xIA==
+COSMOS_DATABASE=MortgageLendingDB
+COSMOS_CONTAINER_APPLICATIONS=Applications
+COSMOS_CONTAINER_DOCUMENTS=Documents
+COSMOS_CONTAINER_AUDIT=AuditLog
+
+# Azure Blob Storage
+AZURE_STORAGE_CONNECTION_STRING=your_storage_connection_string
+AZURE_STORAGE_ACCOUNT=yourstorageaccount
+AZURE_STORAGE_KEY=your_storage_key
+AZURE_STORAGE_CONTAINER=mortgage-documents
+
+# Security settings
+SECRET_KEY=your_secret_key_for_jwt_generation
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+PII_DETECTION_THRESHOLD=0.8
+ENABLE_JAILBREAK_DETECTION=true
+
+# Copilot Studio
+# Copilot Studio Configuration
+COPILOT_STUDIO_TOKEN_ENDPOINT=https://default94e1538a3b464d3fb78c1f1613e4b6.a2.environment.api.powerplatform.com/powervirtualagents/botsbyschema/crf19_mortgageLendingAssistant/directline/token?api-version=2022-03-01-preview
+COPILOT_STUDIO_API_KEY=your_copilot_studio_api_key
+COPILOT_STUDIO_BOT_ID=crf19_mortgageLendingAssistant
+COPILOT_STUDIO_TENANT_ID=your_tenant_id
+
+# Monitoring
+ENABLE_TELEMETRY=true
+OPENTELEMETRY_ENDPOINT=http://localhost:4317
+
+# Agent Configuration
+MAX_REASONING_ITERATIONS=5
+CONFIDENCE_THRESHOLD=0.7
+DEFAULT_AGENT_TEMPERATURE=0.2
+
+# Workflow settings
+DOCUMENT_REQUIRED_TYPES=income_verification,credit_report,property_appraisal
+COMPLIANCE_RULES_FILE=compliance_rules.json

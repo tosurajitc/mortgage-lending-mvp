@@ -1,0 +1,340 @@
+# Microsoft Copilot Studio Implementation Components
+
+## 1. Topics and Conversation Flows
+
+### Applicant Conversation Flows
+
+#### Application Submission Flow
+```yaml
+Topic: Apply for a Mortgage
+Trigger Phrases:
+  - "I want to apply for a mortgage"
+  - "How do I get a mortgage"
+  - "Start mortgage application"
+  - "Begin home loan process"
+Entities:
+  - PropertyType: [Single Family, Condo, Townhouse, Multi-Family]
+  - LoanType: [Conventional, FHA, VA, Jumbo]
+  - PropertyUse: [Primary Residence, Second Home, Investment]
+  - ApplicantInfo: [Name, Email, Phone, Income]
+Conversation Steps:
+  1. Welcome and introduction to mortgage process
+  2. Collect basic applicant information
+  3. Collect property information
+  4. Collect loan details
+  5. Summarize and confirm information
+  6. Create application in system
+  7. Explain next steps
+```
+
+#### Document Upload Guidance Flow
+```yaml
+Topic: Upload Documents
+Trigger Phrases:
+  - "What documents do I need"
+  - "How do I upload documents"
+  - "Submit mortgage documents"
+  - "Upload my financial documents"
+Entities:
+  - DocumentType: [PayStub, W2, TaxReturn, BankStatement, EmploymentVerification]
+Conversation Steps:
+  1. Explain required documents based on loan type
+  2. Provide document upload instructions
+  3. Verify document requirements for specific application
+  4. Guide to minimal web portal for upload
+  5. Explain document processing expectations
+```
+
+#### Application Status Flow
+```yaml
+Topic: Check Application Status
+Trigger Phrases:
+  - "What's my application status"
+  - "Check my mortgage status"
+  - "Update on my mortgage application"
+  - "When will I hear back about my application"
+Entities:
+  - ApplicationID: [Application reference number]
+Conversation Steps:
+  1. Authenticate applicant
+  2. Retrieve application status from system
+  3. Explain current status in natural language
+  4. Provide details on next steps
+  5. Handle any follow-up questions about the process
+```
+
+### Loan Officer Conversation Flows
+
+#### Application Review Flow
+```yaml
+Topic: Review Mortgage Applications
+Trigger Phrases:
+  - "Show me pending applications"
+  - "Review application queue"
+  - "Applications needing review"
+  - "View mortgage applications"
+Entities:
+  - ApplicationStatus: [New, DocumentReview, Underwriting, Pending]
+  - SortBy: [Date, LoanAmount, RiskScore]
+Conversation Steps:
+  1. Authenticate loan officer
+  2. Retrieve application list based on filters
+  3. Present applications in conversational format
+  4. Allow selection of application for detailed review
+  5. Provide AI-generated application summary
+```
+
+#### Underwriting Decision Flow
+```yaml
+Topic: Make Underwriting Decision
+Trigger Phrases:
+  - "Make decision on application"
+  - "Approve mortgage application"
+  - "Review underwriting results"
+  - "Process application decision"
+Entities:
+  - ApplicationID: [Application reference number]
+  - Decision: [Approve, Conditionally Approve, Decline, Need More Info]
+Conversation Steps:
+  1. Retrieve application details and AI analysis
+  2. Present key financial ratios and risk factors
+  3. Show automated recommendation
+  4. Capture loan officer decision
+  5. Record decision rationale
+  6. Process in system and notify applicant
+```
+
+### Administrator Conversation Flows
+
+#### System Monitoring Flow
+```yaml
+Topic: System Status and Monitoring
+Trigger Phrases:
+  - "Check system status"
+  - "Show me system health"
+  - "Application processing metrics"
+  - "See performance dashboard"
+Entities:
+  - MetricType: [Performance, Error, Usage, Queue]
+  - TimeRange: [Today, ThisWeek, ThisMonth, Custom]
+Conversation Steps:
+  1. Authenticate administrator
+  2. Retrieve system metrics
+  3. Present health status in natural language
+  4. Allow drill-down into specific metrics
+  5. Provide recommendations for any issues
+```
+
+#### Configuration Management Flow
+```yaml
+Topic: System Configuration
+Trigger Phrases:
+  - "Update system settings"
+  - "Configure workflow rules"
+  - "Change system parameters"
+  - "Modify decision thresholds"
+Entities:
+  - ConfigCategory: [Workflow, Security, Integration, Model]
+  - SettingName: [Parameter names]
+Conversation Steps:
+  1. Authenticate administrator with elevated privileges
+  2. Present current configuration
+  3. Capture requested changes
+  4. Confirm and validate changes
+  5. Apply changes and verify
+```
+
+## 2. Custom Actions
+
+### Application Actions
+```yaml
+Action: CreateApplication
+Inputs:
+  - ApplicantName: string
+  - ApplicantEmail: string
+  - ApplicantPhone: string
+  - PropertyType: string
+  - LoanAmount: number
+  - PropertyUse: string
+Implementation:
+  - Call OrchestrationManager.process_application API
+  - Handle validation errors gracefully
+  - Return application ID and status
+```
+
+```yaml
+Action: GetApplicationStatus
+Inputs:
+  - ApplicationID: string
+  - AuthToken: string
+Implementation:
+  - Call OrchestrationManager.get_application_status API
+  - Format response for conversational presentation
+  - Transform technical terms to user-friendly language
+```
+
+### Document Actions
+```yaml
+Action: GetRequiredDocuments
+Inputs:
+  - ApplicationID: string
+  - LoanType: string
+Implementation:
+  - Determine required documents based on application
+  - Format list with explanations and instructions
+  - Include portal link for document upload
+```
+
+```yaml
+Action: CheckDocumentStatus
+Inputs:
+  - ApplicationID: string
+Implementation:
+  - Retrieve document status from system
+  - Identify missing or problematic documents
+  - Format response with next steps
+```
+
+### Decision Actions
+```yaml
+Action: GetApplicationSummary
+Inputs:
+  - ApplicationID: string
+Implementation:
+  - Retrieve comprehensive application data
+  - Call agent system to generate analysis
+  - Format as concise summary with key points
+```
+
+```yaml
+Action: RecordDecision
+Inputs:
+  - ApplicationID: string
+  - Decision: string
+  - Rationale: string
+  - ConditionsList: array (optional)
+Implementation:
+  - Call OrchestrationManager to record decision
+  - Format confirmation message
+  - Handle notification process
+```
+
+### Admin Actions
+```yaml
+Action: GetSystemHealth
+Inputs:
+  - MetricType: string
+  - TimeRange: string
+Implementation:
+  - Call monitoring system to retrieve metrics
+  - Format as natural language summary
+  - Include visual reference if available
+```
+
+```yaml
+Action: UpdateConfiguration
+Inputs:
+  - ConfigCategory: string
+  - SettingName: string
+  - SettingValue: string
+Implementation:
+  - Validate input with security checks
+  - Apply configuration change
+  - Verify change was successful
+  - Return confirmation
+```
+
+## 3. Entity Recognition
+
+### Applicant Entities
+```yaml
+Entity: ApplicantInfo
+Recognition Pattern:
+  - Name: [First and last name pattern]
+  - Email: [Email format pattern]
+  - Phone: [Phone number format pattern]
+  - Income: [Currency format with timeframe]
+Examples:
+  - "My name is John Smith"
+  - "You can reach me at john@example.com"
+  - "My annual income is $85,000"
+```
+
+```yaml
+Entity: PropertyDetails
+Recognition Pattern:
+  - Address: [Street address pattern]
+  - PropertyType: [Enumeration of property types]
+  - PurchasePrice: [Currency format]
+  - LoanAmount: [Currency format]
+Examples:
+  - "I want to buy a single-family home at 123 Main St"
+  - "The purchase price is $350,000"
+  - "I need a loan for $280,000"
+```
+
+### Loan Officer Entities
+```yaml
+Entity: ApplicationFilters
+Recognition Pattern:
+  - Status: [Enumeration of application statuses]
+  - DateRange: [Date or relative time expressions]
+  - LoanType: [Enumeration of loan types]
+Examples:
+  - "Show me all pending applications from this week"
+  - "I need to see FHA loans awaiting decision"
+  - "Find applications with documents submitted in the last 3 days"
+```
+
+```yaml
+Entity: DecisionParameters
+Recognition Pattern:
+  - Decision: [Approval types or rejection]
+  - Conditions: [List of conditions]
+  - RateOffering: [Percentage formats]
+Examples:
+  - "Approve this loan with a 3.5% interest rate"
+  - "Conditionally approve pending verification of employment"
+  - "Decline due to insufficient income documentation"
+```
+
+### Admin Entities
+```yaml
+Entity: SystemMetrics
+Recognition Pattern:
+  - MetricType: [Performance, Error, Usage, Queue]
+  - TimeRange: [Date ranges, relative time]
+  - Threshold: [Numeric with optional units]
+Examples:
+  - "Show me error rates for the past week"
+  - "What's our average processing time today?"
+  - "Check if any metrics are above threshold"
+```
+
+## 4. Variable Management
+
+### Session Variables
+```yaml
+Variables:
+  - CurrentApplicationID: Stores the active application being discussed
+  - UserRole: Stores authenticated user role (applicant, officer, admin)
+  - AuthenticationStatus: Tracks if user is authenticated
+  - ConversationContext: Maintains context of the current conversation
+```
+
+### Global Variables
+```yaml
+Variables:
+  - RequiredDocumentsByLoanType: Maps loan types to required document lists
+  - StatusDescriptions: User-friendly descriptions of technical status codes
+  - ComplianceRequirements: Current regulatory requirements to reference
+```
+
+## 5. Minimal Web Components
+
+### Landing Page
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8

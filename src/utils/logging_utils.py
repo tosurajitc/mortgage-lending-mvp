@@ -19,6 +19,15 @@ def setup_logging(
         default_level (int, optional): Default logging level if config fails.
         env_key (str, optional): Environment variable to check for config path.
     """
+
+    # Add environment variable for log level
+    log_level = os.getenv('LOG_LEVEL', default_level)
+    try:
+        default_level = getattr(logging, log_level.upper())
+    except AttributeError:
+        default_level = logging.INFO
+
+        
     # Create logs directory if it doesn't exist
     Path('logs').mkdir(exist_ok=True)
     

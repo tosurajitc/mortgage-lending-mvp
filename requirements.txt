@@ -5,7 +5,7 @@ fastapi>=0.100.0
 uvicorn>=0.22.0
 
 # Azure AI services
-azure-ai-document-intelligence>=1.0.0
+azure-ai-formrecognizer>=3.2.0
 azure-storage-blob>=12.16.0
 azure-cosmos>=4.5.0
 azure-identity>=1.13.0

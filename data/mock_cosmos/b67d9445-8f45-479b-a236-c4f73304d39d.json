@@ -1,0 +1,13 @@
+{
+  "application_id": "b67d9445-8f45-479b-a236-c4f73304d39d",
+  "status": "initiated",
+  "context": {},
+  "history": [
+    {
+      "status": "initiated",
+      "timestamp": "2025-04-05T07:18:32.941054",
+      "notes": "Application initiated"
+    }
+  ],
+  "last_updated": "2025-04-05T07:18:32.941054"
+}

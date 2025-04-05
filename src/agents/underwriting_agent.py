@@ -9,7 +9,8 @@ import asyncio
 from .base_agent import BaseAgent
 from src.semantic_kernel.kernel_setup import get_kernel
 from src.autogen.reasoning_agents import get_underwriting_reasoning_agent
-from utils.logging_utils import get_logger
+from src.utils.logging_utils import get_logger
+from src.data.cosmos_manager import CosmosDBManager
 
 
 class UnderwritingAgent(BaseAgent):
@@ -25,13 +26,22 @@ class UnderwritingAgent(BaseAgent):
         Args:
             agent_config: Configuration for the agent
         """
-        super().__init__("underwriting", agent_config)
+
+        super().__init__("underwriting")
         
         # Initialize Semantic Kernel
         self.kernel = get_kernel()
         
         # Get underwriting reasoning agent from AutoGen
-        self.reasoning_agent = get_underwriting_reasoning_agent()
+        
+        cosmos_manager = CosmosDBManager() 
+        prompt_manager = None
+
+        self.reasoning_agent = get_underwriting_reasoning_agent(
+            kernel=self.kernel,
+            cosmos_manager=cosmos_manager,
+            prompt_manager=prompt_manager
+    )
         
         self.logger.info("Underwriting agent initialized")
     

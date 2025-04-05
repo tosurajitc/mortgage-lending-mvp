@@ -8,8 +8,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 from src.utils.logging_utils import get_logger
-from security.validation import validate_input
-from security.pii_detector import detect_and_mask_pii
+from src.security.validation import validate_input
+from src.security.pii_detector import detect_and_mask_pii
 
 
 class BaseAgent(ABC):
