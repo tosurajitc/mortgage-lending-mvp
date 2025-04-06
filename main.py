@@ -12,10 +12,14 @@ app = FastAPI(
 # Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://copilotstudio.microsoft.com", "https://ispring.azurewebsites.net"],  # Replace with specific Copilot Studio domain in production
+    allow_origins=[
+        "https://copilotstudio.microsoft.com", 
+        "https://ispring.azurewebsites.net"
+        "https://surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net"
+    ],  # Replace with specific Copilot Studio domain in production
     allow_credentials=True,
-    allow_methods=["POST", "GET", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "Accept"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include router from endpoints

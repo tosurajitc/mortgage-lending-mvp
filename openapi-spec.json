@@ -1,0 +1,1006 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Mortgage Lending Assistant API",
+      "description": "API for residential mortgage application processing and management",
+      "version": "1.0.0",
+      "contact": {
+        "name": "API Support"
+      }
+    },
+    "servers": [
+      {
+        "url": "https://ispring.azurewebsites.net",
+        "description": "Azure App Service"
+      }
+    ],
+    "paths": {
+      "/api/applications/submit": {
+        "post": {
+          "summary": "Submit a new mortgage application",
+          "description": "Submit a new mortgage application from Copilot Studio",
+          "operationId": "submitMortgageApplication",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitMortgageApplicationSchema"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Application submitted successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApplicationSubmitResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/applications/{application_id}/status": {
+        "get": {
+          "summary": "Check the status of an existing application",
+          "description": "Check the status of an existing mortgage application",
+          "operationId": "checkApplicationStatus",
+          "parameters": [
+            {
+              "name": "application_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The ID of the application to check"
+            },
+            {
+              "name": "applicant_name",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The name of the applicant for verification"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Application status retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApplicationStatusResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Application not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/applications/{application_id}/documents/upload": {
+        "post": {
+          "summary": "Upload documents for a mortgage application",
+          "description": "Upload supporting documents for a mortgage application",
+          "operationId": "uploadDocuments",
+          "parameters": [
+            {
+              "name": "application_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The ID of the application to upload documents for"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopilotUploadDocumentSchema"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Document uploaded successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DocumentUploadResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/loan/recommendations": {
+        "post": {
+          "summary": "Get loan type recommendations based on applicant criteria",
+          "description": "Get loan type recommendations based on financial and property criteria",
+          "operationId": "loanTypeRecommendation",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopilotLoanRecommendationSchema"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Loan recommendations retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/LoanRecommendationResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/applications/{application_id}/issues/resolve": {
+        "post": {
+          "summary": "Resolve issues with a mortgage application",
+          "description": "Address and resolve identified issues with a mortgage application",
+          "operationId": "resolveMortgageIssues",
+          "parameters": [
+            {
+              "name": "application_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The ID of the application with issues to resolve"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopilotIssueResolutionSchema"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Issues resolved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/IssueResolutionResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/loan/eligibility": {
+        "post": {
+          "summary": "Calculate loan eligibility and pre-approval amount",
+          "description": "Evaluate financial information to determine loan eligibility",
+          "operationId": "loanEligibilityCalculation",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopilotLoanEligibilitySchema"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Eligibility calculation successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/LoanEligibilityResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/copilot/process-input": {
+        "post": {
+          "summary": "Process conversational input from Copilot Studio",
+          "description": "Handle general user input from Copilot Studio conversational interface",
+          "operationId": "processCopilotInput",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopilotUserInputRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Input processed successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CopilotUserInputResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/copilot/test-connection": {
+        "get": {
+          "summary": "Test endpoint for Copilot Studio integration",
+          "description": "Verify connectivity between Copilot Studio and the API",
+          "operationId": "testCopilotConnection",
+          "responses": {
+            "200": {
+              "description": "Connection test successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "example": "connected"
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Copilot Studio connection is working properly"
+                      },
+                      "test_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/copilot/submit-application": {
+        "post": {
+          "summary": "Submit application via Copilot Studio",
+          "description": "Process a mortgage application submitted through Copilot Studio interface",
+          "operationId": "submitApplicationViaCopilot",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Application submitted successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/copilot/application-status/{application_id}": {
+        "get": {
+          "summary": "Check application status via Copilot Studio",
+          "description": "Get the status of an application through Copilot Studio interface",
+          "operationId": "getApplicationStatusViaCopilot",
+          "parameters": [
+            {
+              "name": "application_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The ID of the application to check"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Application status retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/health": {
+        "get": {
+          "summary": "Health check endpoint",
+          "description": "Check the health status of the API",
+          "operationId": "healthCheck",
+          "responses": {
+            "200": {
+              "description": "Health check successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "example": "healthy"
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "SubmitMortgageApplicationSchema": {
+          "type": "object",
+          "required": [
+            "applicantName",
+            "applicantEmail",
+            "applicantPhone",
+            "applicantAddress",
+            "applicantSSN",
+            "propertyType",
+            "propertyAddress",
+            "propertyValue",
+            "loanAmount",
+            "employmentStatus",
+            "employmentType",
+            "employmentLength",
+            "annualIncome",
+            "creditScoreRange"
+          ],
+          "properties": {
+            "applicantName": {
+              "type": "string",
+              "example": "John Doe"
+            },
+            "applicantEmail": {
+              "type": "string",
+              "format": "email",
+              "example": "john.doe@example.com"
+            },
+            "applicantPhone": {
+              "type": "string",
+              "example": "555-123-4567"
+            },
+            "applicantAddress": {
+              "type": "string",
+              "example": "123 Main St, Anytown, ST 12345"
+            },
+            "applicantSSN": {
+              "type": "string",
+              "example": "123-45-6789"
+            },
+            "propertyType": {
+              "type": "string",
+              "example": "SINGLE_FAMILY"
+            },
+            "propertyAddress": {
+              "type": "string",
+              "example": "456 Oak Ln, Anytown, ST 12345"
+            },
+            "propertyValue": {
+              "type": "number",
+              "format": "float",
+              "example": 350000
+            },
+            "loanAmount": {
+              "type": "number",
+              "format": "float",
+              "example": 280000
+            },
+            "employmentStatus": {
+              "type": "string",
+              "example": "EMPLOYED"
+            },
+            "employmentType": {
+              "type": "string",
+              "example": "FULL_TIME"
+            },
+            "employmentLength": {
+              "type": "string",
+              "example": "5_YEARS_PLUS"
+            },
+            "annualIncome": {
+              "type": "number",
+              "format": "float",
+              "example": 85000
+            },
+            "creditScoreRange": {
+              "type": "string",
+              "example": "GOOD_700_749"
+            },
+            "existingMortgages": {
+              "type": "number",
+              "format": "float",
+              "example": 0
+            }
+          }
+        },
+        "CopilotUploadDocumentSchema": {
+          "type": "object",
+          "required": [
+            "documentType"
+          ],
+          "properties": {
+            "documentType": {
+              "type": "string",
+              "example": "INCOME_VERIFICATION"
+            },
+            "documentYear": {
+              "type": "string",
+              "example": "2024"
+            },
+            "documentDescription": {
+              "type": "string",
+              "example": "W-2 Form"
+            },
+            "documentFormat": {
+              "type": "string",
+              "default": "PDF",
+              "example": "PDF"
+            },
+            "documentContent": {
+              "type": "string",
+              "description": "Base64 encoded document content",
+              "example": "JVBERi0xLjUKJYCBgoMKMSAwIG9iago..."
+            }
+          }
+        },
+        "CopilotLoanRecommendationSchema": {
+          "type": "object",
+          "required": [
+            "annualIncome",
+            "creditScoreRange",
+            "downPaymentPercentage",
+            "propertyType"
+          ],
+          "properties": {
+            "annualIncome": {
+              "type": "number",
+              "format": "float",
+              "example": 85000
+            },
+            "creditScoreRange": {
+              "type": "string",
+              "example": "GOOD_700_749"
+            },
+            "downPaymentPercentage": {
+              "type": "number",
+              "format": "float",
+              "example": 20
+            },
+            "propertyType": {
+              "type": "string",
+              "example": "SINGLE_FAMILY"
+            },
+            "propertyValue": {
+              "type": "number",
+              "format": "float",
+              "example": 350000
+            },
+            "homeOwnershipPlans": {
+              "type": "string",
+              "example": "PRIMARY_RESIDENCE"
+            },
+            "militaryService": {
+              "type": "boolean",
+              "default": false,
+              "example": false
+            },
+            "propertyLocation": {
+              "type": "string",
+              "example": "Anytown, ST"
+            },
+            "financialPriority": {
+              "type": "string",
+              "example": "LOWER_MONTHLY_PAYMENT"
+            }
+          }
+        },
+        "CopilotLoanEligibilitySchema": {
+          "type": "object",
+          "required": [
+            "annualIncome",
+            "monthlyDebts",
+            "creditScoreRange",
+            "employmentStatus"
+          ],
+          "properties": {
+            "annualIncome": {
+              "type": "number",
+              "format": "float",
+              "example": 85000
+            },
+            "monthlyDebts": {
+              "type": "number",
+              "format": "float",
+              "example": 1200
+            },
+            "creditScoreRange": {
+              "type": "string",
+              "example": "GOOD_700_749"
+            },
+            "employmentStatus": {
+              "type": "string",
+              "example": "EMPLOYED"
+            },
+            "propertyValue": {
+              "type": "number",
+              "format": "float",
+              "example": 350000
+            },
+            "downPaymentAmount": {
+              "type": "number",
+              "format": "float",
+              "example": 70000
+            },
+            "loanTermYears": {
+              "type": "integer",
+              "default": 30,
+              "example": 30
+            },
+            "propertyType": {
+              "type": "string",
+              "default": "SINGLE_FAMILY",
+              "example": "SINGLE_FAMILY"
+            },
+            "propertyLocation": {
+              "type": "string",
+              "example": "Anytown, ST"
+            },
+            "desiredLoanAmount": {
+              "type": "number",
+              "format": "float",
+              "example": 280000
+            }
+          }
+        },
+        "CopilotIssueResolutionSchema": {
+          "type": "object",
+          "required": [
+            "issueType",
+            "issueDescription"
+          ],
+          "properties": {
+            "issueType": {
+              "type": "string",
+              "example": "DOCUMENTATION_PROBLEM"
+            },
+            "issueDescription": {
+              "type": "string",
+              "example": "Missing pages in W-2 document"
+            },
+            "contactPreference": {
+              "type": "string",
+              "default": "EMAIL",
+              "example": "EMAIL"
+            },
+            "urgencyLevel": {
+              "type": "string",
+              "default": "MEDIUM",
+              "example": "MEDIUM"
+            },
+            "supportingDocuments": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "CopilotUserInputRequest": {
+          "type": "object",
+          "required": [
+            "userInput"
+          ],
+          "properties": {
+            "userInput": {
+              "type": "string",
+              "example": "What types of mortgage loans do you offer?"
+            },
+            "sessionId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "ApplicationSubmitResponse": {
+          "type": "object",
+          "properties": {
+            "applicationId": {
+              "type": "string",
+              "example": "APP-20231015-SMITH"
+            },
+            "applicationStatus": {
+              "type": "string",
+              "example": "INITIATED"
+            },
+            "nextSteps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["Upload required documents", "Expect a call from our loan officer"]
+            },
+            "requiredDocuments": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["W-2 Form", "Bank Statements", "Pay Stubs"]
+            },
+            "estimatedReviewTime": {
+              "type": "string",
+              "example": "1-2 business days"
+            }
+          }
+        },
+        "ApplicationStatusResponse": {
+          "type": "object",
+          "properties": {
+            "applicationId": {
+              "type": "string",
+              "example": "APP-20231015-SMITH"
+            },
+            "applicationStatus": {
+              "type": "string",
+              "example": "DOCUMENT_REVIEW"
+            },
+            "currentStage": {
+              "type": "string",
+              "example": "Processing"
+            },
+            "pendingItems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["Credit check", "Property appraisal"]
+            },
+            "estimatedCompletion": {
+              "type": "string",
+              "example": "5-7 business days"
+            },
+            "lastUpdated": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "statusExplanation": {
+              "type": "string",
+              "example": "Your application is currently under review by our underwriting team."
+            }
+          }
+        },
+        "DocumentUploadResponse": {
+          "type": "object",
+          "properties": {
+            "applicationId": {
+              "type": "string",
+              "example": "APP-20231015-SMITH"
+            },
+            "uploadStatus": {
+              "type": "string",
+              "example": "SUCCESS"
+            },
+            "documentType": {
+              "type": "string",
+              "example": "INCOME_VERIFICATION"
+            },
+            "message": {
+              "type": "string",
+              "example": "Document uploaded successfully"
+            },
+            "nextSteps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["Upload Property Appraisal document", "Wait for document verification"]
+            }
+          }
+        },
+        "LoanRecommendationResponse": {
+          "type": "object",
+          "properties": {
+            "recommendedLoanTypes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": [
+                {
+                  "loanType": "CONVENTIONAL",
+                  "interestRate": 5.25,
+                  "score": 92,
+                  "benefits": [
+                    "Lower interest rates for good credit",
+                    "No upfront mortgage insurance with 20% down"
+                  ]
+                },
+                {
+                  "loanType": "FHA",
+                  "interestRate": 5.5,
+                  "score": 88,
+                  "benefits": [
+                    "Lower down payment requirements",
+                    "More flexible credit requirements"
+                  ]
+                }
+              ]
+            },
+            "primaryRecommendation": {
+              "type": "string",
+              "example": "CONVENTIONAL"
+            },
+            "explanation": {
+              "type": "string",
+              "example": "Based on your good credit score and 20% down payment, a conventional loan offers the best overall value."
+            },
+            "eligibility": {
+              "type": "object",
+              "additionalProperties": true,
+              "example": {
+                "conventional": "EXCELLENT",
+                "fha": "GOOD",
+                "va": "INELIGIBLE"
+              }
+            },
+            "nextSteps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["Submit a full application", "Speak with a loan officer about rate locks"]
+            }
+          }
+        },
+        "IssueResolutionResponse": {
+          "type": "object",
+          "properties": {
+            "applicationId": {
+              "type": "string",
+              "example": "APP-20231015-SMITH"
+            },
+            "caseNumber": {
+              "type": "string",
+              "example": "CASE-A12B3C"
+            },
+            "resolutionSteps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["Re-upload complete W-2 document", "Verify document legibility"]
+            },
+            "estimatedResolutionTime": {
+              "type": "string",
+              "example": "1-2 business days"
+            },
+            "message": {
+              "type": "string",
+              "example": "Your issue has been recorded and is being addressed. Please follow the resolution steps."
+            }
+          }
+        },
+        "LoanEligibilityResponse": {
+          "type": "object",
+          "properties": {
+            "eligibilityStatus": {
+              "type": "string",
+              "example": "ELIGIBLE"
+            },
+            "maximumLoanAmount": {
+              "type": "number",
+              "format": "float",
+              "example": 320000
+            },
+            "estimatedMonthlyPayment": {
+              "type": "number",
+              "format": "float",
+              "example": 1765.23
+            },
+            "eligibilityFactors": {
+              "type": "object",
+              "additionalProperties": true,
+              "example": {
+                "dti": 0.32,
+                "ltv": 0.78,
+                "creditScore": "GOOD"
+              }
+            },
+            "recommendedActions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["Consider increasing down payment to get better interest rate", "Submit full application"]
+            },
+            "affordabilityAnalysis": {
+              "type": "object",
+              "additionalProperties": true,
+              "example": {
+                "comfortablePaymentRange": "1500-1800",
+                "stressPoint": 2100
+              }
+            }
+          }
+        },
+        "CopilotUserInputResponse": {
+          "type": "object",
+          "properties": {
+            "response": {
+              "type": "string",
+              "example": "We offer several types of mortgage loans including Conventional, FHA, VA, and USDA loans. Each has different requirements and benefits."
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "nextActions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["Get loan recommendations", "Check eligibility"]
+            },
+            "requiredInfo": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["Annual income", "Credit score range"]
+            },
+            "sessionId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "error": {
+              "type": "string"
+            }
+          }
+        },
+        "ErrorResponse": {
+          "type": "object",
+          "properties": {
+            "detail": {
+              "type": "string",
+              "example": "An error occurred while processing your request"
+            }
+          }
+        }
+      }
+    }
+  }
