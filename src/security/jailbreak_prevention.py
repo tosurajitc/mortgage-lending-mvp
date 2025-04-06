@@ -8,18 +8,15 @@ import logging
 import os
 import json
 from typing import Dict, List, Tuple, Set, Optional, Any
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# Get configuration
-ENABLE_JAILBREAK_DETECTION = os.environ.get("ENABLE_JAILBREAK_DETECTION", "true").lower() == "true"
-JAILBREAK_THRESHOLD = float(os.environ.get("JAILBREAK_THRESHOLD", "0.65"))
-MAX_REASONING_ITERATIONS = int(os.environ.get("MAX_REASONING_ITERATIONS", "5"))
+from datetime import datetime
 
 # Set up logging
 logger = logging.getLogger("security.jailbreak_prevention")
+
+# Enable jailbreak detection by default
+ENABLE_JAILBREAK_DETECTION = True
+JAILBREAK_THRESHOLD = 0.65
+MAX_REASONING_ITERATIONS = 5
 
 # Define jailbreak patterns to detect
 JAILBREAK_PATTERNS = [
@@ -35,12 +32,11 @@ JAILBREAK_PATTERNS = [
     
     # Prompt injection attempts
     r"(?i)\bnew prompt:.*$",
-    r"(?i)\bsystem prompt:.*$",
+    r"(?i)\bs\s*y\s*s\s*t\s*e\s*m\s*\s+p\s*r\s*o\s*m\s*p\s*t",
     r"(?i)\buser prompt:.*$",
     r"(?i)\binitial prompt:.*$",
     
     # Obfuscation attempts
-    r"(?i)\bs\s*y\s*s\s*t\s*e\s*m\s*\s+p\s*r\s*o\s*m\s*p\s*t",
     r"(?i)\bd\s*i\s*s\s*r\s*e\s*g\s*a\s*r\s*d",
     
     # Token manipulation
@@ -95,6 +91,11 @@ JAILBREAK_PATTERNS = [
     
     # Direct prompt exposure requests
     r"(?i)\b(show|provide|give) (me|us) (your|the) (prompt|system message|instructions|knowledge cutoff)",
+    
+    # Mortgage-specific patterns
+    r"(?i)\b(forge|fake|falsify) (income|documents|statements|application|credit|employment)",
+    r"(?i)\b(how to|ways to) (cheat|trick|deceive|mislead) (mortgage|loan|bank|lender|underwriter)",
+    r"(?i)\b(bypass|avoid|get around) (credit check|verification|background check|income verification)",
 ]
 
 # Keywords that might indicate malicious intent
@@ -103,7 +104,9 @@ SUSPICIOUS_KEYWORDS = {
     "disregard", "ignore", "circumvent", "unrestricted", "unfiltered", "uncensored", 
     "no limits", "no restrictions", "DAN", "STAN", "DUDE", "DAVE", "AIM", 
     "sudo mode", "admin mode", "god mode", "developer mode", "root access",
-    "token", "regex", "injection", "prompt leaking", "prohibited", "forbidden"
+    "token", "regex", "injection", "prompt leaking", "prohibited", "forbidden",
+    "forge", "fake", "falsify", "manipulate", "counterfeit", "fabricate",
+    "fraudulent", "defraud", "misrepresent", "deceive", "cheat"
 }
 
 # Topic areas that warrant extra scrutiny
@@ -112,7 +115,8 @@ SENSITIVE_TOPICS = {
     "illegal activities", "drugs", "hacking", "fraud", "deception", "phishing",
     "malware", "ransomware", "virus", "scam", "confidential", "classified",
     "pornography", "obscene", "harmful", "suicide", "self-harm", "violence",
-    "extremism", "discrimination", "hate speech"
+    "extremism", "discrimination", "hate speech", "mortgage fraud", "bank fraud",
+    "identity theft", "money laundering", "tax evasion", "credit fraud"
 }
 
 def check_jailbreak_attempt(prompt: str) -> Tuple[bool, float, Optional[str]]:
@@ -181,20 +185,6 @@ def _normalize_text(text: str) -> str:
     # Remove common obfuscation techniques
     text = re.sub(r'[._\-*+]', '', text)  # Remove separators commonly used in obfuscation
     
-    # Handle Unicode homoglyphs (characters that look similar)
-    homoglyph_map = {
-        'а': 'a',  # Cyrillic 'a' to Latin 'a'
-        'е': 'e',  # Cyrillic 'e' to Latin 'e'
-        'о': 'o',  # Cyrillic 'o' to Latin 'o'
-        'р': 'p',  # Cyrillic 'p' to Latin 'p'
-        'с': 'c',  # Cyrillic 'c' to Latin 'c'
-        'і': 'i',  # Cyrillic 'i' to Latin 'i'
-        # Add more homoglyphs as needed
-    }
-    
-    for cyrillic, latin in homoglyph_map.items():
-        text = text.replace(cyrillic, latin)
-    
     return text
 
 def _calculate_keyword_density(text: str, keywords: Set[str]) -> float:
@@ -208,12 +198,9 @@ def _calculate_keyword_density(text: str, keywords: Set[str]) -> float:
     Returns:
         Score between 0 and 1 indicating keyword density
     """
-    # Simple word splitting (can be improved)
+    # Simple word splitting
     words = text.split()
-    word_count = len(words)
-    
-    if word_count == 0:
-        return 0.0
+    word_count = max(1, len(words))  # Avoid division by zero
     
     # Count suspicious keyword occurrences
     keyword_count = 0
@@ -221,16 +208,11 @@ def _calculate_keyword_density(text: str, keywords: Set[str]) -> float:
     for word in words:
         # Clean word
         clean_word = re.sub(r'[^\w]', '', word)
-        if clean_word in keywords:
+        if clean_word.lower() in keywords:
             keyword_count += 1
     
-    # Calculate density and apply a logarithmic scaling
-    # This prevents very long prompts from diluting the score too much
-    import math
-    base_density = keyword_count / word_count
-    scaled_density = min(1.0, base_density * math.log10(max(10, word_count)))
-    
-    return scaled_density
+    # Calculate density
+    return min(1.0, keyword_count / word_count * 3)  # Multiply by 3 to make it more sensitive
 
 def _check_for_techniques(text: str) -> float:
     """
@@ -245,15 +227,9 @@ def _check_for_techniques(text: str) -> float:
     score = 0.0
     
     # Check for character-by-character spelling of keywords
-    spelled_out_keywords = ["i g n o r e", "d i s r e g a r d", "b y p a s s", "j a i l b r e a k"]
+    spelled_out_keywords = ["i g n o r e", "d i s r e g a r d", "b y p a s s", "j a i l b r e a k", "f o r g e"]
     for keyword in spelled_out_keywords:
-        if keyword in text:
-            score += 0.5
-    
-    # Check for reversed instructions
-    reversed_keywords = ["erongi", "drageriad", "ssapyb"]  # ignore, disregard, bypass spelled backwards
-    for keyword in reversed_keywords:
-        if keyword in text:
+        if keyword in text.lower():
             score += 0.5
     
     # Check for excessive use of special characters (potential obfuscation)
@@ -261,54 +237,8 @@ def _check_for_techniques(text: str) -> float:
     if special_char_ratio > 0.1:  # More than 10% special characters
         score += min(0.3, special_char_ratio)
     
-    # Check for excessive repetition
-    repetition_score = _check_repetition(text)
-    score += repetition_score * 0.3
-    
-    # Check for structured delimiters that might be trying to mimic system prompts
-    delimiter_pairs = [
-        (r"<|", r"|>"),
-        (r"\[", r"\]"),
-        (r"\{", r"\}"),
-        (r"<", r">"),
-        (r"```", r"```"),
-    ]
-    
-    for start, end in delimiter_pairs:
-        if re.search(f"{start}[^{end}]{20,}{end}", text):
-            score += 0.3
-    
     # Normalize score to 0-1 range
     return min(1.0, score)
-
-def _check_repetition(text: str) -> float:
-    """
-    Check for suspicious repetition in text.
-    
-    Args:
-        text: Text to analyze
-        
-    Returns:
-        Score between 0 and 1 indicating repetition level
-    """
-    # Check for repeated phrases (potential for instruction hammering)
-    phrases = re.findall(r'\b(\w+\s+\w+\s+\w+)\b', text)
-    if not phrases:
-        return 0.0
-    
-    phrase_counts = {}
-    for phrase in phrases:
-        if phrase in phrase_counts:
-            phrase_counts[phrase] += 1
-        else:
-            phrase_counts[phrase] = 1
-    
-    max_repetitions = max(phrase_counts.values()) if phrase_counts else 0
-    
-    # Normalize score
-    repetition_score = min(1.0, max_repetitions / 10)  # 10+ repetitions -> score of 1.0
-    
-    return repetition_score
 
 def sanitize_prompt(prompt: str) -> str:
     """
@@ -326,18 +256,6 @@ def sanitize_prompt(prompt: str) -> str:
     for pattern in JAILBREAK_PATTERNS:
         sanitized = re.sub(pattern, "[REMOVED]", sanitized, flags=re.IGNORECASE)
     
-    # Remove any instructions asking to ignore guidelines
-    ignore_patterns = [
-        r"(?i)(\b|^)ignore .*instructions",
-        r"(?i)(\b|^)disregard .*instructions",
-        r"(?i)(\b|^)bypass .*restrictions",
-        r"(?i)(\b|^)don'?t (follow|adhere to) .*guidelines"
-    ]
-    
-    for pattern in ignore_patterns:
-        sanitized = re.sub(pattern, "[REMOVED]", sanitized)
-    
-    # Return sanitized prompt
     return sanitized
 
 def get_jailbreak_warning() -> str:
@@ -367,7 +285,7 @@ def log_jailbreak_attempt(prompt: str, score: float, matched_pattern: Optional[s
     """
     # Create structured log entry
     log_entry = {
-        "timestamp": _get_current_timestamp(),
+        "timestamp": datetime.utcnow().isoformat(),
         "event_type": "jailbreak_attempt",
         "confidence_score": score,
         "matched_pattern": matched_pattern,
@@ -378,155 +296,7 @@ def log_jailbreak_attempt(prompt: str, score: float, matched_pattern: Optional[s
     
     # Log as JSON for easy parsing
     logger.warning(f"SECURITY_ALERT: Jailbreak attempt - {json.dumps(log_entry)}")
-    
-    # Implement additional logging to security monitoring systems here
-    # For example, sending to SIEM or security monitoring service
-    _send_security_alert(log_entry)
 
-def _send_security_alert(log_entry: Dict[str, Any]):
-    """
-    Send security alert to monitoring systems.
-    
-    Args:
-        log_entry: The security event to log
-    """
-    # This is a placeholder for integration with security monitoring
-    # In a production system, this might send to:
-    # - SIEM system
-    # - Security operations center
-    # - Cloud security monitoring
-    # - Administrator alerts
-    pass
-
-def _get_current_timestamp() -> str:
-    """
-    Get the current timestamp in ISO 8601 format.
-    
-    Returns:
-        Current timestamp string
-    """
-    from datetime import datetime
-    return datetime.utcnow().isoformat()
-
-def apply_prompt_quotas(user_id: str) -> bool:
-    """
-    Apply rate limiting to prevent repeated jailbreak attempts.
-    
-    Args:
-        user_id: The ID of the user to check
-        
-    Returns:
-        True if user is allowed to proceed, False if rate limited
-    """
-    # This is a placeholder for a more sophisticated rate limiting system
-    # In a production system, this would check for:
-    # - Number of recent jailbreak attempts
-    # - Overall request frequency
-    # - User risk score
-    
-    # For now, always return True
-    return True
-
-def create_safe_prompt_context(original_prompt: str) -> Dict[str, Any]:
-    """
-    Create a safe context for processing prompts with enhanced security.
-    
-    Args:
-        original_prompt: Original user prompt
-        
-    Returns:
-        Context dictionary with security information
-    """
-    # Check if prompt appears to be a jailbreak attempt
-    is_jailbreak, score, pattern = check_jailbreak_attempt(original_prompt)
-    
-    # Prepare sanitized version of the prompt
-    sanitized_prompt = original_prompt
-    if is_jailbreak:
-        sanitized_prompt = sanitize_prompt(original_prompt)
-    
-    # Create context dictionary
-    context = {
-        "original_prompt": original_prompt,
-        "sanitized_prompt": sanitized_prompt,
-        "is_jailbreak_attempt": is_jailbreak,
-        "jailbreak_confidence": score,
-        "matched_pattern": pattern,
-        "timestamp": _get_current_timestamp(),
-        "max_reasoning_iterations": MAX_REASONING_ITERATIONS  # Limit reasoning to prevent exploitation
-    }
-    
-    return context
-
-def detect_multi_persona_manipulation(prompt: str) -> bool:
-    """
-    Detect attempts to make the AI respond as multiple personas to bypass restrictions.
-    
-    Args:
-        prompt: The user prompt to check
-        
-    Returns:
-        True if multi-persona manipulation is detected
-    """
-    patterns = [
-        r"(?i)\brespond as (if you were|though you are) (two|multiple|several|[2-9]) (different|distinct|separate) (models|assistants|AIs|entities)",
-        r"(?i)\balternate between (two|multiple|several|[2-9]) (different|distinct|separate) (models|assistants|AIs|entities|personalities|perspectives)",
-        r"(?i)\b(pretend|imagine) you are (both|all of the following|several different)"
-    ]
-    
-    for pattern in patterns:
-        if re.search(pattern, prompt):
-            return True
-    
-    return False
-
-def detect_continuation_manipulation(prompt: str) -> bool:
-    """
-    Detect attempts to make the AI continue a prompt that contains jailbreak instructions.
-    
-    Args:
-        prompt: The user prompt to check
-        
-    Returns:
-        True if continuation manipulation is detected
-    """
-    patterns = [
-        r"(?i)\bI'll (start|begin) a sentence and you (finish|complete|continue) it:",
-        r"(?i)\bcontinue (this|the following) (text|story|narrative|sequence)",
-        r"(?i)\bcomplete (this|the following) (paragraph|text|narrative)",
-        r"(?i)\bwrite what comes (next|after)"
-    ]
-    
-    for pattern in patterns:
-        if re.search(pattern, prompt):
-            return True
-    
-    return False
-
-def detect_language_manipulation(prompt: str) -> bool:
-    """
-    Detect attempts to use other languages to mask jailbreak instructions.
-    
-    Args:
-        prompt: The user prompt to check
-        
-    Returns:
-        True if language manipulation is detected
-    """
-    # This is a simplified implementation
-    # A more robust solution would use language detection libraries
-    
-    # Check for non-English text followed by suspicious keywords
-    non_english_followed_by_keyword = re.search(
-        r'[^\x00-\x7F]{10,}.*\b(ignore|bypass|jailbreak|disregard)\b', 
-        prompt, 
-        re.IGNORECASE
-    )
-    
-    if non_english_followed_by_keyword:
-        return True
-    
-    return False
 
 class PromptSecurityFilter:
     """
@@ -564,43 +334,25 @@ class PromptSecurityFilter:
         # Check for jailbreak attempt
         is_jailbreak, score, pattern = check_jailbreak_attempt(prompt)
         
-        # Apply additional checks for specific techniques
-        multi_persona = detect_multi_persona_manipulation(prompt)
-        continuation = detect_continuation_manipulation(prompt)
-        language_manip = detect_language_manipulation(prompt)
-        
-        # Combine results
-        combined_risk = score
-        if multi_persona:
-            combined_risk = max(combined_risk, 0.7)
-        if continuation:
-            combined_risk = max(combined_risk, 0.6)
-        if language_manip:
-            combined_risk = max(combined_risk, 0.7)
-        
         # Determine if prompt should be rejected based on threshold
-        should_reject = combined_risk >= self.threshold
+        should_reject = is_jailbreak or score >= self.threshold
         
         if should_reject:
             # Log the attempt
-            log_jailbreak_attempt(prompt, combined_risk, pattern, user_id)
+            log_jailbreak_attempt(prompt, score, pattern, user_id)
             
-            # Check rate limits
-            rate_limited = not apply_prompt_quotas(user_id or "anonymous")
-            
-            # Prepare result
+            # Prepare rejection result
             return {
                 "prompt": prompt,
                 "is_allowed": False,
-                "risk_score": combined_risk,
+                "risk_score": score,
                 "rejection_reason": "Security policy violation",
-                "rate_limited": rate_limited,
                 "security_advice": get_jailbreak_warning()
             }
         else:
             # Prompt is allowed, perform sanitization if needed
             sanitized_prompt = prompt
-            needs_sanitization = combined_risk > (self.threshold / 2)
+            needs_sanitization = score > (self.threshold / 2)
             
             if needs_sanitization:
                 sanitized_prompt = sanitize_prompt(prompt)
@@ -609,7 +361,7 @@ class PromptSecurityFilter:
                 "prompt": sanitized_prompt,
                 "original_prompt": prompt if needs_sanitization else None,
                 "is_allowed": True,
-                "risk_score": combined_risk,
+                "risk_score": score,
                 "was_sanitized": needs_sanitization
             }
 
@@ -620,12 +372,4 @@ def get_default_security_filter() -> PromptSecurityFilter:
     Returns:
         Configured security filter
     """
-    # Read security level from environment
-    security_level = os.environ.get("SECURITY_LEVEL", "medium").lower()
-    
-    # Validate and default to medium if invalid
-    if security_level not in ["low", "medium", "high"]:
-        security_level = "medium"
-    
-    # Create and return filter
-    return PromptSecurityFilter(security_level)
+    return PromptSecurityFilter("medium")

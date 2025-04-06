@@ -253,7 +253,7 @@ class CustomerServiceAgent(BaseAgent):
             
             # Fallback to generic response
             return {
-                "application_id": application_id,
+                "application_id": input_data.get("application_id"),
                 "request_type": "customer_inquiry",
                 "success": False,
                 "inquiry": inquiry_text,
