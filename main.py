@@ -14,7 +14,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://copilotstudio.microsoft.com", 
-        "https://ispring.azurewebsites.net"
+        "https://ispring.azurewebsites.net",
         "https://surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net"
     ],  # Replace with specific Copilot Studio domain in production
     allow_credentials=True,
