@@ -112,6 +112,23 @@ class ReasoningAgent(BaseCollaborativeAgent):
         self.reasoning_capabilities = capabilities or []
         self.reasoning_history = []
     
+    async def answer_customer_inquiry(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Handle customer inquiries with a generic response.
+        
+        Args:
+            context: Context of the inquiry
+            
+        Returns:
+            Dict with response details
+        """
+        return {
+            "response": "Thank you for your inquiry. Our team is reviewing your application and will provide an update soon.",
+            "requires_human_follow_up": True
+        }
+
+
+
     async def reason_about_income_document(self, document_content: Any, initial_extraction: Dict[str, Any]) -> Dict[str, Any]:
         """
         Async method to reason about income documents

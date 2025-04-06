@@ -45,49 +45,6 @@ class OrchestratorAgent(BaseAgent):
         
         self.logger.info("Orchestrator agent fully initialized")
     
-
-
-    async def _process_new_application(
-        self, 
-        applicant_data: Dict[str, Any], 
-        loan_details: Dict[str, Any], 
-        property_info: Dict[str, Any], 
-        documents: Optional[List[Dict[str, Any]]] = None
-    ) -> Dict[str, Any]:
-        """
-        Process a new mortgage application with restructured input.
-        
-        Args:
-            applicant_data: Applicant information
-            loan_details: Loan details
-            property_info: Property information
-            documents: Optional list of documents
-            
-        Returns:
-            Dict containing processing results
-        """
-        # Generate unique application ID if not provided
-        application_id = f"APP-{datetime.now().strftime('%Y%m%d')}-{applicant_data.get('name', 'UNKNOWN').split()[-1].upper()}"
-        
-        # Prepare input data for existing processing method
-        input_data = {
-            "action": "process_application",
-            "application_id": application_id,
-            "application_data": {
-                "applicant": applicant_data,
-                "loan": loan_details,
-                "property": property_info
-            }
-        }
-        
-        # Add documents if provided
-        if documents:
-            input_data["documents"] = documents
-        
-        # Use existing process method
-        return await self.process(input_data)
-
-
     async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process a mortgage application through the entire pipeline.
@@ -107,17 +64,8 @@ class OrchestratorAgent(BaseAgent):
         action = input_data.get("action", "process_application")
         
         # Route to appropriate handler based on action
-
         if action == "process_application":
-            # Extract necessary data for new application processing
-            application_data = input_data.get("application_data", {})
-            applicant_data = application_data.get("applicant", {})
-            loan_details = application_data.get("loan", {})
-            property_info = application_data.get("property", {})
-            documents = input_data.get("documents", [])
-
-
-            return await self._process_new_application(applicant_data, loan_details, property_info, documents)
+            return await self._process_new_application(input_data)
         elif action == "handle_customer_inquiry":
             return await self._handle_customer_inquiry(input_data)
         elif action == "update_application":
@@ -126,7 +74,7 @@ class OrchestratorAgent(BaseAgent):
             raise ValueError(f"Unknown action requested: {action}")
     
 
-    async def _process_new_application(self, applicant_data, loan_details, property_info, documents):
+    async def _process_new_application(self, applicant_data, loan_details, property_info):
         """
         Process a new mortgage application through the entire pipeline.
         
