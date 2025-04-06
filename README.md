@@ -1,242 +1,111 @@
-# Mortgage Lending Assistant MVP
+# Application configuration
+APP_ENV=development  # development, testing, production
+LOG_LEVEL=INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+PORT=8000
 
-An intelligent, agentic AI approach to mortgage lending that demonstrates clear advantages over traditional solutions.
+# Azure OpenAI Service
+AZURE_OPENAI_API_KEY=5kB2wiDU0lB29j3qXJkekOherOEDiH0D76TMUC0vEX1IuXSB03dvJQQJ99BCACYeBjFXJ3w3AAABACOGPtcd
+AZURE_OPENAI_ENDPOINT=https://surajit-openai.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2023-12-01-preview
+AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-ada-002
 
-## Project Overview
+# Azure Document Intelligence
+AZURE_DOCUMENT_INTELLIGENCE_KEY=8362ioYsQarAdgEl5DhTFcPGDdwee1sxEoIzGH1QaatnzJDOBfj0JQQJ99BCACYeBjFXJ3w3AAALACOGIR1c
+AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT=https://mvp-document-intelligence.cognitiveservices.azure.com/
 
-The Mortgage Lending Assistant is an advanced AI solution designed to streamline the mortgage application process using a multi-agent architecture. It addresses the following pain points in traditional mortgage lending:
+# Azure Cosmos DB
+COSMOS_URI=https://surajit-cosmosdb.documents.azure.com:443/
+COSMOS_KEY=CnL0s6Pgwof0ecRoxZO1VF4O5QPCNSYCY48VMm9Qz2INUoTYm9E87REZX5bgZ0vDKl3GRySaEW0VACDbbo3xIA==
+COSMOS_DATABASE=MortgageLendingDB
+COSMOS_CONTAINER_APPLICATIONS=Applications
+COSMOS_CONTAINER_DOCUMENTS=Documents
+COSMOS_CONTAINER_AUDIT=AuditLog
 
-- Lengthy approval processes (45-60 days)
-- High processing costs ($11,400/loan)
-- Inconsistent decision-making
-- Customer frustration
-- 12-15% error rates
+# Azure Blob Storage
+AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=mortgagelendingmvp;AccountKey=wbjt8hdx5wTyDlrKqY0i7n00YJ/ssSNWgqiuzp4MTSNAhhA1Y5zhm0xf6p1qjzfiOSanD31VXlY1+AStLGh5VQ==;EndpointSuffix=core.windows.net
+AZURE_STORAGE_ACCOUNT=mortgagelendingmvp
+AZURE_STORAGE_KEY=wbjt8hdx5wTyDlrKqY0i7n00YJ/ssSNWgqiuzp4MTSNAhhA1Y5zhm0xf6p1qjzfiOSanD31VXlY1+AStLGh5VQ==
+AZURE_STORAGE_CONTAINER=mortgage-documents
 
-Our solution leverages Azure technologies and AI agents to deliver:
-- 79% cost reduction
-- 85% faster processing
-- 90% decision accuracy
+# Security settings
+SECRET_KEY=15bc6b55b44813882cefc28dba6d3cdc24d6a38a1bb0e1b34b342a06ff1f667b
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+PII_DETECTION_THRESHOLD=0.8
+ENABLE_JAILBREAK_DETECTION=true
+JAILBREAK_THRESHOLD=0.65
+RATE_LIMIT_REQUESTS_PER_MINUTE=100
+MAX_REQUEST_BODY_SIZE=10485760
+ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
+SECURITY_LEVEL=medium
 
-## Value Proposition
 
-Once implemented, the Mortgage Lending AI Assistant will drastically reduce costs, accelerate processing times, and significantly improve decision accuracy, transforming the lending experience for customers and lenders alike.
 
-## System Architecture
 
-The system uses a coordinated multi-agent architecture:
+# Copilot Studio
+# Copilot Studio Configuration
+COPILOT_STUDIO_TOKEN_ENDPOINT=https://default94e1538a3b464d3fb78c1f1613e4b6.a2.environment.api.powerplatform.com/powervirtualagents/botsbyschema/crf19_mortgageLendingAssistant/directline/token?api-version=2022-03-01-preview
+COPILOT_STUDIO_API_KEY=SKntTUITIGEYYhliamGao9jJZGhkY2kI73mCBLp4oL7M71j59Y0YJQQJ99BCAC5T7U2AArohAAABAZBSAYQp.9NrQK5Qj2AmwuIpyvyhOGTygP0RbNGyM4qYupktNx573Uka5z4l8JQQJ99BCAC5T7U2AArohAAABAZBS2pj3
+COPILOT_STUDIO_BOT_ID=7b832d0c-a98c-4df1-be62-0b131ad44e3a
+COPILOT_STUDIO_TENANT_ID=94e1538a-3b46-4d3f-b78c-1f1613e4b6a2
 
-1. **Orchestrator Agent**: Coordinates workflow and communications between specialized agents
-2. **Document Analysis Agent**: Processes and analyzes mortgage-related documents
-3. **Underwriting Agent**: Evaluates loan applications based on financial criteria
-4. **Compliance Agent**: Ensures applications meet regulatory requirements
-5. **Customer Service Agent**: Handles customer-facing interactions and explanations
+# Monitoring
+ENABLE_TELEMETRY=true
+OPENTELEMETRY_ENDPOINT=http://localhost:4317
 
-## Technologies Used
+# Agent Configuration
+MAX_REASONING_ITERATIONS=5
+CONFIDENCE_THRESHOLD=0.7
+DEFAULT_AGENT_TEMPERATURE=0.2
 
-- **Azure OpenAI**: Powers AI reasoning and natural language processing capabilities
-- **Semantic Kernel**: Provides framework for AI orchestration
-- **AutoGen**: Enables multi-agent collaboration and reasoning
-- **Azure Document Intelligence**: Extracts information from documents
-- **Azure Cosmos DB**: Stores application data
-- **Azure Blob Storage**: Manages document storage
-- **FastAPI**: Provides REST API endpoints for integration
+# Workflow settings
+DOCUMENT_REQUIRED_TYPES=income_verification,credit_report,property_appraisal
+COMPLIANCE_RULES_FILE=compliance_rules.json
 
-## Project Structure
+# Performance & Security Enhancements
+REQUEST_TIMEOUT=30
+MAX_CONNECTIONS=100
+RATE_LIMIT_REQUESTS_PER_MINUTE=100
+MAX_REQUEST_BODY_SIZE=10485760  # 10MB
+ALLOWED_ORIGINS=https://your-frontend-domain.com,http://localhost:3000
 
-```
-mortgage-lending-mvp/
-│
-├── src/                              # Source code directory
-│   ├── __init__.py
-│   │
-│   ├── agents/                       # Agent implementations
-│   │   ├── __init__.py
-│   │   ├── base_agent.py             # Base class for all agents
-│   │   ├── orchestrator.py           # Orchestrator agent
-│   │   ├── document_agent.py         # Document analysis agent
-│   │   ├── underwriting_agent.py     # Underwriting decision agent
-│   │   ├── compliance_agent.py       # Regulatory compliance agent
-│   │   └── customer_agent.py         # Customer service agent
-│   │
-│   ├── autogen/                      # AutoGen integration
-│   │   ├── __init__.py
-│   │   ├── agent_factory.py          # Creates AutoGen agents
-│   │   ├── reasoning_agents.py       # Specialized reasoning agents
-│   │   ├── conversation_manager.py   # Manages agent conversations
-│   │   └── collaboration/            # Collaboration components
-│   │       ├── __init__.py
-│   │       ├── manager.py            # Collaboration manager
-│   │       ├── agent.py              # Collaborative agent interface
-│   │       ├── selection.py          # Dynamic agent selection
-│   │       ├── feedback.py           # Feedback loops
-│   │       └── metrics.py            # Collaboration metrics
-│   │
-│   ├── semantic_kernel/              # Semantic Kernel integration
-│   │   ├── __init__.py
-│   │   ├── kernel_setup.py           # SK initialization
-│   │   ├── plugins/                  # Semantic Kernel plugins
-│   │   │   ├── __init__.py
-│   │   │   ├── document_plugin/      # Document analysis skills
-│   │   │   ├── underwriting_plugin/  # Underwriting skills
-│   │   │   ├── compliance_plugin/    # Compliance checking skills
-│   │   │   └── customer_plugin/      # Customer interaction skills
-│   │   └── prompts/                  # Prompt templates
-│   │
-│   ├── copilot/                      # Copilot Studio integration
-│   │   ├── __init__.py
-│   │   ├── actions/                  # Custom actions for Copilot
-│   │   │   ├── __init__.py
-│   │   │   ├── application_actions.py
-│   │   │   └── document_actions.py
-│   │   ├── conversation_flows/       # Conversation definitions
-│   │   └── entity_mappings.py        # Entity recognition config
-│   │
-│   ├── data/                         # Data handling
-│   │   ├── __init__.py
-│   │   ├── models.py                 # Data models
-│   │   ├── cosmos_manager.py         # Cosmos DB integration
-│   │   ├── blob_storage.py           # Blob storage for documents
-│   │   └── mock_data_generator.py    # Test data generation
-│   │
-│   ├── security/                     # Security components
-│   │   ├── __init__.py
-│   │   ├── validation.py             # Input validation
-│   │   ├── pii_detector.py           # PII detection & handling
-│   │   ├── access_control.py         # Agent access control
-│   │   └── audit_logger.py           # Security logging
-│   │
-│   ├── workflow/                     # Workflow management
-│   │   ├── __init__.py
-│   │   ├── state_manager.py          # Application state tracking
-│   │   ├── task_router.py            # Routes tasks to agents
-│   │   ├── decision_tracker.py       # Tracks decision process
-│   │   ├── workflow_manager.py       # Manages application workflow
-│   │   ├── orchestration_manager.py  # High-level orchestration
-│   │   ├── error_recovery.py         # Error handling mechanisms
-│   │   └── monitoring.py             # Logging and monitoring
-│   │
-│   ├── utils/                        # Utility functions
-│   │   ├── __init__.py
-│   │   ├── config.py                 # Configuration management
-│   │   ├── exceptions.py             # Custom exceptions
-│   │   └── logging_utils.py          # Logging utilities
-│   │
-│   └── api/                          # API layer
-│       ├── __init__.py
-│       ├── app.py                    # FastAPI application
-│       ├── endpoints.py              # REST API endpoints
-│       ├── middleware.py             # API middleware
-│       └── schemas.py                # API request/response schemas
-│
-├── config/                           # Configuration files
-│   ├── app_config.json               # Application configuration
-│   ├── agent_config.json             # Agent configuration
-│   ├── security_config.json          # Security configuration
-│   └── logging_config.json           # Logging configuration
-│
-├── tests/                            # Test suite
-│   ├── __init__.py
-│   ├── mock_data/                    # Test data
-│   ├── unit/                         # Unit tests
-│   └── integration/                  # Integration tests
-│
-├── docs/                             # Documentation
-│   ├── architecture.md               # Architecture overview
-│   ├── agent_design.md               # Agent design details
-│   ├── security.md                   # Security measures
-│   ├── api_reference.md              # API documentation
-│   ├── copilot_integration.md        # Copilot Studio integration guide
-│   └── demo_script.md                # Demonstration script
-│
-├── scripts/                          # Utility scripts
-│   ├── setup_azure.py                # Azure resource setup
-│   ├── setup_env.py                  # Environment setup
-│   ├── test_env.py                   # Environment testing
-│   ├── generate_test_data.py         # Generate test data
-│   └── run_demo.py                   # Run demonstration
-│
-├── deployment/                       # Deployment configuration
-│   ├── copilot_studio/               # Copilot Studio export files
-│   ├── azure/                        # Azure deployment templates
-│   └── docker/                       # Docker configuration
-│
-├── mock_data/                        # Mock data generators
-│   ├── __init__.py
-│   ├── generators/                   # Data generator modules
-│   └── templates/                    # Templates for mock data
-│
-├── .env.example                      # Example environment variables
-├── .gitignore                        # Git ignore file
-├── requirements.txt                  # Project dependencies
-├── setup.py                          # Package setup script
-└── README.md                         # Project overview (this file)
-```
+# Advanced Logging
+LOG_FILE_PATH=/var/log/mortgage-lending-mvp/app.log
+LOG_MAX_BYTES=10485760  # 10MB
+LOG_BACKUP_COUNT=5
 
-## Getting Started
+# Error Handling
+RETRY_ATTEMPTS=3
+RETRY_DELAY=2  # seconds
 
-### Prerequisites
+# Existing configurations remain the same
 
-- Python 3.8+
-- Azure subscription with OpenAI, Cosmos DB, and Blob Storage resources
-- Copilot Studio environment (for chatbot integration)
+# Security Enhancements
+CORS_ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
+MAX_REQUEST_BODY_SIZE=10485760  # 10MB in bytes
+RATE_LIMIT_REQUESTS_PER_MINUTE=100
+RATE_LIMIT_CONCURRENT_CONNECTIONS=50
 
-### Installation
+# Logging Enhancements
+LOG_FILE_PATH=logs/mortgage_lending_mvp.log
+LOG_MAX_FILE_SIZE=10485760  # 10MB
+LOG_BACKUP_COUNT=5
+LOG_ROTATION_INTERVAL=daily
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/mortgage-lending-mvp.git
-   cd mortgage-lending-mvp
-   ```
+# Performance Configurations
+CONNECTION_POOL_MIN_CONNECTIONS=5
+CONNECTION_POOL_MAX_CONNECTIONS=20
+REQUEST_TIMEOUT=30  # seconds
+API_REQUEST_TIMEOUT=10  # seconds for external API calls
+RETRY_ATTEMPTS=3
+RETRY_DELAY=2  # seconds between retry attempts
 
-2. Create a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+# Database Connection Pooling
+DB_POOL_MIN_CONNECTIONS=5
+DB_POOL_MAX_CONNECTIONS=20
+DB_CONNECTION_TIMEOUT=10  # seconds
 
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-
-4. Create an environment file:
-   ```
-   cp .env.example .env
-   ```
-
-5. Update the `.env` file with your Azure service credentials.
-
-### Running the Application
-
-1. Start the API server:
-   ```
-   python -m src.api.app
-   ```
-
-2. Test the application:
-   ```
-   python scripts/run_demo.py
-   ```
-
-## Key Features
-
-1. **Intelligent Document Analysis**: Automatically extracts and validates information from mortgage documents
-2. **AI-Driven Underwriting**: Evaluates applications using financial ratios and advanced reasoning
-3. **Regulatory Compliance**: Ensures adherence to lending regulations and standards
-4. **Personalized Customer Interaction**: Generates clear explanations and guidance for applicants
-5. **Secure Information Handling**: Protects sensitive customer data with PII detection and handling
-
-## Security Considerations
-
-- Input validation for all data entry points
-- PII detection and secure handling
-- Access control between agents
-- Authentication for Copilot Studio interactions
-- Audit logging of all decision points
-- Jailbreak prevention in AI prompts
-
-## Acknowledgments
-
-- Azure OpenAI team
-- Semantic Kernel contributors
-- AutoGen framework developers
+# External Service Timeouts
+AZURE_OPENAI_TIMEOUT=30
+DOCUMENT_INTELLIGENCE_TIMEOUT=20
