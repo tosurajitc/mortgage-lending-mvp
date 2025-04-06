@@ -27,16 +27,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
         
-      # Add this step to make startup.sh executable
-      - name: Make startup script executable
+      - name: Verify Python application
         run: |
-          if [ -f "startup.sh" ]; then
-            chmod +x startup.sh
-            echo "Made startup.sh executable"
-          else
-            echo "startup.sh not found"
-            ls -la  # List files to help diagnose
-          fi
+          echo "Verifying Python application..."
+          python -c "import importlib.util; importlib.util.find_spec('main') or exit(1)"
+          echo "Application verified successfully"
       
       - name: List files and create deployment package
         run: |
@@ -89,3 +84,8 @@ jobs:
           app-name: 'surajit-hackathon'
           slot-name: 'Production'
           package: deployment_package.zip
+      
+      - name: 'Verify deployment status'
+        run: |
+          echo "Deployment completed. URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}"
+          echo "Note: Your app startup is configured in Azure Portal as 'python -m uvicorn main:app --host 0.0.0.0 --port 8000'"
