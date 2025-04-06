@@ -1,111 +1,147 @@
-# Application configuration
-APP_ENV=development  # development, testing, production
-LOG_LEVEL=INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
-PORT=8000
+# Mortgage Lending Assistant
 
-# Azure OpenAI Service
-AZURE_OPENAI_API_KEY=5kB2wiDU0lB29j3qXJkekOherOEDiH0D76TMUC0vEX1IuXSB03dvJQQJ99BCACYeBjFXJ3w3AAABACOGPtcd
-AZURE_OPENAI_ENDPOINT=https://surajit-openai.openai.azure.com/
-AZURE_OPENAI_API_VERSION=2023-12-01-preview
-AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4
-AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-ada-002
+A sophisticated AI-powered system designed to streamline and automate the residential home mortgage lending process, making it faster, more accurate, and customer-friendly.
 
-# Azure Document Intelligence
-AZURE_DOCUMENT_INTELLIGENCE_KEY=8362ioYsQarAdgEl5DhTFcPGDdwee1sxEoIzGH1QaatnzJDOBfj0JQQJ99BCACYeBjFXJ3w3AAALACOGIR1c
-AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT=https://mvp-document-intelligence.cognitiveservices.azure.com/
+## Overview
 
-# Azure Cosmos DB
-COSMOS_URI=https://surajit-cosmosdb.documents.azure.com:443/
-COSMOS_KEY=CnL0s6Pgwof0ecRoxZO1VF4O5QPCNSYCY48VMm9Qz2INUoTYm9E87REZX5bgZ0vDKl3GRySaEW0VACDbbo3xIA==
-COSMOS_DATABASE=MortgageLendingDB
-COSMOS_CONTAINER_APPLICATIONS=Applications
-COSMOS_CONTAINER_DOCUMENTS=Documents
-COSMOS_CONTAINER_AUDIT=AuditLog
+The Mortgage Lending Assistant addresses the challenges in traditional mortgage lending processes which are typically complex, time-consuming, and prone to human error. This system provides:
 
-# Azure Blob Storage
-AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=mortgagelendingmvp;AccountKey=wbjt8hdx5wTyDlrKqY0i7n00YJ/ssSNWgqiuzp4MTSNAhhA1Y5zhm0xf6p1qjzfiOSanD31VXlY1+AStLGh5VQ==;EndpointSuffix=core.windows.net
-AZURE_STORAGE_ACCOUNT=mortgagelendingmvp
-AZURE_STORAGE_KEY=wbjt8hdx5wTyDlrKqY0i7n00YJ/ssSNWgqiuzp4MTSNAhhA1Y5zhm0xf6p1qjzfiOSanD31VXlY1+AStLGh5VQ==
-AZURE_STORAGE_CONTAINER=mortgage-documents
+- Automated document processing and analysis
+- Intelligent underwriting decision support
+- Regulatory compliance verification
+- Customer-friendly explanations and guidance
 
-# Security settings
-SECRET_KEY=15bc6b55b44813882cefc28dba6d3cdc24d6a38a1bb0e1b34b342a06ff1f667b
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-PII_DETECTION_THRESHOLD=0.8
-ENABLE_JAILBREAK_DETECTION=true
-JAILBREAK_THRESHOLD=0.65
-RATE_LIMIT_REQUESTS_PER_MINUTE=100
-MAX_REQUEST_BODY_SIZE=10485760
-ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
-SECURITY_LEVEL=medium
+The solution is especially applicable for:
+- First-time homebuyers
+- Refinancing existing properties
+- Primary residence purchases
+- Secondary/vacation home financing
 
+## Architecture
 
+The system is built on a multi-agent architecture with specialized components:
 
+- **Document Analysis Agent**: Processes and extracts information from mortgage application documents
+- **Underwriting Agent**: Evaluates loan applications based on financial criteria
+- **Compliance Agent**: Ensures applications meet regulatory requirements
+- **Customer Service Agent**: Handles customer inquiries and generates explanations
+- **Orchestrator Agent**: Coordinates workflow between all specialized agents
 
-# Copilot Studio
-# Copilot Studio Configuration
-COPILOT_STUDIO_TOKEN_ENDPOINT=https://default94e1538a3b464d3fb78c1f1613e4b6.a2.environment.api.powerplatform.com/powervirtualagents/botsbyschema/crf19_mortgageLendingAssistant/directline/token?api-version=2022-03-01-preview
-COPILOT_STUDIO_API_KEY=SKntTUITIGEYYhliamGao9jJZGhkY2kI73mCBLp4oL7M71j59Y0YJQQJ99BCAC5T7U2AArohAAABAZBSAYQp.9NrQK5Qj2AmwuIpyvyhOGTygP0RbNGyM4qYupktNx573Uka5z4l8JQQJ99BCAC5T7U2AArohAAABAZBS2pj3
-COPILOT_STUDIO_BOT_ID=7b832d0c-a98c-4df1-be62-0b131ad44e3a
-COPILOT_STUDIO_TENANT_ID=94e1538a-3b46-4d3f-b78c-1f1613e4b6a2
+## Technology Stack
 
-# Monitoring
-ENABLE_TELEMETRY=true
-OPENTELEMETRY_ENDPOINT=http://localhost:4317
+- **Backend**: Python, FastAPI
+- **AI & ML**: Azure OpenAI Service, Azure Document Intelligence
+- **Data Storage**: Azure Cosmos DB, Azure Blob Storage
+- **Integration**: Microsoft Copilot Studio
+- **Deployment**: Azure App Service, AWS
 
-# Agent Configuration
-MAX_REASONING_ITERATIONS=5
-CONFIDENCE_THRESHOLD=0.7
-DEFAULT_AGENT_TEMPERATURE=0.2
+## Setup Instructions
 
-# Workflow settings
-DOCUMENT_REQUIRED_TYPES=income_verification,credit_report,property_appraisal
-COMPLIANCE_RULES_FILE=compliance_rules.json
+### Prerequisites
 
-# Performance & Security Enhancements
-REQUEST_TIMEOUT=30
-MAX_CONNECTIONS=100
-RATE_LIMIT_REQUESTS_PER_MINUTE=100
-MAX_REQUEST_BODY_SIZE=10485760  # 10MB
-ALLOWED_ORIGINS=https://your-frontend-domain.com,http://localhost:3000
+- Python 3.8 or higher
+- Azure subscription with access to:
+  - Azure OpenAI Service
+  - Azure Document Intelligence
+  - Azure Cosmos DB
+  - Azure Blob Storage
+- Microsoft Copilot Studio environment
 
-# Advanced Logging
-LOG_FILE_PATH=/var/log/mortgage-lending-mvp/app.log
-LOG_MAX_BYTES=10485760  # 10MB
-LOG_BACKUP_COUNT=5
+### Environment Setup
 
-# Error Handling
-RETRY_ATTEMPTS=3
-RETRY_DELAY=2  # seconds
+1. Clone the repository:
+   ```
+   git clone <repository-url>
+   cd mortgage-lending-assistant
+   ```
 
-# Existing configurations remain the same
+2. Create and activate a virtual environment:
+   ```
+   python -m venv .venv
+   
+   # Windows
+   .venv\Scripts\activate
+   
+   # macOS/Linux
+   source .venv/bin/activate
+   ```
 
-# Security Enhancements
-CORS_ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
-MAX_REQUEST_BODY_SIZE=10485760  # 10MB in bytes
-RATE_LIMIT_REQUESTS_PER_MINUTE=100
-RATE_LIMIT_CONCURRENT_CONNECTIONS=50
+3. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
-# Logging Enhancements
-LOG_FILE_PATH=logs/mortgage_lending_mvp.log
-LOG_MAX_FILE_SIZE=10485760  # 10MB
-LOG_BACKUP_COUNT=5
-LOG_ROTATION_INTERVAL=daily
+4. Create a `.env` file based on the provided template with your Azure credentials and configuration settings
 
-# Performance Configurations
-CONNECTION_POOL_MIN_CONNECTIONS=5
-CONNECTION_POOL_MAX_CONNECTIONS=20
-REQUEST_TIMEOUT=30  # seconds
-API_REQUEST_TIMEOUT=10  # seconds for external API calls
-RETRY_ATTEMPTS=3
-RETRY_DELAY=2  # seconds between retry attempts
+### Running Locally
 
-# Database Connection Pooling
-DB_POOL_MIN_CONNECTIONS=5
-DB_POOL_MAX_CONNECTIONS=20
-DB_CONNECTION_TIMEOUT=10  # seconds
+1. Start the FastAPI server:
+   ```
+   uvicorn main:app --reload
+   ```
 
-# External Service Timeouts
-AZURE_OPENAI_TIMEOUT=30
-DOCUMENT_INTELLIGENCE_TIMEOUT=20
+2. Access the API documentation at `http://localhost:8000/docs`
+
+### Deployment
+
+#### AWS Deployment
+
+1. Ensure your `requirements.txt` is up-to-date:
+   ```
+   pip freeze > requirements.txt
+   ```
+
+2. Configure CORS in your `main.py` file:
+   ```python
+   app.add_middleware(
+       CORSMiddleware,
+       allow_origins=[
+           "https://copilotstudio.microsoft.com",
+           "https://ispring.azurewebsites.net"
+           # Add any additional domains that will access your API
+       ],
+       allow_credentials=True,
+       allow_methods=["*"],
+       allow_headers=["*"],
+   )
+   ```
+
+3. Follow AWS deployment guidelines for FastAPI applications
+
+#### Azure Deployment
+
+The system includes integration with Azure App Service for web deployment.
+
+## API Endpoints
+
+### Core API Endpoints
+
+- `POST /api/applications/submit`: Submit a new mortgage application
+- `GET /api/applications/{application_id}/status`: Check application status
+- `POST /api/applications/{application_id}/documents/upload`: Upload documents
+- `POST /api/loan/recommendations`: Get loan type recommendations
+- `POST /api/applications/{application_id}/issues/resolve`: Resolve application issues
+- `POST /api/loan/eligibility`: Calculate loan eligibility
+
+### Copilot Studio Integration
+
+- `POST /copilot/process-input`: Process conversational input from Copilot Studio
+- `GET /copilot/test-connection`: Test endpoint for Copilot Studio integration
+- `POST /copilot/submit-application`: Submit application via Copilot Studio
+- `GET /copilot/application-status/{application_id}`: Check status via Copilot Studio
+
+## Security Considerations
+
+- All API endpoints are secured with token-based authentication
+- PII (Personally Identifiable Information) detection and protection
+- Rate limiting to prevent abuse
+- Input validation and sanitization
+- CORS configuration to restrict access to trusted domains
+
+## Contributors
+
+[Surajit Chatterjee]
+
+## Contact
+
+For support or inquiries, please contact [surajit.chatterjee@in.ibm.com]
