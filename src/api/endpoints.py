@@ -94,14 +94,57 @@ async def upload_documents(
     application_id: str,
     document_data: dict = Body(...)
 ):
-    """Minimal test endpoint"""
-    return {
-        "applicationId": application_id,
-        "uploadStatus": "SUCCESS",
-        "documentType": document_data.get("documentType", ""),
-        "message": "Success",
-        "output": ["Step 1", "Step 2"]  # Using "output" as specified in your action fields
-    }
+    """Upload documents with consistent data between nextSteps and output"""
+    try:
+        result = await document_actions.upload_document(
+            application_id=application_id,
+            document_type=document_data.get("documentType"),
+            document_year=document_data.get("documentYear"),
+            document_description=document_data.get("documentDescription"),
+            document_format=document_data.get("documentFormat", "PDF"),
+            document_content=document_data.get("documentContent", "")
+        )
+        
+        # Get next steps from the result
+        next_steps = result.get("next_steps", ["Document received successfully"])
+        
+        # Create a string version of next steps
+        next_steps_str = ", ".join(next_steps) if isinstance(next_steps, list) else str(next_steps)
+        
+        # Build the response
+        response = {
+            "applicationId": application_id,
+            "uploadStatus": "SUCCESS" if not result.get("error") else "FAILED",
+            "documentType": document_data.get("documentType", ""),
+            "message": result.get("message", "Document uploaded successfully"),
+            
+            # Include both fields for internal consistency
+            "nextSteps": next_steps,  # Keep original array format for API consistency
+            
+            # Try output as a string instead of an array for Copilot Studio
+            "output": next_steps_str
+        }
+        
+        # Log the complete response for debugging
+        logger.info(f"Returning response: {response}")
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error uploading document: {str(e)}", exc_info=True)
+        
+        error_response = {
+            "applicationId": application_id,
+            "uploadStatus": "FAILED",
+            "documentType": document_data.get("documentType", ""),
+            "message": f"Error: {str(e)}",
+            "nextSteps": [],
+            "output": "Error occurred during document upload"
+        }
+        
+        logger.info(f"Returning error response: {error_response}")
+        
+        return error_response
     
 # 4. Loan Type Recommendation
 @router.post("/loan/recommendations")
