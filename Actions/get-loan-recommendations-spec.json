@@ -1,0 +1,178 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Mortgage Lending Assistant API",
+      "description": "API for getting loan type recommendations based on applicant criteria",
+      "version": "0.1.0"
+    },
+    "host": "surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net",
+    "basePath": "/api",
+    "schemes": [
+      "https"
+    ],
+    "securityDefinitions": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "paths": {
+      "/loan/recommendations": {
+        "post": {
+          "summary": "Get loan type recommendations",
+          "description": "Endpoint to get personalized loan type recommendations based on applicant's financial profile",
+          "security": [
+            {
+              "ApiKeyAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "loan_criteria",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "annualIncome": {
+                    "type": "number",
+                    "description": "Applicant's annual income",
+                    "minimum": 0
+                  },
+                  "creditScoreRange": {
+                    "type": "string",
+                    "description": "Credit score range of the applicant",
+                    "enum": [
+                      "EXCELLENT",
+                      "GOOD",
+                      "FAIR",
+                      "POOR"
+                    ]
+                  },
+                  "downPaymentPercentage": {
+                    "type": "number",
+                    "description": "Percentage of down payment",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "propertyType": {
+                    "type": "string",
+                    "description": "Type of property",
+                    "enum": [
+                      "SINGLE_FAMILY",
+                      "MULTI_FAMILY",
+                      "CONDO",
+                      "TOWNHOUSE",
+                      "MANUFACTURED_HOME"
+                    ]
+                  },
+                  "homeOwnershipPlans": {
+                    "type": "string",
+                    "description": "Applicant's homeownership plans",
+                    "enum": [
+                      "FIRST_TIME_BUYER",
+                      "REFINANCING",
+                      "INVESTMENT_PROPERTY",
+                      "PRIMARY_RESIDENCE",
+                      "SECOND_HOME"
+                    ]
+                  },
+                  "militaryService": {
+                    "type": "boolean",
+                    "description": "Whether the applicant has military service"
+                  },
+                  "propertyLocation": {
+                    "type": "string",
+                    "description": "Location of the property (state or region)"
+                  },
+                  "financialPriority": {
+                    "type": "string",
+                    "description": "Applicant's primary financial goal",
+                    "enum": [
+                      "LOWEST_MONTHLY_PAYMENT",
+                      "SHORTEST_LOAN_TERM",
+                      "LOWEST_INTEREST_RATE",
+                      "MINIMAL_DOWN_PAYMENT"
+                    ]
+                  }
+                },
+                "required": [
+                  "annualIncome",
+                  "creditScoreRange",
+                  "downPaymentPercentage",
+                  "propertyType"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful loan recommendations retrieval",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recommendedLoanTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "loanType": {
+                          "type": "string",
+                          "description": "Type of recommended loan"
+                        },
+                        "suitabilityScore": {
+                          "type": "number",
+                          "description": "How well the loan matches the applicant's profile"
+                        }
+                      }
+                    }
+                  },
+                  "primaryRecommendation": {
+                    "type": "string",
+                    "description": "The most suitable loan type"
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "description": "Detailed explanation of recommendations"
+                  },
+                  "eligibility": {
+                    "type": "object",
+                    "description": "Detailed eligibility information",
+                    "properties": {
+                      "approvalProbability": {
+                        "type": "number",
+                        "description": "Estimated probability of loan approval"
+                      },
+                      "requiredDocuments": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "nextSteps": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Recommended next steps for the applicant"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request - Invalid input parameters"
+            },
+            "401": {
+              "description": "Unauthorized - Invalid API key"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    }
+  }

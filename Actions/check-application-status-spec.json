@@ -1,0 +1,151 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Mortgage Lending Application Status API",
+      "description": "API for checking mortgage application status",
+      "version": "1.0.0"
+    },
+    "host": "surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net",
+    "basePath": "/",
+    "schemes": [
+      "https"
+    ],
+    "paths": {
+      "/api/applications/{application_id}/status": {
+        "get": {
+          "summary": "Check Application Status",
+          "description": "Retrieve the current status of a mortgage application",
+          "operationId": "CheckApplicationStatus",
+          "parameters": [
+            {
+              "name": "application_id",
+              "in": "path",
+              "required": true,
+              "type": "string",
+              "description": "Unique identifier for the mortgage application"
+            },
+            {
+              "name": "applicant_name",
+              "in": "query",
+              "required": true,
+              "type": "string",
+              "description": "Name of the applicant for verification"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful application status retrieval",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "applicationId": {
+                    "type": "string",
+                    "description": "Unique identifier of the application"
+                  },
+                  "applicationStatus": {
+                    "type": "string",
+                    "description": "Current status of the application",
+                    "enum": [
+                      "INITIATED",
+                      "DRAFT",
+                      "SUBMITTED",
+                      "DOCUMENT_REVIEW",
+                      "DOCUMENTS_PROCESSED",
+                      "UNDERWRITING",
+                      "COMPLIANCE_REVIEW",
+                      "APPROVED",
+                      "REJECTED",
+                      "CANCELLED"
+                    ]
+                  },
+                  "currentStage": {
+                    "type": "string",
+                    "description": "Detailed current stage of the application"
+                  },
+                  "pendingItems": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of pending items or actions required"
+                  },
+                  "estimatedCompletion": {
+                    "type": "string",
+                    "description": "Estimated time for application completion"
+                  },
+                  "lastUpdated": {
+                    "type": "string",
+                    "description": "Timestamp of last application update"
+                  },
+                  "statusExplanation": {
+                    "type": "string",
+                    "description": "Detailed explanation of current application status"
+                  }
+                }
+              },
+              "examples": {
+                "application/json": {
+                  "applicationId": "APP-2024-0001",
+                  "applicationStatus": "UNDERWRITING",
+                  "currentStage": "Underwriting Review",
+                  "pendingItems": [
+                    "Verify employment documents",
+                    "Review credit report"
+                  ],
+                  "estimatedCompletion": "7-10 business days",
+                  "lastUpdated": "2024-04-07T14:30:00Z",
+                  "statusExplanation": "Your application is currently under review by our underwriting team."
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request - Invalid input parameters",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not Found - Application does not exist",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      }
+    },
+    "securityDefinitions": {
+      "bearerAuth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "JWT Bearer Token"
+      }
+    }
+  }

@@ -1,0 +1,142 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Mortgage Lending Assistant API",
+      "description": "API for resolving issues with a mortgage application",
+      "version": "0.1.0"
+    },
+    "host": "surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net",
+    "basePath": "/api",
+    "schemes": [
+      "https"
+    ],
+    "securityDefinitions": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "paths": {
+      "/applications/{application_id}/issues/resolve": {
+        "post": {
+          "summary": "Resolve issues with a mortgage application",
+          "description": "Endpoint to address and resolve specific issues in a mortgage application",
+          "security": [
+            {
+              "ApiKeyAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "application_id",
+              "in": "path",
+              "required": true,
+              "type": "string",
+              "description": "Unique identifier of the mortgage application"
+            },
+            {
+              "name": "issue_data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "issueType": {
+                    "type": "string",
+                    "description": "Type of issue to be resolved",
+                    "enum": [
+                      "MISSING_DOCUMENTS",
+                      "INCOME_VERIFICATION",
+                      "CREDIT_ISSUE",
+                      "PROPERTY_APPRAISAL",
+                      "EMPLOYMENT_VERIFICATION",
+                      "COMPLIANCE",
+                      "OTHER"
+                    ]
+                  },
+                  "issueDescription": {
+                    "type": "string",
+                    "description": "Detailed description of the issue",
+                    "minLength": 10,
+                    "maxLength": 500
+                  },
+                  "contactPreference": {
+                    "type": "string",
+                    "description": "Preferred method of communication",
+                    "enum": [
+                      "EMAIL",
+                      "PHONE",
+                      "SMS",
+                      "MAIL"
+                    ],
+                    "default": "EMAIL"
+                  },
+                  "urgencyLevel": {
+                    "type": "string",
+                    "description": "Urgency of the issue resolution",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH",
+                      "CRITICAL"
+                    ],
+                    "default": "MEDIUM"
+                  }
+                },
+                "required": [
+                  "issueType",
+                  "issueDescription"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully initiated issue resolution process",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "applicationId": {
+                    "type": "string",
+                    "description": "ID of the application"
+                  },
+                  "caseNumber": {
+                    "type": "string",
+                    "description": "Unique case number for tracking the issue"
+                  },
+                  "resolutionSteps": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Recommended steps to resolve the issue"
+                  },
+                  "estimatedResolutionTime": {
+                    "type": "string",
+                    "description": "Estimated time to resolve the issue"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Additional information or instructions"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request - Invalid input parameters"
+            },
+            "401": {
+              "description": "Unauthorized - Invalid API key"
+            },
+            "404": {
+              "description": "Not Found - Application ID does not exist"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    }
+  }
