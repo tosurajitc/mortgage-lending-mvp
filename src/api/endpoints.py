@@ -110,29 +110,30 @@ async def upload_documents(
             document_content=document_data.get("documentContent", "")
         )
         
+        # Return with both "nextSteps" and "output" fields, both using the same source
         return {
             "applicationId": application_id,
             "uploadStatus": "SUCCESS" if not result.get("error") else "FAILED",
             "documentType": document_data.get("documentType", ""),
             "message": result.get("message", "Document uploaded successfully"),
-            "nextSteps": result.get("next_steps", [])
+            "nextSteps": result.get("next_steps", []),  # Keep original approach
+            "output": result.get("next_steps", [])     # Same source, different field name
         }
     except Exception as e:
         logger.error(f"Error uploading document: {str(e)}", exc_info=True)
-        # Return a structured error response rather than raising an exception
-        # This makes debugging easier, especially when you can't see server logs
+        # Return a structured error response with both fields
         return JSONResponse(
-            status_code=500,
+            status_code=200,  # Return 200 so Copilot can see the response
             content={
-                "error": str(e),
-                "detail": getattr(e, "__dict__", {}),
-                "received_data": {
-                    "application_id": application_id,
-                    "document_type": document_data.get("documentType") if document_data else None
-                }
+                "applicationId": application_id,
+                "uploadStatus": "FAILED",
+                "documentType": document_data.get("documentType", ""),
+                "message": f"Error: {str(e)}",
+                "nextSteps": [],
+                "output": []
             }
         )
-
+    
 # 4. Loan Type Recommendation
 @router.post("/loan/recommendations")
 async def loan_type_recommendation(
