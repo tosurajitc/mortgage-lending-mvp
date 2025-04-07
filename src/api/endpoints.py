@@ -7,12 +7,8 @@ from fastapi import FastAPI, HTTPException, Body, APIRouter, Request
 from typing import Dict, Any, Optional
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi.responses import JSONResponse
-
-# Remove specific dependencies
-# from src.security.validation import validate_request
-# from src.security.access_control import check_permissions
 
 # Import from your existing architecture
 from src.copilot.actions.application_actions import ApplicationActions
@@ -102,6 +98,9 @@ async def upload_documents(
     try:
         logger.info(f"Received document upload request for application {application_id}")
         
+        # Add debug logging to see what's being received
+        logger.debug(f"Document data received: {document_data}")
+        
         result = await document_actions.upload_document(
             application_id=application_id,
             document_type=document_data.get("documentType"),
@@ -120,7 +119,19 @@ async def upload_documents(
         }
     except Exception as e:
         logger.error(f"Error uploading document: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        # Return a structured error response rather than raising an exception
+        # This makes debugging easier, especially when you can't see server logs
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": str(e),
+                "detail": getattr(e, "__dict__", {}),
+                "received_data": {
+                    "application_id": application_id,
+                    "document_type": document_data.get("documentType") if document_data else None
+                }
+            }
+        )
 
 # 4. Loan Type Recommendation
 @router.post("/loan/recommendations")
@@ -245,4 +256,4 @@ async def process_customer_inquiry(
 @router.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
+    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
