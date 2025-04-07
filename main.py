@@ -35,10 +35,6 @@ async def root():
         "status": "online"
     }
 
-# Optional: Health check endpoint
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
 
 # Optional: If you want to run the app directly (for development)
 if __name__ == "__main__":
