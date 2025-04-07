@@ -1,0 +1,117 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Mortgage Lending Assistant API",
+      "description": "API for uploading documents in mortgage application process",
+      "version": "0.1.0"
+    },
+    "host": "surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net",
+    "basePath": "/api",
+    "schemes": [
+      "https"
+    ],
+    "paths": {
+      "/applications/{application_id}/documents/upload": {
+        "post": {
+          "summary": "Upload documents for a mortgage application",
+          "description": "Endpoint to upload documents associated with a specific mortgage application",
+          "parameters": [
+            {
+              "name": "application_id",
+              "in": "path",
+              "required": true,
+              "type": "string",
+              "description": "Unique identifier of the mortgage application"
+            },
+            {
+              "name": "document_data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "documentType": {
+                    "type": "string",
+                    "description": "Type of document being uploaded",
+                    "enum": [
+                      "INCOME_VERIFICATION",
+                      "CREDIT_REPORT",
+                      "PROPERTY_APPRAISAL",
+                      "BANK_STATEMENT",
+                      "ID_VERIFICATION",
+                      "TAX_RETURN",
+                      "OTHER"
+                    ]
+                  },
+                  "documentYear": {
+                    "type": "string",
+                    "description": "Year of the document (optional)"
+                  },
+                  "documentDescription": {
+                    "type": "string",
+                    "description": "Additional description of the document (optional)"
+                  },
+                  "documentFormat": {
+                    "type": "string",
+                    "description": "Format of the document",
+                    "default": "PDF",
+                    "enum": ["PDF", "JPEG", "PNG", "DOCX"]
+                  },
+                  "documentContent": {
+                    "type": "string",
+                    "description": "Base64 encoded document content"
+                  }
+                },
+                "required": ["documentType", "documentFormat"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Document uploaded successfully",
+              "schema": {
+                "type": "object",
+                "required": ["applicationId", "uploadStatus", "documentType", "message", "nextSteps"],
+                "properties": {
+                  "applicationId": {
+                    "type": "string",
+                    "description": "ID of the application"
+                  },
+                  "uploadStatus": {
+                    "type": "string",
+                    "description": "Status of the upload",
+                    "enum": ["SUCCESS", "FAILED"]
+                  },
+                  "documentType": {
+                    "type": "string",
+                    "description": "Type of uploaded document"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Detailed message about the upload"
+                  },
+                  "nextSteps": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Recommended next steps after document upload"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request - Invalid input"
+            },
+            "401": {
+              "description": "Unauthorized - Invalid API key"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    }
+  }
+  

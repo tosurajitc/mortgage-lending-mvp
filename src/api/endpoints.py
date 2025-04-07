@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, Body, APIRouter, Request
 from typing import Dict, Any, Optional
 import logging
 import uuid
+import json
 from datetime import datetime, timezone
 from fastapi.responses import JSONResponse
 
@@ -145,7 +146,7 @@ async def upload_documents(
         logger.info(f"Returning error response: {error_response}")
         
         return error_response
-    
+
 # 4. Loan Type Recommendation
 @router.post("/loan/recommendations")
 async def loan_type_recommendation(
@@ -264,6 +265,58 @@ async def process_customer_inquiry(
     except Exception as e:
         logger.error(f"Error processing customer inquiry: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+# 8. Copilot Process Input Endpoint
+@router.post("/copilot/process-input")
+async def copilot_process_input(request: Request):
+    """
+    Universal endpoint for processing inputs from Copilot Studio
+    """
+    try:
+        # Parse the incoming request body
+        body = await request.json()
+        
+        # Log the raw payload for debugging
+        logger.critical("Copilot Process Input - Raw Payload:")
+        logger.critical(json.dumps(body, indent=2))
+        
+        # Handle potential 'output' wrapper
+        payload = body.get('output', body)
+        
+        # Determine input type and route accordingly
+        request_type = payload.get('request_type', '').lower()
+        
+        logger.critical(f"Request Type Detected: {request_type}")
+        
+        if request_type == 'submit_application':
+            return await submit_mortgage_application(payload)
+        elif request_type == 'upload_document':
+            return await upload_documents(payload.get('application_id', ''), payload)
+        elif request_type == 'check_status':
+            return await check_application_status(payload.get('application_id'))
+        else:
+            logger.warning(f"Unsupported request type: {request_type}")
+            return {
+                "error": "Unsupported request type",
+                "received_type": request_type,
+                "received_payload": payload
+            }
+    except Exception as e:
+        logger.error(f"Copilot processing error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 9. Copilot Test Connection
+@router.get("/copilot/test-connection")
+async def copilot_test_connection():
+    """
+    Simple health check for Copilot Studio connection
+    """
+    return {
+        "status": "healthy",
+        "service": "Mortgage Lending Assistant",
+        "copilot_ready": True,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
 
 # Health Check Endpoint
 @router.get("/health")
