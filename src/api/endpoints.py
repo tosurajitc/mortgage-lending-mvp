@@ -94,45 +94,14 @@ async def upload_documents(
     application_id: str,
     document_data: dict = Body(...)
 ):
-    """Upload documents for a mortgage application"""
-    try:
-        logger.info(f"Received document upload request for application {application_id}")
-        
-        # Add debug logging to see what's being received
-        logger.debug(f"Document data received: {document_data}")
-        
-        result = await document_actions.upload_document(
-            application_id=application_id,
-            document_type=document_data.get("documentType"),
-            document_year=document_data.get("documentYear"),
-            document_description=document_data.get("documentDescription"),
-            document_format=document_data.get("documentFormat", "PDF"),
-            document_content=document_data.get("documentContent", "")
-        )
-        
-        # Return with both "nextSteps" and "output" fields, both using the same source
-        return {
-            "applicationId": application_id,
-            "uploadStatus": "SUCCESS" if not result.get("error") else "FAILED",
-            "documentType": document_data.get("documentType", ""),
-            "message": result.get("message", "Document uploaded successfully"),
-            "nextSteps": result.get("next_steps", []),  # Keep original approach
-            "output": result.get("next_steps", [])     # Same source, different field name
-        }
-    except Exception as e:
-        logger.error(f"Error uploading document: {str(e)}", exc_info=True)
-        # Return a structured error response with both fields
-        return JSONResponse(
-            status_code=200,  # Return 200 so Copilot can see the response
-            content={
-                "applicationId": application_id,
-                "uploadStatus": "FAILED",
-                "documentType": document_data.get("documentType", ""),
-                "message": f"Error: {str(e)}",
-                "nextSteps": [],
-                "output": []
-            }
-        )
+    """Minimal test endpoint"""
+    return {
+        "applicationId": application_id,
+        "uploadStatus": "SUCCESS",
+        "documentType": document_data.get("documentType", ""),
+        "message": "Success",
+        "output": ["Step 1", "Step 2"]  # Using "output" as specified in your action fields
+    }
     
 # 4. Loan Type Recommendation
 @router.post("/loan/recommendations")
