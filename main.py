@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api.endpoints import app as endpoints_app  # Import the app from endpoints
+from src.api.endpoints import router as api_router  # Import the router instead of app
 
 # Create FastAPI application instance
 app = FastAPI(
@@ -22,8 +22,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount the endpoints app
-app.mount("/api", endpoints_app)
+# Include the router directly
+app.include_router(api_router, prefix="/api")
 
 # Add root path handler
 @app.get("/")
