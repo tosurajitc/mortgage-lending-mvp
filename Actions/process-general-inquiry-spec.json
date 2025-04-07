@@ -1,0 +1,175 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Mortgage Lending Assistant API",
+      "description": "API for processing customer inquiries about mortgage applications",
+      "version": "0.1.0"
+    },
+    "host": "surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net",
+    "basePath": "/api",
+    "schemes": [
+      "https"
+    ],
+    "securityDefinitions": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "paths": {
+      "/applications/{application_id}/inquiries": {
+        "post": {
+          "summary": "Process a customer inquiry for a specific mortgage application",
+          "description": "Endpoint to handle and respond to customer questions about their mortgage application",
+          "security": [
+            {
+              "ApiKeyAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "application_id",
+              "in": "path",
+              "required": true,
+              "type": "string",
+              "description": "Unique identifier of the mortgage application"
+            },
+            {
+              "name": "inquiry_data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "inquiryText": {
+                    "type": "string",
+                    "description": "Detailed text of the customer's inquiry",
+                    "minLength": 10,
+                    "maxLength": 1000,
+                    "example": "What is the current status of my mortgage application?"
+                  },
+                  "inquiryCategory": {
+                    "type": "string",
+                    "description": "Category of the inquiry",
+                    "enum": [
+                      "APPLICATION_STATUS",
+                      "DOCUMENT_REQUIREMENTS",
+                      "LOAN_DETAILS",
+                      "TIMELINE",
+                      "FINANCIAL_INFORMATION",
+                      "GENERAL_QUESTION",
+                      "OTHER"
+                    ],
+                    "example": "APPLICATION_STATUS"
+                  },
+                  "contactPreference": {
+                    "type": "string",
+                    "description": "Preferred method of response",
+                    "enum": [
+                      "EMAIL",
+                      "PHONE",
+                      "SMS",
+                      "IN_APP_MESSAGE"
+                    ],
+                    "default": "EMAIL"
+                  },
+                  "additionalContext": {
+                    "type": "object",
+                    "description": "Additional contextual information to help process the inquiry",
+                    "properties": {
+                      "lastInteractionDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date of last interaction with the application"
+                      },
+                      "previousInquiries": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "date": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "summary": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "inquiryText",
+                  "inquiryCategory"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully processed customer inquiry",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "applicationId": {
+                    "type": "string",
+                    "description": "ID of the application"
+                  },
+                  "inquiryText": {
+                    "type": "string",
+                    "description": "Original inquiry text"
+                  },
+                  "response": {
+                    "type": "object",
+                    "properties": {
+                      "responseText": {
+                        "type": "string",
+                        "description": "Detailed response to the inquiry"
+                      },
+                      "requiresHumanFollowUp": {
+                        "type": "boolean",
+                        "description": "Indicates if human agent intervention is needed"
+                      },
+                      "recommendedFollowUpAction": {
+                        "type": "string",
+                        "description": "Suggested next steps or follow-up actions"
+                      }
+                    }
+                  },
+                  "additionalDetails": {
+                    "type": "object",
+                    "description": "Supplementary information related to the inquiry",
+                    "properties": {
+                      "currentApplicationStatus": {
+                        "type": "string",
+                        "description": "Current status of the mortgage application"
+                      },
+                      "estimatedTimeline": {
+                        "type": "string",
+                        "description": "Estimated timeline for next steps"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request - Invalid input parameters"
+            },
+            "401": {
+              "description": "Unauthorized - Invalid API key"
+            },
+            "404": {
+              "description": "Not Found - Application ID does not exist"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    }
+  }

@@ -1,0 +1,200 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Mortgage Lending Assistant API",
+      "description": "API for calculating loan eligibility and pre-approval amount",
+      "version": "0.1.0"
+    },
+    "host": "surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net",
+    "basePath": "/api",
+    "schemes": [
+      "https"
+    ],
+    "securityDefinitions": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "paths": {
+      "/loan/eligibility": {
+        "post": {
+          "summary": "Calculate loan eligibility and pre-approval amount",
+          "description": "Endpoint to determine loan eligibility based on financial profile",
+          "security": [
+            {
+              "ApiKeyAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "financial_data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "annualIncome": {
+                    "type": "number",
+                    "description": "Applicant's total annual income",
+                    "minimum": 0,
+                    "example": 75000
+                  },
+                  "monthlyDebts": {
+                    "type": "number",
+                    "description": "Total monthly debt payments",
+                    "minimum": 0,
+                    "example": 1500
+                  },
+                  "creditScoreRange": {
+                    "type": "string",
+                    "description": "Credit score range of the applicant",
+                    "enum": [
+                      "EXCELLENT",
+                      "GOOD",
+                      "FAIR",
+                      "POOR"
+                    ],
+                    "example": "GOOD"
+                  },
+                  "employmentStatus": {
+                    "type": "string",
+                    "description": "Current employment status",
+                    "enum": [
+                      "FULL_TIME",
+                      "PART_TIME",
+                      "SELF_EMPLOYED",
+                      "CONTRACT",
+                      "UNEMPLOYED"
+                    ],
+                    "example": "FULL_TIME"
+                  },
+                  "downPaymentAmount": {
+                    "type": "number",
+                    "description": "Amount available for down payment",
+                    "minimum": 0,
+                    "example": 50000
+                  },
+                  "loanTermYears": {
+                    "type": "integer",
+                    "description": "Desired loan term in years",
+                    "minimum": 10,
+                    "maximum": 40,
+                    "default": 30,
+                    "example": 30
+                  },
+                  "propertyType": {
+                    "type": "string",
+                    "description": "Type of property",
+                    "enum": [
+                      "SINGLE_FAMILY",
+                      "MULTI_FAMILY",
+                      "CONDO",
+                      "TOWNHOUSE",
+                      "MANUFACTURED_HOME"
+                    ],
+                    "example": "SINGLE_FAMILY"
+                  },
+                  "propertyLocation": {
+                    "type": "string",
+                    "description": "Location of the property (state or region)",
+                    "example": "CA"
+                  }
+                },
+                "required": [
+                  "annualIncome",
+                  "monthlyDebts",
+                  "creditScoreRange",
+                  "employmentStatus",
+                  "propertyType"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful loan eligibility calculation",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "eligibilityStatus": {
+                    "type": "string",
+                    "description": "Overall eligibility status",
+                    "enum": [
+                      "PRE_APPROVED",
+                      "CONDITIONALLY_APPROVED",
+                      "NEEDS_REVIEW",
+                      "NOT_ELIGIBLE"
+                    ]
+                  },
+                  "maximumLoanAmount": {
+                    "type": "number",
+                    "description": "Maximum loan amount the applicant qualifies for",
+                    "minimum": 0
+                  },
+                  "estimatedMonthlyPayment": {
+                    "type": "number",
+                    "description": "Estimated monthly mortgage payment",
+                    "minimum": 0
+                  },
+                  "eligibilityFactors": {
+                    "type": "object",
+                    "description": "Detailed breakdown of factors affecting eligibility",
+                    "properties": {
+                      "debtToIncomeRatio": {
+                        "type": "number",
+                        "description": "Calculated debt-to-income ratio"
+                      },
+                      "creditScoreImpact": {
+                        "type": "number",
+                        "description": "Impact of credit score on eligibility"
+                      },
+                      "incomeStability": {
+                        "type": "number",
+                        "description": "Score representing income stability"
+                      }
+                    }
+                  },
+                  "recommendedActions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Recommended actions to improve eligibility"
+                  },
+                  "affordabilityAnalysis": {
+                    "type": "object",
+                    "description": "Detailed affordability breakdown",
+                    "properties": {
+                      "monthlyIncome": {
+                        "type": "number",
+                        "description": "Monthly income used in calculations"
+                      },
+                      "totalMonthlyObligations": {
+                        "type": "number",
+                        "description": "Total monthly financial obligations"
+                      },
+                      "availableMonthlyBudget": {
+                        "type": "number",
+                        "description": "Remaining monthly budget for mortgage"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request - Invalid input parameters"
+            },
+            "401": {
+              "description": "Unauthorized - Invalid API key"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    }
+  }
