@@ -238,16 +238,6 @@ async def copilot_submit_application(request: Request):
     
     return result
 
-@router.get("/copilot/application-status/{application_id}")
-async def copilot_get_application_status(application_id: str):
-    """Get application status via Copilot Studio"""
-    orchestrator = OrchestratorAgent()
-    result = await orchestrator.process({
-        "action": "check_status",
-        "application_id": application_id
-    })
-    
-    return result
 
 # Health Check Endpoint
 @router.get("/health")
