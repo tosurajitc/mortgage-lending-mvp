@@ -29,16 +29,24 @@ document_actions = DocumentActions()
 # 1. Submit Mortgage Application
 @router.post("/applications/submit")
 async def submit_mortgage_application(application_data: dict):
-    """Submit a new mortgage application"""
     try:
-        logger.info("Received new mortgage application submission")
-        
+        # Directly extract all required parameters
         result = await application_actions.submit_application(
-            application_data.get("applicant"),
-            application_data.get("loan"),
-            application_data.get("property"),
-            application_data.get("employment", {}),
-            application_data.get("financial", {})
+            applicantName=application_data.get("applicantName"),
+            applicantEmail=application_data.get("applicantEmail"),
+            applicantPhone=application_data.get("applicantPhone"),
+            applicantAddress=application_data.get("applicantAddress"),
+            applicantSSN=application_data.get("applicantSSN"),
+            propertyType=application_data.get("propertyType"),
+            propertyAddress=application_data.get("propertyAddress"),
+            propertyValue=application_data.get("propertyValue"),
+            loanAmount=application_data.get("loanAmount"),
+            employmentStatus=application_data.get("employmentStatus"),
+            employmentType=application_data.get("employmentType"),
+            employmentLength=application_data.get("employmentLength"),
+            annualIncome=application_data.get("annualIncome"),
+            creditScoreRange=application_data.get("creditScoreRange"),
+            existingMortgages=application_data.get("existingMortgages")
         )
         
         return {
@@ -50,7 +58,10 @@ async def submit_mortgage_application(application_data: dict):
         }
     except Exception as e:
         logger.error(f"Error submitting mortgage application: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e), headers={"X-Error-Details": str(e)})
+
+
+
 
 # 2. Check Application Status
 @router.get("/applications/{application_id}/status")
