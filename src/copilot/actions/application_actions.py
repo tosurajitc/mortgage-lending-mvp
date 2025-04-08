@@ -1,9 +1,13 @@
 # src/copilot/actions/application_actions.py
 from ...agents.orchestrator import OrchestratorAgent
+from datetime import datetime
+import logging
+import uuid
 
 class ApplicationActions:
     def __init__(self):
         self.orchestrator = OrchestratorAgent()
+        self.logger = logging.getLogger(__name__)
     
     async def submit_application(self, 
         applicantName, 
@@ -49,13 +53,29 @@ class ApplicationActions:
             "existing_mortgages": existingMortgages
         }
         
-        return await self.orchestrator._process_new_application(
-            applicant_data, loan_details, property_info
-        )
+        # Initialize empty documents list
+        documents = []
+        
+        # Create a properly formatted input for the orchestrator.process() method
+        application_id = f"APP-{datetime.now().strftime('%Y%m%d')}-{applicantName.split()[-1].upper()}"
+        
+        input_data = {
+            "action": "process_application",
+            "application_id": application_id,
+            "application_data": {
+                "applicant": applicant_data,
+                "loan": loan_details,
+                "property": property_info
+            },
+            "documents": documents
+        }
+        
+        # Use the main process method instead of _process_new_application
+        return await self.orchestrator.process(input_data)
     
-    async def check_application_status(self, application_id):
+    async def check_application_status(self, application_id, extra_context=None):
         """Check the status of an existing application"""
-        return await self.orchestrator.get_application_status(application_id)
+        return await self.orchestrator.get_application_status(application_id, extra_context)
     
     async def provide_additional_documents(self, application_id, document_type, document_content):
         """Add additional documents to an existing application"""
@@ -63,7 +83,6 @@ class ApplicationActions:
             application_id, document_type, document_content
         )
     
-
     async def recommend_loan_types(self, annual_income, credit_score_range, down_payment_percentage, 
                             property_type, homeownership_plans, military_service, 
                             property_location, financial_priority):
@@ -292,7 +311,6 @@ class ApplicationActions:
             }
 
     # Helper methods
-
     def _estimate_credit_score(self, credit_score_range):
         """Convert credit score range to a numeric estimate"""
         if credit_score_range == "Excellent (750+)":
@@ -369,8 +387,6 @@ class ApplicationActions:
         
         return explanation
     
-
-
     async def resolve_issue(self, application_id, issue_type, issue_description, contact_preference, urgency_level):
         """
         Handle resolution of issues for mortgage applications.
@@ -447,7 +463,6 @@ class ApplicationActions:
             }
 
     # Helper methods
-
     def _generate_case_id(self):
         """Generate a unique case ID"""
         import random
@@ -469,9 +484,9 @@ class ApplicationActions:
         # For MVP, you might implement a simple in-memory storage or mock
         
         # Example implementation using cosmos_manager:
-        from src.data.cosmos_manager import CosmosManager
+        from src.data.cosmos_manager import CosmosDBManager
         
-        cosmos = CosmosManager()
+        cosmos = CosmosDBManager()
         
         issue_data = {
             "id": case_number,
@@ -581,8 +596,6 @@ class ApplicationActions:
         # For MVP, you might add a simple mock implementation
         return {"id": application_id, "status": "PROCESSING"}
     
-
-
     async def calculate_loan_eligibility(self, annual_income, monthly_debts, credit_score_range, 
                                employment_status, down_payment_amount, loan_term_years, 
                                property_type, property_location):
@@ -744,21 +757,7 @@ class ApplicationActions:
                 ]
             }
 
-    # Helper methods
-
-    def _estimate_credit_score(self, credit_score_range):
-        """Convert credit score range to a numeric estimate"""
-        if credit_score_range == "Excellent (750+)":
-            return 750
-        elif credit_score_range == "Good (700-749)":
-            return 725
-        elif credit_score_range == "Fair (650-699)":
-            return 675
-        elif credit_score_range == "Poor (below 650)":
-            return 625
-        else:
-            return 680  # Default middle estimate
-
+    # Additional helper methods for loan eligibility calculation
     def _get_max_dti(self, credit_score):
         """Get maximum allowable DTI ratio based on credit score"""
         if credit_score >= 740:
