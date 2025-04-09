@@ -3,7 +3,7 @@ API Endpoints for Mortgage Lending System
 Provides comprehensive REST API endpoints for mortgage application processing
 """
 
-from fastapi import FastAPI, HTTPException, Body, APIRouter, Request
+from fastapi import FastAPI, HTTPException, Body, APIRouter, Request, File, UploadFile, Form
 from typing import Dict, Any, Optional
 import logging
 import uuid
@@ -101,44 +101,67 @@ async def check_application_status(
         raise HTTPException(status_code=500, detail=str(e))
 
 # 3. Upload Documents
+# Simplified document upload endpoint
 @router.post("/applications/{application_id}/documents/upload")
 async def upload_documents(
     application_id: str,
-    document_data: dict = Body(...)
+    document_type: str = Form(...),
+    document_year: Optional[str] = Form(None),
+    document_description: Optional[str] = Form(None),
+    document_format: str = Form("PDF"),
+    file: UploadFile = File(...)
 ):
-    """Upload documents with consistent data between nextSteps and output"""
+    """
+    Upload a document for a mortgage application.
+    
+    Parameters:
+    - application_id: ID of the mortgage application
+    - document_type: Type of document being uploaded (e.g., INCOME_VERIFICATION)
+    - document_year: Year the document is for (e.g., tax year)
+    - document_description: Optional description of the document
+    - document_format: Format of the document (default: PDF)
+    - file: The actual document file to upload
+    
+    Returns:
+    - Upload status information and next steps
+    """
     try:
+        logger.info(f"Processing document upload for application {application_id}, type: {document_type}")
+        
+        # Read file content
+        content = await file.read()
+        
+        # Convert to base64 for internal processing
+        import base64
+        document_content = base64.b64encode(content).decode('utf-8')
+        
+        # Call the document actions with the file content
         result = await document_actions.upload_document(
             application_id=application_id,
-            document_type=document_data.get("documentType"),
-            document_year=document_data.get("documentYear"),
-            document_description=document_data.get("documentDescription"),
-            document_format=document_data.get("documentFormat", "PDF"),
-            document_content=document_data.get("documentContent", "")
+            document_type=document_type,
+            document_year=document_year,
+            document_description=document_description,
+            document_format=document_format,
+            document_content=document_content
         )
         
         # Get next steps from the result
         next_steps = result.get("next_steps", ["Document received successfully"])
         
-        # Create a string version of next steps
+        # Create a string version of next steps for Copilot Studio
         next_steps_str = ", ".join(next_steps) if isinstance(next_steps, list) else str(next_steps)
         
         # Build the response
         response = {
             "applicationId": application_id,
             "uploadStatus": "SUCCESS" if not result.get("error") else "FAILED",
-            "documentType": document_data.get("documentType", ""),
+            "documentType": document_type,
             "message": result.get("message", "Document uploaded successfully"),
-            
-            # Include both fields for internal consistency
-            "nextSteps": next_steps,  # Keep original array format for API consistency
-            
-            # Try output as a string instead of an array for Copilot Studio
+            "nextSteps": next_steps,
             "output": next_steps_str
         }
         
-        # Log the complete response for debugging
-        logger.info(f"Returning response: {response}")
+        logger.info(f"Document upload successful for application {application_id}, type: {document_type}")
         
         return response
         
@@ -148,13 +171,11 @@ async def upload_documents(
         error_response = {
             "applicationId": application_id,
             "uploadStatus": "FAILED",
-            "documentType": document_data.get("documentType", ""),
+            "documentType": document_type,
             "message": f"Error: {str(e)}",
-            "nextSteps": [],
+            "nextSteps": ["Please try uploading again", "Contact support if the issue persists"],
             "output": "Error occurred during document upload"
         }
-        
-        logger.info(f"Returning error response: {error_response}")
         
         return error_response
 
@@ -278,6 +299,56 @@ async def process_customer_inquiry(
         raise HTTPException(status_code=500, detail=str(e))
 
 # 8. Copilot Process Input Endpoint
+# Special route for Copilot Studio document uploads
+@router.post("/copilot/upload-document/{application_id}")
+async def copilot_upload_document(
+    application_id: str,
+    document_data: dict = Body(...)
+):
+    """
+    Special endpoint for Copilot Studio to trigger document uploads.
+    This endpoint doesn't actually upload files, but informs the user
+    that they need to use the standard upload form.
+    """
+    try:
+        logger.info(f"Copilot document upload request for application {application_id}")
+        
+        # Extract document information from the request
+        document_type = document_data.get("documentType", "")
+        document_year = document_data.get("documentYear")
+        document_description = document_data.get("documentDescription")
+        
+        # Create a response with instructions for uploading
+        response = {
+            "applicationId": application_id,
+            "uploadStatus": "PENDING",
+            "documentType": document_type,
+            "message": "Please upload the document file using our secure document upload form.",
+            "nextSteps": [
+                "Go to the document upload page",
+                f"Select document type: {document_type}",
+                "Choose the file from your device",
+                "Click 'Upload' to complete the process"
+            ],
+            "output": "Please upload the actual document file using our secure document upload form."
+        }
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error handling Copilot document upload request: {str(e)}", exc_info=True)
+        
+        error_response = {
+            "applicationId": application_id,
+            "uploadStatus": "FAILED",
+            "message": f"Error: {str(e)}",
+            "nextSteps": ["Please try again later"],
+            "output": "An error occurred while processing your document upload request."
+        }
+        
+        return error_response
+
+# Update Copilot Process Input Endpoint
 @router.post("/copilot/process-input")
 async def copilot_process_input(request: Request):
     """
@@ -287,9 +358,9 @@ async def copilot_process_input(request: Request):
         # Parse the incoming request body
         body = await request.json()
         
-        # Log the raw payload for debugging
-        logger.critical("Copilot Process Input - Raw Payload:")
-        logger.critical(json.dumps(body, indent=2))
+        # Log the payload for debugging
+        logger.info("Copilot Process Input - Raw Payload:")
+        logger.info(json.dumps(body, indent=2))
         
         # Handle potential 'output' wrapper
         payload = body.get('output', body)
@@ -297,12 +368,14 @@ async def copilot_process_input(request: Request):
         # Determine input type and route accordingly
         request_type = payload.get('request_type', '').lower()
         
-        logger.critical(f"Request Type Detected: {request_type}")
+        logger.info(f"Request Type Detected: {request_type}")
         
         if request_type == 'submit_application':
             return await submit_mortgage_application(payload)
         elif request_type == 'upload_document':
-            return await upload_documents(payload.get('application_id', ''), payload)
+            # For document uploads through Copilot, use the special handler
+            application_id = payload.get('application_id', '')
+            return await copilot_upload_document(application_id, payload)
         elif request_type == 'check_status':
             return await check_application_status(payload.get('application_id'))
         else:
@@ -310,7 +383,7 @@ async def copilot_process_input(request: Request):
             return {
                 "error": "Unsupported request type",
                 "received_type": request_type,
-                "received_payload": payload
+                "supported_types": ["submit_application", "upload_document", "check_status"]
             }
     except Exception as e:
         logger.error(f"Copilot processing error: {e}", exc_info=True)
