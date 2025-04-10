@@ -64,34 +64,40 @@ async def submit_mortgage_application(application_data: dict):
 
 
 # 2. Check Application Status
-@router.get("/applications/{application_id}/status")
+# Updated POST endpoint for checking application status
+@router.post("/applications/status")
 async def check_application_status(
-    application_id: str,
-    applicant_name: Optional[str] = None
+    request_data: Dict[str, Any] = Body(...)
 ):
     """Check the status of an existing application"""
     try:
-        logger.info(f"Received status check request for application {application_id}")
+        logger.info("Received application status check request")
         
-        # Add a default applicant name if not provided
-        if not applicant_name:
-            applicant_name = "Applicant"
+        # Extract required applicationId from request body
+        application_id = request_data.get("applicationId")
+        if not application_id:
+            raise HTTPException(status_code=400, detail="applicationId is required")
+            
+        # Extract optional applicantName from request body
+        applicant_name = request_data.get("applicantName")
         
-        result = await application_actions.check_application_status(
-            application_id, 
-            {"applicant_name": applicant_name}
-        )
+        # Create the extra_context parameter if applicantName is provided
+        extra_context = {"applicant_name": applicant_name} if applicant_name else None
+        
+        # Call the method with the correct parameters
+        result = await application_actions.check_application_status(application_id, extra_context)
             
         if result.get("error"):
             raise HTTPException(status_code=404, detail=result["error"])
             
+        # Format the response according to the required JSON structure
         return {
             "applicationId": application_id,
-            "applicationStatus": result.get("status", "UNKNOWN"),
+            "applicationStatus": result.get("status", "UNKNOWN").lower(),
             "currentStage": result.get("current_stage", "Processing"),
             "pendingItems": result.get("pending_items", []),
             "estimatedCompletion": result.get("estimated_completion", ""),
-            "lastUpdated": result.get("last_updated", ""),
+            "lastUpdated": result.get("last_updated", datetime.now(timezone.utc).isoformat()),
             "statusExplanation": result.get("status_explanation", "")
         }
     except HTTPException:
@@ -99,6 +105,8 @@ async def check_application_status(
     except Exception as e:
         logger.error(f"Error checking application status: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+    
+
 
 # 3. Upload Documents
 # Simplified document upload endpoint
@@ -348,7 +356,8 @@ async def copilot_upload_document(
         
         return error_response
 
-# Update Copilot Process Input Endpoint
+
+# Update Copilot Studio integration with fixed method call
 @router.post("/copilot/process-input")
 async def copilot_process_input(request: Request):
     """
@@ -358,9 +367,9 @@ async def copilot_process_input(request: Request):
         # Parse the incoming request body
         body = await request.json()
         
-        # Log the payload for debugging
-        logger.info("Copilot Process Input - Raw Payload:")
-        logger.info(json.dumps(body, indent=2))
+        # Log the raw payload for debugging
+        logger.debug("Copilot Process Input - Raw Payload:")
+        logger.debug(json.dumps(body, indent=2))
         
         # Handle potential 'output' wrapper
         payload = body.get('output', body)
@@ -373,21 +382,22 @@ async def copilot_process_input(request: Request):
         if request_type == 'submit_application':
             return await submit_mortgage_application(payload)
         elif request_type == 'upload_document':
-            # For document uploads through Copilot, use the special handler
-            application_id = payload.get('application_id', '')
-            return await copilot_upload_document(application_id, payload)
+            return await upload_documents(payload.get('application_id', ''), payload)
         elif request_type == 'check_status':
-            return await check_application_status(payload.get('application_id'))
+            # Route to our application status endpoint
+            return await check_application_status(payload)
         else:
             logger.warning(f"Unsupported request type: {request_type}")
             return {
                 "error": "Unsupported request type",
                 "received_type": request_type,
-                "supported_types": ["submit_application", "upload_document", "check_status"]
+                "received_payload": payload
             }
     except Exception as e:
         logger.error(f"Copilot processing error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
 
 # 9. Copilot Test Connection
 @router.get("/copilot/test-connection")
@@ -407,3 +417,56 @@ async def copilot_test_connection():
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
+
+
+# Update the dedicated Copilot endpoint for application status
+@router.post("/copilot/application-status")
+async def copilot_application_status(request_data: Dict[str, Any] = Body(...)):
+    """
+    Dedicated endpoint for Copilot Studio to check application status
+    """
+    try:
+        logger.info("Received Copilot application status check request")
+        
+        # Extract required applicationId
+        application_id = request_data.get("applicationId")
+        if not application_id:
+            return {
+                "error": "applicationId is required",
+                "applicationStatus": "ERROR",
+                "statusExplanation": "Please provide a valid application ID"
+            }
+            
+        # Extract optional applicantName
+        applicant_name = request_data.get("applicantName")
+        
+        # Create extra_context if applicantName is provided
+        extra_context = {"applicant_name": applicant_name} if applicant_name else None
+        
+        # Get application status with the correct parameters
+        result = await application_actions.check_application_status(application_id, extra_context)
+        
+        # Format the response for Copilot Studio
+        if result.get("error"):
+            return {
+                "error": result["error"],
+                "applicationStatus": "NOT_FOUND",
+                "statusExplanation": f"Application with ID {application_id} not found"
+            }
+            
+        return {
+            "applicationId": application_id,
+            "applicationStatus": result.get("status", "UNKNOWN").lower(),
+            "currentStage": result.get("current_stage", "Processing"),
+            "pendingItems": result.get("pending_items", []),
+            "estimatedCompletion": result.get("estimated_completion", ""),
+            "lastUpdated": result.get("last_updated", datetime.now(timezone.utc).isoformat()),
+            "statusExplanation": result.get("status_explanation", "")
+        }
+    except Exception as e:
+        logger.error(f"Error checking application status for Copilot: {str(e)}", exc_info=True)
+        return {
+            "error": str(e),
+            "applicationStatus": "ERROR",
+            "statusExplanation": "An error occurred while checking the application status"
+        }
