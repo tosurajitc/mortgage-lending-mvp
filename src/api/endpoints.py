@@ -48,18 +48,16 @@ async def submit_mortgage_application(application_data: dict):
             existingMortgages=application_data.get("existingMortgages", None)
         )
         
-        # Handle different return scenarios
-        if result.get("status") == "ERROR":
-            return {
-                "error": result.get("message", "Unknown error occurred")
-            }
-        
         return result
     
     except Exception as e:
         logger.error(f"Endpoint error: {str(e)}")
         return {
-            "error": str(e)
+            "applicationId": str(uuid.uuid4()),
+            "applicationStatus": "ERROR",
+            "nextSteps": [],
+            "requiredDocuments": [],
+            "estimatedReviewTime": "Unable to determine"
         }
 
 

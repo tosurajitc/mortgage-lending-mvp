@@ -21,3 +21,215 @@
 2025-04-10 10:33:30,810 - agent.orchestrator - INFO - Orchestrator agent fully initialized
 2025-04-10 10:33:30,810 - agent.document_analysis - INFO - Initializing document_analysis agent
 2025-04-10 10:33:30,811 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:34:04,833 - src.copilot.actions.application_actions - WARNING - Missing required parameters
+2025-04-10 10:34:44,409 - src.copilot.actions.application_actions - WARNING - Missing required parameters
+2025-04-10 10:34:56,179 - src.copilot.actions.application_actions - INFO - Submitting application: APP-20250410-DOE
+2025-04-10 10:34:56,180 - src.copilot.actions.application_actions - INFO - Application input data: {'action': 'process_application', 'application_id': 'APP-20250410-DOE', 'application_data': {'applicant': {'name': 'John Doe', 'email': 'john.doe@example.com', 'phone': '1234567890', 'address': '123 Main St, Anytown, USA', 'ssn': '123-45-6789', 'income': 85000, 'credit_score_range': '700-749', 'employment': {'status': 'FULL_TIME', 'type': 'SALARIED', 'length': '3'}}, 'loan': {'amount': 250000, 'existing_mortgages': None}, 'property': {'type': 'SINGLE_FAMILY', 'address': '123 Main St, Anytown, USA', 'value': 350000}}, 'documents': []}
+2025-04-10 10:34:56,180 - agent.orchestrator - INFO - orchestrator - Starting new application processing for 3b88622e-0f2f-4b4f-a22e-b2fe30614bfc
+2025-04-10 10:34:56,180 - state_manager - INFO - Creating application state for 3b88622e-0f2f-4b4f-a22e-b2fe30614bfc with initial state ApplicationStatus.INITIATED
+2025-04-10 10:34:56,182 - src.data.cosmos_manager - INFO - Created mock item in application_states: 3b88622e-0f2f-4b4f-a22e-b2fe30614bfc
+2025-04-10 10:34:56,182 - agent.orchestrator - INFO - orchestrator - Starting document analysis
+2025-04-10 10:34:56,184 - agent.document_analysis - INFO - document_analysis - Processing started
+2025-04-10 10:34:56,184 - agent.document_analysis - INFO - document_analysis - Processing 2 documents for application 3b88622e-0f2f-4b4f-a22e-b2fe30614bfc
+2025-04-10 10:34:56,184 - agent.document_analysis - INFO - document_analysis - Analyzing document of type: INCOME_VERIFICATION
+2025-04-10 10:34:56,185 - semantic_function.extract_income_data - INFO - Invoking semantic function: extract_income_data
+2025-04-10 10:34:56,185 - agent.document_analysis - INFO - document_analysis - Analyzing document of type: PROPERTY_APPRAISAL
+2025-04-10 10:34:56,185 - semantic_function.extract_property_data - INFO - Invoking semantic function: extract_property_data
+2025-04-10 10:34:56,507 - agent.document_analysis - INFO - document_analysis - Processing completed
+2025-04-10 10:34:56,508 - state_manager - INFO - Updating application 3b88622e-0f2f-4b4f-a22e-b2fe30614bfc state to ApplicationStatus.DOCUMENTS_PROCESSED
+2025-04-10 10:34:56,509 - src.data.cosmos_manager - INFO - Updated mock item in application_states: 3b88622e-0f2f-4b4f-a22e-b2fe30614bfc
+2025-04-10 10:34:56,510 - agent.orchestrator - INFO - orchestrator - Document analysis shows incomplete documentation: {'missing_documents': ['CREDIT_REPORT', 'ID_VERIFICATION']}
+2025-04-10 10:34:56,510 - agent.customer_service - INFO - customer_service - Processing started
+2025-04-10 10:34:56,511 - agent.customer_service - INFO - customer_service - Processing missing_documents request for application 3b88622e-0f2f-4b4f-a22e-b2fe30614bfc
+2025-04-10 10:34:56,511 - agent.customer_service - INFO - customer_service - Generating missing documents notification for 2 documents
+2025-04-10 10:34:56,511 - semantic_function.explain_required_document - INFO - Invoking semantic function: explain_required_document
+2025-04-10 10:34:56,511 - semantic_function.explain_required_document - INFO - Invoking semantic function: explain_required_document
+2025-04-10 10:34:56,512 - semantic_function.generate_missing_documents_notification - INFO - Invoking semantic function: generate_missing_documents_notification
+2025-04-10 10:34:56,512 - semantic_function.generate_document_submission_steps - INFO - Invoking semantic function: generate_document_submission_steps
+2025-04-10 10:34:56,512 - semantic_function.generate_document_submission_steps - INFO - Invoking semantic function: generate_document_submission_steps
+2025-04-10 10:34:56,512 - agent.customer_service - INFO - customer_service - Processing completed
+2025-04-10 10:34:56,513 - src.copilot.actions.application_actions - INFO - Application APP-20250410-DOE processed successfully
+2025-04-10 10:45:10,761 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:45:10,761 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:45:10,761 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:45:10,761 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:45:10,772 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:45:11,306 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:45:11,306 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:45:11,306 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:45:11,307 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:45:11,307 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:45:11,308 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:11,308 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:45:11,308 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:45:11,309 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:11,309 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:45:11,310 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:45:11,310 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:11,311 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:45:11,311 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:11,312 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:11,312 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:45:11,312 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:45:11,312 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:45:14,944 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:45:14,944 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:45:14,944 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:45:14,944 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:45:14,945 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:45:15,300 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:45:15,300 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:45:15,301 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:45:15,301 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:45:15,301 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:45:15,302 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:15,302 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:45:15,302 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:45:15,304 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:15,305 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:45:15,305 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:45:15,306 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:15,306 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:45:15,307 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:15,308 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:15,308 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:45:15,308 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:45:15,309 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:45:30,069 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:45:30,069 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:45:30,070 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:45:30,070 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:45:30,071 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:45:30,460 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:45:30,461 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:45:30,461 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:45:30,462 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:45:30,462 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:45:30,463 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:30,463 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:45:30,463 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:45:30,464 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:30,464 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:45:30,464 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:45:30,465 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:30,465 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:45:30,466 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:30,467 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:45:30,467 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:45:30,468 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:45:30,468 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:47:06,342 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:47:06,343 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:47:06,343 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:47:06,343 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:47:06,344 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:47:06,706 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:47:06,706 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:47:06,706 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:47:06,706 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:47:06,707 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:47:06,707 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:06,708 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:47:06,708 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:47:06,708 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:06,709 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:47:06,709 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:47:06,710 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:06,710 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:47:06,711 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:06,712 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:06,712 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:47:06,712 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:47:06,712 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:47:49,095 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:47:49,096 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:47:49,096 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:47:49,096 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:47:49,097 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:47:49,534 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:47:49,534 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:47:49,534 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:47:49,534 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:47:49,535 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:47:49,536 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:49,536 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:47:49,536 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:47:49,537 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:49,537 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:47:49,537 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:47:49,538 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:49,539 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:47:49,539 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:49,540 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:47:49,540 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:47:49,541 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:47:49,541 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:48:18,187 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:48:18,188 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:48:18,188 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:48:18,188 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:48:18,189 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:48:18,549 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:48:18,550 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:48:18,550 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:48:18,550 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:48:18,551 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:48:18,551 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:18,551 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:48:18,552 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:48:18,552 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:18,553 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:48:18,553 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:48:18,554 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:18,554 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:48:18,555 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:18,556 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:18,556 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:48:18,557 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:48:18,557 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:48:27,162 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:48:27,162 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:48:27,162 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:48:27,164 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:48:27,164 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:48:27,695 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:48:27,696 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:48:27,696 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:48:27,696 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:48:27,697 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:48:27,698 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:27,698 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:48:27,698 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:48:27,700 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:27,700 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:48:27,700 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:48:27,701 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:27,701 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:48:27,703 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:27,705 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:27,705 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:48:27,706 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:48:27,706 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:48:56,885 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:48:56,886 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:48:56,886 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:48:56,887 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:48:56,887 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:48:57,634 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:48:57,634 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:48:57,635 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:48:57,635 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:48:57,635 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:48:57,636 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:57,637 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:48:57,637 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:48:57,638 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:57,638 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:48:57,639 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:48:57,640 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:57,640 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:48:57,641 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:57,642 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:48:57,642 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:48:57,642 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:48:57,642 - agent.document_analysis - INFO - Document analysis agent initialized

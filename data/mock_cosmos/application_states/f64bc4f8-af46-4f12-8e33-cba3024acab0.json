@@ -1,0 +1,64 @@
+{
+  "application_id": "f64bc4f8-af46-4f12-8e33-cba3024acab0",
+  "status": "documents_processed",
+  "context": {
+    "document_analysis": {
+      "application_id": "f64bc4f8-af46-4f12-8e33-cba3024acab0",
+      "document_results": {
+        "INCOME_VERIFICATION": {
+          "document_type": "INCOME_VERIFICATION",
+          "income_amount": 75000,
+          "employer_name": "ACME Corporation",
+          "employment_duration": "3 years",
+          "document_date": null,
+          "confidence": 0.85,
+          "status": "PROCESSED"
+        },
+        "PROPERTY_APPRAISAL": {
+          "document_type": "PROPERTY_APPRAISAL",
+          "property_value": 350000,
+          "property_address": "[REDACTED ADDRESS]",
+          "property_type": "Single Family",
+          "appraisal_date": null,
+          "confidence": 0.85,
+          "status": "PROCESSED"
+        }
+      },
+      "is_complete": false,
+      "missing_documents": [
+        "CREDIT_REPORT",
+        "ID_VERIFICATION"
+      ],
+      "inconsistencies": [],
+      "summary": {
+        "income": {
+          "annual_income": 75000,
+          "employer": "ACME Corporation",
+          "employment_duration": "3 years"
+        },
+        "property": {
+          "value": 350000,
+          "address": "[REDACTED ADDRESS]",
+          "type": "Single Family"
+        },
+        "narrative": "Based on the submitted documents, the applicant's annual income is approximately $75,000. The property is located at [REDACTED ADDRESS] and is valued at $350,000. "
+      },
+      "overall_confidence": 0.85
+    }
+  },
+  "history": [
+    {
+      "status": "initiated",
+      "timestamp": "2025-04-10T05:19:07.695074",
+      "notes": "Application initiated"
+    },
+    {
+      "status": "documents_processed",
+      "timestamp": "2025-04-10T05:19:08.022620",
+      "notes": "State changed to ApplicationStatus.DOCUMENTS_PROCESSED"
+    }
+  ],
+  "last_updated": "2025-04-10T05:19:08.022620",
+  "created_at": "2025-04-10T05:19:07.695074",
+  "updated_at": "2025-04-10T05:19:08.022620"
+}

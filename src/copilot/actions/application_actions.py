@@ -113,15 +113,24 @@ class ApplicationActions:
                 # Additional logging for successful submission
                 logger.info(f"Application {application_id} processed successfully")
                 
-                return result
+                return {
+                    "applicationId": result.get('application_id', str(uuid.uuid4())),
+                    "applicationStatus": result.get('status', 'INITIATED'),
+                    "nextSteps": result.get('next_steps', []),
+                    "requiredDocuments": result.get('missing_documents', []),
+                    "estimatedReviewTime": result.get('estimated_review_time', '1-2 business days')
+                }
             
             except Exception as process_error:
                 # Log any errors during processing
                 logger.error(f"Error processing application {application_id}: {str(process_error)}")
                 
                 return {
-                    "status": "ERROR",
-                    "message": f"Application processing failed: {str(process_error)}"
+                    "applicationId": application_id,
+                    "applicationStatus": "ERROR",
+                    "nextSteps": [],
+                    "requiredDocuments": [],
+                    "estimatedReviewTime": "Unable to determine"
                 }
         
         except Exception as general_error:
@@ -129,10 +138,14 @@ class ApplicationActions:
             logger.error(f"Unexpected error in application submission: {str(general_error)}")
             
             return {
-                "status": "ERROR",
-                "message": "An unexpected error occurred during application submission"
-            }
-    
+                    "applicationId": str(uuid.uuid4()),
+                    "applicationStatus": "ERROR",
+                    "nextSteps": [],
+                    "requiredDocuments": [],
+                    "estimatedReviewTime": "Unable to determine"
+                    }
+        
+        
     async def check_application_status(self, application_id, extra_context=None):
         """Check the status of an existing application"""
         return await self.orchestrator.get_application_status(application_id, extra_context)
