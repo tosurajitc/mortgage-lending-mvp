@@ -145,10 +145,21 @@ class ApplicationActions:
                     "estimatedReviewTime": "Unable to determine"
                     }
         
-        
+
     async def check_application_status(self, application_id, extra_context=None):
         """Check the status of an existing application"""
-        return await self.orchestrator.get_application_status(application_id, extra_context)
+        try:
+            self.logger.info(f"Checking status for application: {application_id}")
+            if extra_context:
+                self.logger.info(f"Extra context provided: {extra_context}")
+            
+            return await self.orchestrator.get_application_status(application_id)
+        except Exception as e:
+            self.logger.error(f"Error checking application status: {str(e)}", exc_info=True)
+            return {
+                "error": f"Error retrieving application status: {str(e)}",
+                "status": "ERROR"
+            }
     
     async def provide_additional_documents(self, application_id, document_type, document_content):
         """Add additional documents to an existing application"""

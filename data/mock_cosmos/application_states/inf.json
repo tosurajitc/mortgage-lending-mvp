@@ -1,0 +1,14 @@
+{
+  "application_id": Infinity,
+  "status": "initiated",
+  "context": {},
+  "history": [
+    {
+      "status": "initiated",
+      "timestamp": "2025-04-10T13:19:25.192400",
+      "notes": "Default application state initialized"
+    }
+  ],
+  "last_updated": "2025-04-10T13:19:25.192400",
+  "created_at": "2025-04-10T13:19:25.192400"
+}
