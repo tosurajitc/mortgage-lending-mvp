@@ -3,76 +3,149 @@ from ...agents.orchestrator import OrchestratorAgent
 from datetime import datetime
 import logging
 import uuid
+from fastapi import HTTPException
+from typing import Optional, Dict, Any
+
+logger = logging.getLogger(__name__)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),  # Outputs to console
+        logging.FileHandler('application.log')  # Outputs to a file
+    ]
+)
 
 class ApplicationActions:
     def __init__(self):
         self.orchestrator = OrchestratorAgent()
         self.logger = logging.getLogger(__name__)
     
+
     async def submit_application(self, 
-        applicantName, 
-        applicantEmail, 
-        applicantPhone, 
-        applicantAddress, 
-        applicantSSN, 
-        propertyType, 
-        propertyAddress, 
-        propertyValue, 
-        loanAmount, 
-        employmentStatus, 
-        employmentType, 
-        employmentLength, 
-        annualIncome, 
-        creditScoreRange, 
-        existingMortgages=None
-    ):
-        # Restructure data to match existing method
-        applicant_data = {
-            "name": applicantName,
-            "email": applicantEmail,
-            "phone": applicantPhone,
-            "address": applicantAddress,
-            "ssn": applicantSSN,
-            "income": annualIncome,
-            "credit_score_range": creditScoreRange,
-            "employment": {
-                "status": employmentStatus,
-                "type": employmentType,
-                "length": employmentLength
+            applicantName, 
+            applicantEmail, 
+            applicantPhone, 
+            applicantAddress, 
+            applicantSSN, 
+            propertyType, 
+            propertyAddress, 
+            propertyValue, 
+            loanAmount, 
+            employmentStatus, 
+            employmentType, 
+            employmentLength, 
+            annualIncome, 
+            creditScoreRange, 
+            existingMortgages=None
+        ):
+        try:
+            # Comprehensive input validation
+            required_params = [
+                applicantName, applicantEmail, applicantPhone, 
+                applicantAddress, applicantSSN, propertyType, 
+                propertyAddress, propertyValue, loanAmount, 
+                employmentStatus, employmentType, employmentLength, 
+                annualIncome, creditScoreRange
+            ]
+            
+            if any(param is None or param == '' for param in required_params):
+                logger.warning("Missing required parameters")
+                return {
+                    "status": "ERROR",
+                    "message": "All parameters are required. Please provide complete information."
+                }
+
+            # Restructure data to match existing method
+            applicant_data = {
+                "name": applicantName,
+                "email": applicantEmail,
+                "phone": applicantPhone,
+                "address": applicantAddress,
+                "ssn": applicantSSN,
+                "income": annualIncome,
+                "credit_score_range": creditScoreRange,
+                "employment": {
+                    "status": employmentStatus,
+                    "type": employmentType,
+                    "length": employmentLength
+                }
             }
-        }
+            
+            property_info = {
+                "type": propertyType,
+                "address": propertyAddress,
+                "value": propertyValue
+            }
+            
+            loan_details = {
+                "amount": loanAmount,
+                "existing_mortgages": existingMortgages
+            }
+            
+            # Initialize empty documents list
+            documents = []
+            
+            # Create a unique application ID
+            application_id = f"APP-{datetime.now().strftime('%Y%m%d')}-{applicantName.split()[-1].upper()}"
+            
+            # Prepare input data for orchestrator
+            input_data = {
+                "action": "process_application",
+                "application_id": application_id,
+                "application_data": {
+                    "applicant": applicant_data,
+                    "loan": loan_details,
+                    "property": property_info
+                },
+                "documents": documents
+            }
+            
+            # Log the input data for tracking
+            logger.info(f"Submitting application: {application_id}")
+            logger.info(f"Application input data: {input_data}")
+            
+            # Process the application
+            try:
+                result = await self.orchestrator.process(input_data)
+                
+                # Additional logging for successful submission
+                logger.info(f"Application {application_id} processed successfully")
+                
+                return {
+                    "applicationId": result.get('application_id', str(uuid.uuid4())),
+                    "applicationStatus": result.get('status', 'INITIATED'),
+                    "nextSteps": result.get('next_steps', []),
+                    "requiredDocuments": result.get('missing_documents', []),
+                    "estimatedReviewTime": result.get('estimated_review_time', '1-2 business days')
+                }
+            
+            except Exception as process_error:
+                # Log any errors during processing
+                logger.error(f"Error processing application {application_id}: {str(process_error)}")
+                
+                return {
+                    "applicationId": application_id,
+                    "applicationStatus": "ERROR",
+                    "nextSteps": [],
+                    "requiredDocuments": [],
+                    "estimatedReviewTime": "Unable to determine"
+                }
         
-        property_info = {
-            "type": propertyType,
-            "address": propertyAddress,
-            "value": propertyValue
-        }
+        except Exception as general_error:
+            # Catch-all for any other unexpected errors
+            logger.error(f"Unexpected error in application submission: {str(general_error)}")
+            
+            return {
+                    "applicationId": str(uuid.uuid4()),
+                    "applicationStatus": "ERROR",
+                    "nextSteps": [],
+                    "requiredDocuments": [],
+                    "estimatedReviewTime": "Unable to determine"
+                    }
         
-        loan_details = {
-            "amount": loanAmount,
-            "existing_mortgages": existingMortgages
-        }
         
-        # Initialize empty documents list
-        documents = []
-        
-        # Create a properly formatted input for the orchestrator.process() method
-        application_id = f"APP-{datetime.now().strftime('%Y%m%d')}-{applicantName.split()[-1].upper()}"
-        
-        input_data = {
-            "action": "process_application",
-            "application_id": application_id,
-            "application_data": {
-                "applicant": applicant_data,
-                "loan": loan_details,
-                "property": property_info
-            },
-            "documents": documents
-        }
-        
-        # Use the main process method instead of _process_new_application
-        return await self.orchestrator.process(input_data)
-    
     async def check_application_status(self, application_id, extra_context=None):
         """Check the status of an existing application"""
         return await self.orchestrator.get_application_status(application_id, extra_context)
