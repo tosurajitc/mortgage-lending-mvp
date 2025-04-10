@@ -30,35 +30,37 @@ document_actions = DocumentActions()
 @router.post("/applications/submit")
 async def submit_mortgage_application(application_data: dict):
     try:
-        # Directly extract all required parameters
         result = await application_actions.submit_application(
-            applicantName=application_data.get("applicantName"),
-            applicantEmail=application_data.get("applicantEmail"),
-            applicantPhone=application_data.get("applicantPhone"),
-            applicantAddress=application_data.get("applicantAddress"),
-            applicantSSN=application_data.get("applicantSSN"),
-            propertyType=application_data.get("propertyType"),
-            propertyAddress=application_data.get("propertyAddress"),
-            propertyValue=application_data.get("propertyValue"),
-            loanAmount=application_data.get("loanAmount"),
-            employmentStatus=application_data.get("employmentStatus"),
-            employmentType=application_data.get("employmentType"),
-            employmentLength=application_data.get("employmentLength"),
-            annualIncome=application_data.get("annualIncome"),
-            creditScoreRange=application_data.get("creditScoreRange"),
-            existingMortgages=application_data.get("existingMortgages")
+            applicantName=application_data.get("applicantName", ""),
+            applicantEmail=application_data.get("applicantEmail", ""),
+            applicantPhone=application_data.get("applicantPhone", ""),
+            applicantAddress=application_data.get("applicantAddress", ""),
+            applicantSSN=application_data.get("applicantSSN", ""),
+            propertyType=application_data.get("propertyType", ""),
+            propertyAddress=application_data.get("propertyAddress", ""),
+            propertyValue=application_data.get("propertyValue", 0),
+            loanAmount=application_data.get("loanAmount", 0),
+            employmentStatus=application_data.get("employmentStatus", ""),
+            employmentType=application_data.get("employmentType", ""),
+            employmentLength=application_data.get("employmentLength", ""),
+            annualIncome=application_data.get("annualIncome", 0),
+            creditScoreRange=application_data.get("creditScoreRange", ""),
+            existingMortgages=application_data.get("existingMortgages", None)
         )
         
-        return {
-            "applicationId": result.get("application_id", str(uuid.uuid4())),
-            "applicationStatus": result.get("status", "INITIATED"),
-            "nextSteps": result.get("next_steps", []),
-            "requiredDocuments": result.get("required_documents", []),
-            "estimatedReviewTime": result.get("estimated_review_time", "1-2 business days")
-        }
+        # Handle different return scenarios
+        if result.get("status") == "ERROR":
+            return {
+                "error": result.get("message", "Unknown error occurred")
+            }
+        
+        return result
+    
     except Exception as e:
-        logger.error(f"Error submitting mortgage application: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e), headers={"X-Error-Details": str(e)})
+        logger.error(f"Endpoint error: {str(e)}")
+        return {
+            "error": str(e)
+        }
 
 
 

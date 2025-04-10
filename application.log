@@ -1,0 +1,23 @@
+2025-04-10 10:33:29,819 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-10 10:33:29,819 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:33:29,819 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-10 10:33:29,819 - src.utils.config - INFO - Initializing configuration manager with config/app_config.json
+2025-04-10 10:33:29,834 - src.utils.config - INFO - Loaded configuration from config/app_config.json
+2025-04-10 10:33:30,800 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-10 10:33:30,801 - semantic_kernel.plugins - INFO - Registering Semantic Kernel plugins
+2025-04-10 10:33:30,801 - semantic_kernel.plugins - INFO - Successfully registered all plugins with mock functions
+2025-04-10 10:33:30,801 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 10:33:30,802 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-10 10:33:30,802 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:33:30,803 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-10 10:33:30,803 - agent.compliance - INFO - Initializing compliance agent
+2025-04-10 10:33:30,804 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:33:30,804 - agent.compliance - INFO - Compliance agent initialized
+2025-04-10 10:33:30,804 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-10 10:33:30,806 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:33:30,807 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-10 10:33:30,808 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:33:30,810 - src.data.cosmos_manager - INFO - Cosmos DB Manager initialized (Mock Mode: True)
+2025-04-10 10:33:30,810 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-10 10:33:30,810 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-10 10:33:30,811 - agent.document_analysis - INFO - Document analysis agent initialized

@@ -2,6 +2,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.endpoints import router as api_router  # Import the router instead of app
 
+
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),  # Outputs to console
+        logging.FileHandler('application.log')  # Outputs to a file
+    ]
+)
+
+
 # Create FastAPI application instance
 app = FastAPI(
     title="Mortgage Lending Assistant API",
