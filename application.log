@@ -805,3 +805,7 @@ TypeError: ApplicationActions.check_application_status() got an unexpected keywo
 2025-04-10 18:56:45,683 - agent.orchestrator - INFO - Orchestrator agent fully initialized
 2025-04-10 18:56:45,683 - agent.document_analysis - INFO - Initializing document_analysis agent
 2025-04-10 18:56:45,684 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-10 18:57:10,458 - api_endpoints - INFO - Received application status check request
+2025-04-10 18:57:10,458 - src.copilot.actions.application_actions - INFO - Checking status for application: APP-20250410-DOE
+2025-04-10 18:57:10,458 - src.copilot.actions.application_actions - INFO - Extra context provided: {'applicant_name': 'John Doe'}
+2025-04-10 18:57:10,610 - src.data.cosmos_manager - INFO - Created mock item in application_states: APP-20250410-DOE
