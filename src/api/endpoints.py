@@ -251,13 +251,18 @@ async def loan_eligibility_calculation(
         raise HTTPException(status_code=500, detail=str(e))
 
 # 6. Resolve Mortgage Issues
-@router.post("/applications/{application_id}/issues/resolve")
+@router.post("/applications/issues/resolve")
 async def resolve_mortgage_issues(
-    application_id: str,
     issue_data: Dict[str, Any] = Body(...)
 ):
     """Resolve issues with a mortgage application"""
     try:
+        # Extract application ID from the request body instead of the URL
+        application_id = issue_data.get("applicationId")
+        
+        if not application_id:
+            raise HTTPException(status_code=400, detail="Application ID is required")
+            
         logger.info(f"Received issue resolution request for application {application_id}")
         
         result = await application_actions.resolve_issue(
@@ -278,7 +283,6 @@ async def resolve_mortgage_issues(
     except Exception as e:
         logger.error(f"Error resolving mortgage issue: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
-
 # 7. Customer Inquiry
 @router.post("/applications/{application_id}/inquiries")
 async def process_customer_inquiry(
