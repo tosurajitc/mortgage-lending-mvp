@@ -31,7 +31,7 @@
     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   },
   "mock_mode": {
-    "enabled": true,
+    "enabled": false,
     "mock_storage_path": "data/mock_cosmos"
   }
 }

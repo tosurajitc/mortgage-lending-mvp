@@ -67,16 +67,21 @@ def setup_logging(
         )
         logging.warning(f"Logging config file not found at {config_path}. Using basic configuration.")
 def get_logger(name):
-    """
-    Get a logger with the specified name.
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)  # Set to DEBUG for more detailed logs
     
-    Args:
-        name (str): Name of the logger
-        
-    Returns:
-        logging.Logger: Logger with the specified name
-    """
-    return logging.getLogger(name)
+    # Add handler to output to file
+    file_handler = logging.FileHandler('llm_test.log')
+    file_handler.setLevel(logging.DEBUG)
+    
+    # Create a formatter that shows timestamps
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    
+    # Add the handler to logger
+    logger.addHandler(file_handler)
+    
+    return logger
 
 
 def get_audit_logger():
