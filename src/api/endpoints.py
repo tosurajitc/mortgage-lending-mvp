@@ -10,6 +10,7 @@ import uuid
 import json
 from datetime import datetime, timezone
 from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 
 # Import from your existing architecture
 from src.copilot.actions.application_actions import ApplicationActions
@@ -18,6 +19,7 @@ from src.utils.logging_utils import get_logger
 
 # Create a router
 router = APIRouter()
+
 
 # Configure logging
 logger = get_logger("api_endpoints")
@@ -109,48 +111,49 @@ async def check_application_status(
 
 
 # 3. Upload Documents
-# Simplified document upload endpoint
-@router.post("/applications/{application_id}/documents/upload")
+# Updated document upload endpoint without application_id in URL
+@router.post("/applications/documents/upload")
 async def upload_documents(
-    application_id: str,
-    document_type: str = Form(...),
-    document_year: Optional[str] = Form(None),
-    document_description: Optional[str] = Form(None),
-    document_format: str = Form("PDF"),
-    file: UploadFile = File(...)
+    document_data: dict = Body(...)
 ):
     """
-    Upload a document for a mortgage application.
+    Upload a document for a mortgage application using base64 encoded content.
     
-    Parameters:
-    - application_id: ID of the mortgage application
-    - document_type: Type of document being uploaded (e.g., INCOME_VERIFICATION)
-    - document_year: Year the document is for (e.g., tax year)
-    - document_description: Optional description of the document
-    - document_format: Format of the document (default: PDF)
-    - file: The actual document file to upload
+    JSON Body Parameters:
+    - applicationId: ID of the mortgage application
+    - documentType: Type of document being uploaded (e.g., INCOME_VERIFICATION)
+    - documentYear: Year the document is for (e.g., tax year) - optional
+    - documentDescription: Optional description of the document
+    - documentFormat: Format of the document (default: PDF)
+    - documentContent: Base64 encoded document content
     
     Returns:
     - Upload status information and next steps
     """
     try:
-        logger.info(f"Processing document upload for application {application_id}, type: {document_type}")
+        # Extract application ID from the body instead of URL
+        application_id = document_data.get("applicationId")
         
-        # Read file content
-        content = await file.read()
+        # Validate required fields
+        if not application_id:
+            raise HTTPException(status_code=400, detail="applicationId is required")
+            
+        if 'documentType' not in document_data:
+            raise HTTPException(status_code=400, detail="documentType is required")
+            
+        if 'documentContent' not in document_data:
+            raise HTTPException(status_code=400, detail="documentContent is required")
         
-        # Convert to base64 for internal processing
-        import base64
-        document_content = base64.b64encode(content).decode('utf-8')
+        logger.info(f"Processing document upload for application {application_id}, type: {document_data.get('documentType')}")
         
-        # Call the document actions with the file content
+        # Call the document actions with the provided content
         result = await document_actions.upload_document(
             application_id=application_id,
-            document_type=document_type,
-            document_year=document_year,
-            document_description=document_description,
-            document_format=document_format,
-            document_content=document_content
+            document_type=document_data.get("documentType"),
+            document_year=document_data.get("documentYear"),
+            document_description=document_data.get("documentDescription"),
+            document_format=document_data.get("documentFormat", "PDF"),
+            document_content=document_data.get("documentContent")
         )
         
         # Get next steps from the result
@@ -163,30 +166,37 @@ async def upload_documents(
         response = {
             "applicationId": application_id,
             "uploadStatus": "SUCCESS" if not result.get("error") else "FAILED",
-            "documentType": document_type,
+            "documentType": document_data.get("documentType"),
             "message": result.get("message", "Document uploaded successfully"),
             "nextSteps": next_steps,
             "output": next_steps_str
         }
         
-        logger.info(f"Document upload successful for application {application_id}, type: {document_type}")
+        logger.info(f"Document upload successful for application {application_id}, type: {document_data.get('documentType')}")
         
         return response
         
+    except HTTPException as he:
+        raise he
+        
     except Exception as e:
-        logger.error(f"Error uploading document: {str(e)}", exc_info=True)
+        # Extract application ID safely for error response
+        application_id = document_data.get("applicationId", "UNKNOWN")
+        
+        logger.error(f"Error uploading document for application {application_id}: {str(e)}", exc_info=True)
         
         error_response = {
             "applicationId": application_id,
             "uploadStatus": "FAILED",
-            "documentType": document_type,
+            "documentType": document_data.get("documentType", "UNKNOWN"),
             "message": f"Error: {str(e)}",
             "nextSteps": ["Please try uploading again", "Contact support if the issue persists"],
             "output": "Error occurred during document upload"
         }
         
         return error_response
-
+    
+    
 # 4. Loan Type Recommendation
 @router.post("/loan/recommendations")
 async def loan_type_recommendation(
@@ -194,8 +204,26 @@ async def loan_type_recommendation(
 ):
     """Get loan type recommendations based on applicant criteria"""
     try:
-        logger.info("Received loan type recommendation request")
+        # Add silent validation without Pydantic
+        required_fields = {
+            'annualIncome': float,
+            'creditScoreRange': str,
+            'downPaymentPercentage': (float, int),
+            'propertyType': str,
+            'homeOwnershipPlans': str,
+            'militaryService': str,
+            'propertyLocation': str,
+            'financialPriority': str
+        }
         
+        for field, field_type in required_fields.items():
+            if field not in loan_criteria:
+                logger.warning(f"Missing field: {field}")
+            elif not isinstance(loan_criteria[field], field_type):
+                if not (field_type == (float, int) and isinstance(loan_criteria[field], (float, int))):
+                    logger.warning(f"Type mismatch in {field}. Expected {field_type}, got {type(loan_criteria[field])}")
+
+        # Original unchanged processing ▼
         result = await application_actions.recommend_loan_types(
             annual_income=loan_criteria.get("annualIncome"),
             credit_score_range=loan_criteria.get("creditScoreRange"),
@@ -215,8 +243,10 @@ async def loan_type_recommendation(
             "nextSteps": result.get("next_steps", [])
         }
     except Exception as e:
-        logger.error(f"Error getting loan type recommendations: {str(e)}", exc_info=True)
+        logger.error(f"Error in loan recommendations: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+    
+    
 
 # 5. Loan Eligibility Calculation
 @router.post("/loan/eligibility")

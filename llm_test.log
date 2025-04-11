@@ -1,0 +1,41 @@
+2025-04-11 15:38:04,432 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-11 15:38:04,434 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-11 15:38:04,435 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-11 15:38:05,133 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-11 15:38:05,134 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-11 15:38:05,135 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-11 15:38:05,136 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-11 15:38:05,137 - agent.compliance - INFO - Initializing compliance agent
+2025-04-11 15:38:05,138 - agent.compliance - INFO - Compliance agent initialized
+2025-04-11 15:38:05,139 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-11 15:38:05,140 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-11 15:38:05,144 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-11 15:38:05,145 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-11 15:38:05,145 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-11 15:38:05,146 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-11 15:38:05,146 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-11 15:39:45,531 - agent.orchestrator - INFO - orchestrator - Starting new application processing for 41dd1d08-e039-423d-b853-04b5c0116ff8
+2025-04-11 15:39:45,531 - state_manager - INFO - Creating application state for 41dd1d08-e039-423d-b853-04b5c0116ff8 with initial state ApplicationStatus.INITIATED
+2025-04-11 15:39:45,532 - agent.orchestrator - INFO - orchestrator - Starting document analysis
+2025-04-11 15:39:45,532 - agent.document_analysis - DEBUG - Validating input for document_analysis
+2025-04-11 15:39:45,532 - agent.document_analysis - DEBUG - Validating input for document_analysis
+2025-04-11 15:39:45,533 - agent.document_analysis - INFO - document_analysis - Processing started
+2025-04-11 15:39:45,533 - agent.document_analysis - INFO - document_analysis - Processing started
+2025-04-11 15:39:45,534 - agent.document_analysis - INFO - document_analysis - Processing 2 documents for application 41dd1d08-e039-423d-b853-04b5c0116ff8
+2025-04-11 15:39:45,534 - agent.document_analysis - INFO - document_analysis - Processing 2 documents for application 41dd1d08-e039-423d-b853-04b5c0116ff8
+2025-04-11 15:39:45,534 - agent.document_analysis - INFO - document_analysis - Analyzing document of type: INCOME_VERIFICATION
+2025-04-11 15:39:45,534 - agent.document_analysis - INFO - document_analysis - Analyzing document of type: INCOME_VERIFICATION
+2025-04-11 15:39:45,534 - agent.document_analysis - INFO - document_analysis - Analyzing document of type: PROPERTY_APPRAISAL
+2025-04-11 15:39:45,534 - agent.document_analysis - INFO - document_analysis - Analyzing document of type: PROPERTY_APPRAISAL
+2025-04-11 15:39:45,872 - agent.document_analysis - DEBUG - Sanitizing output for document_analysis
+2025-04-11 15:39:45,872 - agent.document_analysis - DEBUG - Sanitizing output for document_analysis
+2025-04-11 15:39:45,876 - agent.document_analysis - INFO - document_analysis - Processing completed
+2025-04-11 15:39:45,876 - agent.document_analysis - INFO - document_analysis - Processing completed
+2025-04-11 15:39:45,876 - state_manager - INFO - Updating application 41dd1d08-e039-423d-b853-04b5c0116ff8 state to ApplicationStatus.DOCUMENTS_PROCESSED
+2025-04-11 15:39:45,876 - agent.orchestrator - INFO - orchestrator - Document analysis shows incomplete documentation: {'missing_documents': ['CREDIT_REPORT', 'ID_VERIFICATION']}
+2025-04-11 15:39:45,877 - agent.customer_service - DEBUG - Validating input for customer_service
+2025-04-11 15:39:45,877 - agent.customer_service - INFO - customer_service - Processing started
+2025-04-11 15:39:45,877 - agent.customer_service - INFO - customer_service - Processing missing_documents request for application 41dd1d08-e039-423d-b853-04b5c0116ff8
+2025-04-11 15:39:45,877 - agent.customer_service - INFO - customer_service - Generating missing documents notification for 2 documents
+2025-04-11 15:39:45,879 - agent.customer_service - DEBUG - Sanitizing output for customer_service
+2025-04-11 15:39:45,880 - agent.customer_service - INFO - customer_service - Processing completed
