@@ -1110,3 +1110,6 @@ TypeError: ApplicationActions.check_application_status() got an unexpected keywo
 2025-04-11 16:01:33,783 - agent.orchestrator - INFO - Orchestrator agent fully initialized
 2025-04-11 16:01:33,783 - agent.document_analysis - INFO - Initializing document_analysis agent
 2025-04-11 16:01:33,784 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-11 16:05:39,258 - api_endpoints - INFO - Processing document upload for application 41dd1d08-e039-423d-b853-04b5c0116ff8, type: CREDIT_REPORT
+2025-04-11 16:05:39,259 - document_actions - INFO - Processing document upload for application 41dd1d08-e039-423d-b853-04b5c0116ff8: CREDIT_REPORT
+2025-04-11 16:05:39,259 - api_endpoints - INFO - Document upload successful for application 41dd1d08-e039-423d-b853-04b5c0116ff8, type: CREDIT_REPORT

@@ -1,484 +1,251 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-      "title": "Submit Mortgage Application",
-      "description": "API to submit a new mortgage application from Copilot Studio",
-      "version": "1.0.0"
-    },
-    "servers": [
-      {
-        "url": "https://surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net"
-      }
-    ],
-    "paths": {
-      "/api/applications/submit": {
-        "post": {
-          "summary": "Submit a new mortgage application",
-          "description": "Submits a new mortgage application with applicant, loan, property, employment, and financial details",
-          "operationId": "submitMortgageApplication",
-          "requestBody": {
-            "required": true,
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Submit Mortgage Application API",
+    "description": "API for submitting new mortgage applications through the mortgage lending system",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/api/applications/submit": {
+      "post": {
+        "summary": "Submit a new mortgage application",
+        "description": "Submit a comprehensive mortgage application with applicant, property, and loan details",
+        "operationId": "submitMortgageApplication",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MortgageApplicationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Application submitted successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MortgageApplicationRequest"
+                  "$ref": "#/components/schemas/MortgageApplicationResponse"
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Successfully submitted mortgage application",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/MortgageApplicationResponse"
-                  }
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            },
-            "400": {
-              "description": "Bad request - invalid input data",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           }
         }
       }
-    },
-    "components": {
-      "schemas": {
-        "MortgageApplicationRequest": {
-          "type": "object",
-          "required": [
-            "applicant",
-            "loan",
-            "property"
-          ],
-          "properties": {
-            "applicant": {
-              "type": "object",
-              "required": [
-                "firstName",
-                "lastName",
-                "email",
-                "phone",
-                "dateOfBirth",
-                "ssnLastFour"
-              ],
-              "properties": {
-                "firstName": {
-                  "type": "string",
-                  "description": "First name of the applicant"
-                },
-                "lastName": {
-                  "type": "string",
-                  "description": "Last name of the applicant"
-                },
-                "email": {
-                  "type": "string",
-                  "format": "email",
-                  "description": "Email address of the applicant"
-                },
-                "phone": {
-                  "type": "string",
-                  "description": "Phone number of the applicant"
-                },
-                "dateOfBirth": {
-                  "type": "string",
-                  "format": "date",
-                  "description": "Date of birth of the applicant (YYYY-MM-DD)"
-                },
-                "ssnLastFour": {
-                  "type": "string",
-                  "pattern": "^[0-9]{4}$",
-                  "description": "Last four digits of the applicant's Social Security Number"
-                },
-                "address": {
-                  "type": "object",
-                  "properties": {
-                    "street": {
-                      "type": "string",
-                      "description": "Street address of the applicant"
-                    },
-                    "city": {
-                      "type": "string",
-                      "description": "City of the applicant"
-                    },
-                    "state": {
-                      "type": "string",
-                      "description": "State of the applicant"
-                    },
-                    "zipCode": {
-                      "type": "string",
-                      "description": "Zip code of the applicant"
-                    },
-                    "country": {
-                      "type": "string",
-                      "default": "USA",
-                      "description": "Country of the applicant"
-                    }
-                  },
-                  "required": [
-                    "street",
-                    "city",
-                    "state",
-                    "zipCode"
-                  ]
-                },
-                "employmentStatus": {
-                  "type": "string",
-                  "enum": [
-                    "EMPLOYED",
-                    "SELF_EMPLOYED",
-                    "RETIRED",
-                    "UNEMPLOYED"
-                  ],
-                  "description": "Employment status of the applicant"
-                },
-                "employerName": {
-                  "type": "string",
-                  "description": "Name of the employer"
-                },
-                "yearsAtCurrentJob": {
-                  "type": "number",
-                  "description": "Number of years at current job"
-                },
-                "annualIncome": {
-                  "type": "number",
-                  "description": "Annual income of the applicant"
-                },
-                "creditScore": {
-                  "type": "integer",
-                  "minimum": 300,
-                  "maximum": 850,
-                  "description": "Credit score of the applicant"
-                }
-              }
-            },
-            "loan": {
-              "type": "object",
-              "required": [
-                "loanAmount",
-                "loanTermYears"
-              ],
-              "properties": {
-                "loanAmount": {
-                  "type": "number",
-                  "description": "Requested loan amount"
-                },
-                "loanTermYears": {
-                  "type": "integer",
-                  "enum": [15, 20, 30],
-                  "description": "Loan term in years"
-                },
-                "interestRate": {
-                  "type": "number",
-                  "description": "Interest rate (if known)"
-                },
-                "loanType": {
-                  "type": "string",
-                  "enum": [
-                    "CONVENTIONAL",
-                    "FHA",
-                    "VA",
-                    "JUMBO",
-                    "USDA"
-                  ],
-                  "default": "CONVENTIONAL",
-                  "description": "Type of loan requested"
-                },
-                "downPayment": {
-                  "type": "number",
-                  "description": "Down payment amount"
-                },
-                "isFirstTimeHomebuyer": {
-                  "type": "boolean",
-                  "default": false,
-                  "description": "Whether the applicant is a first-time homebuyer"
-                }
-              }
-            },
-            "property": {
-              "type": "object",
-              "required": [
-                "address",
-                "propertyType",
-                "estimatedValue"
-              ],
-              "properties": {
-                "address": {
-                  "type": "object",
-                  "properties": {
-                    "street": {
-                      "type": "string",
-                      "description": "Street address of the property"
-                    },
-                    "city": {
-                      "type": "string",
-                      "description": "City of the property"
-                    },
-                    "state": {
-                      "type": "string",
-                      "description": "State of the property"
-                    },
-                    "zipCode": {
-                      "type": "string",
-                      "description": "Zip code of the property"
-                    },
-                    "country": {
-                      "type": "string",
-                      "default": "USA",
-                      "description": "Country of the property"
-                    }
-                  },
-                  "required": [
-                    "street",
-                    "city",
-                    "state",
-                    "zipCode"
-                  ]
-                },
-                "propertyType": {
-                  "type": "string",
-                  "enum": [
-                    "SINGLE_FAMILY",
-                    "CONDOMINIUM",
-                    "TOWNHOUSE",
-                    "MULTI_UNIT",
-                    "MANUFACTURED"
-                  ],
-                  "description": "Type of property"
-                },
-                "estimatedValue": {
-                  "type": "number",
-                  "description": "Estimated value of the property"
-                },
-                "yearBuilt": {
-                  "type": "integer",
-                  "description": "Year the property was built"
-                },
-                "squareFootage": {
-                  "type": "integer",
-                  "description": "Square footage of the property"
-                }
-              }
-            },
-            "employment": {
-              "type": "object",
-              "properties": {
-                "currentEmployer": {
-                  "type": "string",
-                  "description": "Name of current employer"
-                },
-                "position": {
-                  "type": "string",
-                  "description": "Current job position/title"
-                },
-                "yearsAtJob": {
-                  "type": "number",
-                  "description": "Years at current job"
-                },
-                "monthlyIncome": {
-                  "type": "number",
-                  "description": "Monthly income from employment"
-                },
-                "employmentType": {
-                  "type": "string",
-                  "enum": [
-                    "FULL_TIME",
-                    "PART_TIME",
-                    "CONTRACT",
-                    "SELF_EMPLOYED"
-                  ],
-                  "description": "Type of employment"
-                },
-                "previousEmployers": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string",
-                        "description": "Name of previous employer"
-                      },
-                      "startDate": {
-                        "type": "string",
-                        "format": "date",
-                        "description": "Employment start date"
-                      },
-                      "endDate": {
-                        "type": "string",
-                        "format": "date",
-                        "description": "Employment end date"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "financial": {
-              "type": "object",
-              "properties": {
-                "monthlyDebts": {
-                  "type": "number",
-                  "description": "Total monthly debt payments"
-                },
-                "bankAccounts": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "accountType": {
-                        "type": "string",
-                        "enum": [
-                          "CHECKING",
-                          "SAVINGS",
-                          "INVESTMENT"
-                        ],
-                        "description": "Type of bank account"
-                      },
-                      "balance": {
-                        "type": "number",
-                        "description": "Current balance in the account"
-                      }
-                    }
-                  }
-                },
-                "existingMortgages": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "lender": {
-                        "type": "string",
-                        "description": "Name of the mortgage lender"
-                      },
-                      "monthlyPayment": {
-                        "type": "number",
-                        "description": "Monthly payment amount"
-                      },
-                      "remainingBalance": {
-                        "type": "number",
-                        "description": "Remaining balance on the mortgage"
-                      }
-                    }
-                  }
-                },
-                "otherLoans": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "loanType": {
-                        "type": "string",
-                        "enum": [
-                          "AUTO",
-                          "STUDENT",
-                          "PERSONAL"
-                        ],
-                        "description": "Type of loan"
-                      },
-                      "monthlyPayment": {
-                        "type": "number",
-                        "description": "Monthly payment amount"
-                      },
-                      "remainingBalance": {
-                        "type": "number",
-                        "description": "Remaining balance on the loan"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "MortgageApplicationResponse": {
-          "type": "object",
-          "required": [
-            "applicationId",
-            "applicationStatus"
-          ],
-          "properties": {
-            "applicationId": {
-              "type": "string",
-              "description": "Unique identifier for the submitted mortgage application"
-            },
-            "applicationStatus": {
-              "type": "string",
-              "enum": [
-                "INITIATED",
-                "SUBMITTED",
-                "DOCUMENT_REVIEW",
-                "PROCESSING",
-                "INCOMPLETE_DOCUMENTS"
-              ],
-              "description": "Current status of the application"
-            },
-            "nextSteps": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "List of next steps for the applicant"
-            },
-            "requiredDocuments": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "List of required documents for the application"
-            },
-            "estimatedReviewTime": {
-              "type": "string",
-              "description": "Estimated time for application review"
-            }
-          }
-        },
-        "ErrorResponse": {
-          "type": "object",
-          "required": [
-            "error"
-          ],
-          "properties": {
-            "error": {
-              "type": "string",
-              "description": "Error message"
-            },
-            "details": {
-              "type": "string",
-              "description": "Additional error details"
-            }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MortgageApplicationRequest": {
+        "type": "object",
+        "required": [
+          "applicantName",
+          "applicantEmail",
+          "applicantPhone",
+          "applicantAddress",
+          "applicantSSN",
+          "propertyType",
+          "propertyAddress",
+          "propertyValue",
+          "loanAmount",
+          "employmentStatus",
+          "employmentType",
+          "employmentLength",
+          "annualIncome",
+          "creditScoreRange"
+        ],
+        "properties": {
+          "applicantName": {
+            "type": "string",
+            "description": "Full name of the applicant",
+            "example": "John Smith"
+          },
+          "applicantEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the applicant",
+            "example": "john.smith@example.com"
+          },
+          "applicantPhone": {
+            "type": "string",
+            "description": "Phone number of the applicant",
+            "example": "555-123-4567"
+          },
+          "applicantAddress": {
+            "type": "string",
+            "description": "Current residential address of the applicant",
+            "example": "123 Main Street, Apt 4B, New York, NY 10001"
+          },
+          "applicantSSN": {
+            "type": "string",
+            "description": "Social Security Number of the applicant",
+            "example": "123-45-6789"
+          },
+          "propertyType": {
+            "type": "string",
+            "description": "Type of property for the mortgage",
+            "enum": ["SingleFamily", "Condo", "MultiFamily", "TownHouse", "Other"],
+            "example": "SingleFamily"
+          },
+          "propertyAddress": {
+            "type": "string",
+            "description": "Address of the property being financed",
+            "example": "456 Park Avenue, Chicago, IL 60601"
+          },
+          "propertyValue": {
+            "type": "number",
+            "format": "float",
+            "description": "Appraised value of the property in USD",
+            "example": 350000
+          },
+          "loanAmount": {
+            "type": "number",
+            "format": "float",
+            "description": "Requested loan amount in USD",
+            "example": 280000
+          },
+          "employmentStatus": {
+            "type": "string",
+            "description": "Current employment status of the applicant",
+            "enum": ["Employed", "SelfEmployed", "Retired", "Unemployed"],
+            "example": "Employed"
+          },
+          "employmentType": {
+            "type": "string",
+            "description": "Type of employment",
+            "enum": ["FullTime", "PartTime", "Contract", "Seasonal", "Other"],
+            "example": "FullTime"
+          },
+          "employmentLength": {
+            "type": "string",
+            "description": "Length of time at current employment",
+            "example": "5 years"
+          },
+          "annualIncome": {
+            "type": "number",
+            "format": "float",
+            "description": "Annual gross income of the applicant in USD",
+            "example": 85000
+          },
+          "creditScoreRange": {
+            "type": "string",
+            "description": "Credit score range of the applicant",
+            "enum": ["Excellent (750+)", "Good (700-749)", "Fair (650-699)", "Poor (below 650)"],
+            "example": "Good (700-749)"
+          },
+          "existingMortgages": {
+            "type": "number",
+            "format": "float",
+            "description": "Total amount of existing mortgage debt (optional)",
+            "example": 0
           }
         }
       },
-      "securitySchemes": {
-        "ApiKeyAuth": {
-          "type": "apiKey",
-          "in": "header",
-          "name": "Authorization"
+      "MortgageApplicationResponse": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "description": "Unique identifier for the application",
+            "example": "APP-20250412-SMITH"
+          },
+          "applicationStatus": {
+            "type": "string",
+            "description": "Current status of the application",
+            "example": "INITIATED"
+          },
+          "nextSteps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of next steps for the applicant",
+            "example": ["Upload required documentation", "Verify your email address"]
+          },
+          "requiredDocuments": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of documents required for the application",
+            "example": ["INCOME_VERIFICATION", "PROPERTY_APPRAISAL"]
+          },
+          "estimatedReviewTime": {
+            "type": "string",
+            "description": "Estimated time for initial review",
+            "example": "1-2 business days"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "description": "Unique identifier for the application (if available)",
+            "example": "APP-20250412-SMITH"
+          },
+          "applicationStatus": {
+            "type": "string",
+            "description": "Error status",
+            "example": "ERROR"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message with details",
+            "example": "All parameters are required. Please provide complete information."
+          },
+          "nextSteps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Suggested actions to resolve the issue",
+            "example": []
+          },
+          "requiredDocuments": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Documents required (if applicable)",
+            "example": []
+          },
+          "estimatedReviewTime": {
+            "type": "string",
+            "description": "Estimated review time (if applicable)",
+            "example": "Unable to determine"
+          }
         }
       }
-    },
-    "security": [
-      {
-        "ApiKeyAuth": []
-      }
-    ]
+    }
   }
+}

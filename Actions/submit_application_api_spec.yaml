@@ -1,0 +1,59 @@
+openapi: 3.0.0
+info:
+  title: Mortgage Lending API
+  version: 1.0.0
+  description: Submit and manage mortgage applications
+
+servers:
+  - url: https://surajit-hackathon-d3bvddhmfnfkb5aw.canadacentral-01.azurewebsites.net/api
+
+paths:
+  /applications/submit:
+    post:
+      summary: Submit a mortgage application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                applicantName:
+                  type: string
+                applicantEmail:
+                  type: string
+                applicantSSN:
+                  type: string
+                propertyAddress:
+                  type: string
+                loanAmount:
+                  type: number
+                existingMortgages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      loanId:
+                        type: string
+                      outstandingBalance:
+                        type: number
+              required:
+                - applicantName
+                - applicantEmail
+                - applicantSSN
+                - propertyAddress
+                - loanAmount
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  applicationId:
+                    type: string
+                  applicationStatus:
+                    type: string
+        '400':
+          description: Invalid input

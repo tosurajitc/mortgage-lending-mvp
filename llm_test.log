@@ -39,3 +39,22 @@
 2025-04-11 15:39:45,877 - agent.customer_service - INFO - customer_service - Generating missing documents notification for 2 documents
 2025-04-11 15:39:45,879 - agent.customer_service - DEBUG - Sanitizing output for customer_service
 2025-04-11 15:39:45,880 - agent.customer_service - INFO - customer_service - Processing completed
+2025-04-11 16:01:33,074 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-11 16:01:33,075 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-11 16:01:33,076 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-11 16:01:33,775 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-11 16:01:33,776 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-11 16:01:33,777 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-11 16:01:33,777 - agent.underwriting - INFO - Underwriting agent initialized
+2025-04-11 16:01:33,778 - agent.compliance - INFO - Initializing compliance agent
+2025-04-11 16:01:33,779 - agent.compliance - INFO - Compliance agent initialized
+2025-04-11 16:01:33,779 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-11 16:01:33,780 - agent.customer_service - INFO - Customer service agent initialized
+2025-04-11 16:01:33,783 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-11 16:01:33,783 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-11 16:01:33,783 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-11 16:01:33,784 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-11 16:01:33,784 - agent.document_analysis - INFO - Document analysis agent initialized
+2025-04-11 16:05:39,258 - api_endpoints - INFO - Processing document upload for application 41dd1d08-e039-423d-b853-04b5c0116ff8, type: CREDIT_REPORT
+2025-04-11 16:05:39,259 - document_actions - INFO - Processing document upload for application 41dd1d08-e039-423d-b853-04b5c0116ff8: CREDIT_REPORT
+2025-04-11 16:05:39,259 - api_endpoints - INFO - Document upload successful for application 41dd1d08-e039-423d-b853-04b5c0116ff8, type: CREDIT_REPORT

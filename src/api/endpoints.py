@@ -314,14 +314,19 @@ async def resolve_mortgage_issues(
         logger.error(f"Error resolving mortgage issue: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 # 7. Customer Inquiry
-@router.post("/applications/{application_id}/inquiries")
+# 1. Fix the customer inquiry endpoint to be consistent with other endpoints
+@router.post("/applications/inquiries")
 async def process_customer_inquiry(
-    application_id: str,
     inquiry_data: Dict[str, Any] = Body(...)
 ):
     """Process customer inquiries about a specific application"""
     try:
-        logger.info(f"Received inquiry for application {application_id}")
+        logger.info(f"Received customer inquiry")
+        
+        # Extract application ID from request body
+        application_id = inquiry_data.get("applicationId")
+        if not application_id:
+            raise HTTPException(status_code=400, detail="Application ID is required")
         
         result = await application_actions.process_customer_inquiry(
             application_id=application_id,
@@ -340,11 +345,9 @@ async def process_customer_inquiry(
         logger.error(f"Error processing customer inquiry: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
-# 8. Copilot Process Input Endpoint
-# Special route for Copilot Studio document uploads
-@router.post("/copilot/upload-document/{application_id}")
+# 2. Fix duplicated error handling in copilot_upload_document
+@router.post("/copilot/upload-document")
 async def copilot_upload_document(
-    application_id: str,
     document_data: dict = Body(...)
 ):
     """
@@ -353,6 +356,17 @@ async def copilot_upload_document(
     that they need to use the standard upload form.
     """
     try:
+        # Extract application ID from the request body
+        application_id = document_data.get("applicationId")
+        
+        if not application_id:
+            return {
+                "uploadStatus": "FAILED",
+                "message": "Application ID is required",
+                "nextSteps": ["Please provide a valid application ID"],
+                "output": "Please provide a valid application ID to continue."
+            }
+            
         logger.info(f"Copilot document upload request for application {application_id}")
         
         # Extract document information from the request
@@ -381,7 +395,65 @@ async def copilot_upload_document(
         logger.error(f"Error handling Copilot document upload request: {str(e)}", exc_info=True)
         
         error_response = {
+            "uploadStatus": "FAILED",
+            "message": f"Error: {str(e)}",
+            "nextSteps": ["Please try again later"],
+            "output": "An error occurred while processing your document upload request."
+        }
+        
+        return error_response
+
+# 8. Copilot Process Input Endpoint
+# Updated Copilot document upload endpoint without application_id in URL
+@router.post("/copilot/upload-document")
+async def copilot_upload_document(
+    document_data: dict = Body(...)
+):
+    """
+    Special endpoint for Copilot Studio to trigger document uploads.
+    This endpoint doesn't actually upload files, but informs the user
+    that they need to use the standard upload form.
+    """
+    try:
+        # Extract application ID from the request body
+        application_id = document_data.get("applicationId")
+        
+        if not application_id:
+            return {
+                "uploadStatus": "FAILED",
+                "message": "Application ID is required",
+                "nextSteps": ["Please provide a valid application ID"],
+                "output": "Please provide a valid application ID to continue."
+            }
+            
+        logger.info(f"Copilot document upload request for application {application_id}")
+        
+        # Extract document information from the request
+        document_type = document_data.get("documentType", "")
+        document_year = document_data.get("documentYear")
+        document_description = document_data.get("documentDescription")
+        
+        # Create a response with instructions for uploading
+        response = {
             "applicationId": application_id,
+            "uploadStatus": "PENDING",
+            "documentType": document_type,
+            "message": "Please upload the document file using our secure document upload form.",
+            "nextSteps": [
+                "Go to the document upload page",
+                f"Select document type: {document_type}",
+                "Choose the file from your device",
+                "Click 'Upload' to complete the process"
+            ],
+            "output": "Please upload the actual document file using our secure document upload form."
+        }
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error handling Copilot document upload request: {str(e)}", exc_info=True)
+        
+        error_response = {
             "uploadStatus": "FAILED",
             "message": f"Error: {str(e)}",
             "nextSteps": ["Please try again later"],
@@ -416,7 +488,8 @@ async def copilot_process_input(request: Request):
         if request_type == 'submit_application':
             return await submit_mortgage_application(payload)
         elif request_type == 'upload_document':
-            return await upload_documents(payload.get('application_id', ''), payload)
+            # Just pass the payload directly since the upload endpoint now expects the full payload
+            return await upload_documents(payload)
         elif request_type == 'check_status':
             # Route to our application status endpoint
             return await check_application_status(payload)
