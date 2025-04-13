@@ -6,10 +6,10 @@ creating status updates, and explaining mortgage concepts.
 """
 
 import json
+import re
 from typing import Dict, List, Any, Optional
 
 import src.semantic_kernel as sk
-
 from src.utils.logging_utils import get_logger
 
 logger = get_logger("semantic_kernel.plugins.customer")
@@ -56,28 +56,12 @@ class CustomerCommunicatorPlugin:
             "va_loan": "A mortgage guaranteed by the Department of Veterans Affairs"
         }
     
-    @sk_function(
-        description="Generate a personalized response to a customer inquiry",
-        name="respondToInquiry"
-    )
-    @sk_function_context_parameter(
-        name="customer_name",
-        description="Name of the customer"
-    )
-    @sk_function_context_parameter(
-        name="inquiry_text",
-        description="Text of the customer's inquiry"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the relevant application data (optional)"
-    )
-    def respond_to_inquiry(self, context: sk.SKContext) -> str:
+    def respond_to_inquiry(self, context: dict) -> str:
         """
         Generate a personalized response to a customer inquiry.
         
         Args:
-            context: Semantic Kernel context with customer information and inquiry
+            context: Dictionary with customer information and inquiry
             
         Returns:
             Personalized response text
@@ -108,24 +92,12 @@ class CustomerCommunicatorPlugin:
             # General response for other types of inquiries
             return self._generate_general_response(customer_name, inquiry_text, application_data)
     
-    @sk_function(
-        description="Generate a loan application status update",
-        name="generateStatusUpdate"
-    )
-    @sk_function_context_parameter(
-        name="customer_name",
-        description="Name of the customer"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the application data"
-    )
-    def generate_status_update(self, context: sk.SKContext) -> str:
+    def generate_status_update(self, context: dict) -> str:
         """
         Generate a status update for a loan application.
         
         Args:
-            context: Semantic Kernel context with customer and application data
+            context: Dictionary with customer and application data
             
         Returns:
             Status update text
@@ -135,24 +107,12 @@ class CustomerCommunicatorPlugin:
         
         return self._generate_status_update(customer_name, application_data)
     
-    @sk_function(
-        description="Explain a mortgage term or concept in simple language",
-        name="explainMortgageTerm"
-    )
-    @sk_function_context_parameter(
-        name="term",
-        description="The mortgage term or concept to explain"
-    )
-    @sk_function_context_parameter(
-        name="customer_name",
-        description="Name of the customer (optional)"
-    )
-    def explain_mortgage_term(self, context: sk.SKContext) -> str:
+    def explain_mortgage_term(self, context: dict) -> str:
         """
         Explain a mortgage term or concept in simple language.
         
         Args:
-            context: Semantic Kernel context with the term to explain
+            context: Dictionary with the term to explain
             
         Returns:
             Clear explanation of the mortgage term
@@ -162,28 +122,12 @@ class CustomerCommunicatorPlugin:
         
         return self._explain_mortgage_term(customer_name, term)
     
-    @sk_function(
-        description="Generate a customized loan application checklist",
-        name="generateApplicationChecklist"
-    )
-    @sk_function_context_parameter(
-        name="customer_name",
-        description="Name of the customer"
-    )
-    @sk_function_context_parameter(
-        name="loan_type",
-        description="Type of mortgage loan (e.g., Conventional, FHA, VA)"
-    )
-    @sk_function_context_parameter(
-        name="loan_purpose",
-        description="Purpose of the loan (e.g., Purchase, Refinance)"
-    )
-    def generate_application_checklist(self, context: sk.SKContext) -> str:
+    def generate_application_checklist(self, context: dict) -> str:
         """
         Generate a customized checklist for a loan application.
         
         Args:
-            context: Semantic Kernel context with customer and loan information
+            context: Dictionary with customer and loan information
             
         Returns:
             Customized application checklist
@@ -246,28 +190,12 @@ class CustomerCommunicatorPlugin:
         
         return formatted_checklist
     
-    @sk_function(
-        description="Notify customer about missing or incomplete documents",
-        name="notifyMissingDocuments"
-    )
-    @sk_function_context_parameter(
-        name="customer_name",
-        description="Name of the customer"
-    )
-    @sk_function_context_parameter(
-        name="missing_documents",
-        description="JSON array of missing document descriptions"
-    )
-    @sk_function_context_parameter(
-        name="deadline_days",
-        description="Number of days to submit the documents"
-    )
-    def notify_missing_documents(self, context: sk.SKContext) -> str:
+    def notify_missing_documents(self, context: dict) -> str:
         """
         Generate a notification about missing or incomplete documents.
         
         Args:
-            context: Semantic Kernel context with customer and missing document information
+            context: Dictionary with customer and missing document information
             
         Returns:
             Notification message about missing documents
@@ -295,24 +223,12 @@ class CustomerCommunicatorPlugin:
         
         return greeting + introduction + document_list + deadline_text + closing
     
-    @sk_function(
-        description="Explain a specific step in the mortgage process",
-        name="explainMortgageStep"
-    )
-    @sk_function_context_parameter(
-        name="step_name",
-        description="Name of the mortgage process step to explain"
-    )
-    @sk_function_context_parameter(
-        name="customer_name",
-        description="Name of the customer (optional)"
-    )
-    def explain_mortgage_step(self, context: sk.SKContext) -> str:
+    def explain_mortgage_step(self, context: dict) -> str:
         """
         Explain a specific step in the mortgage process.
         
         Args:
-            context: Semantic Kernel context with the step to explain
+            context: Dictionary with the step to explain
             
         Returns:
             Clear explanation of the mortgage process step
@@ -680,4 +596,38 @@ class CustomerCommunicatorPlugin:
             if points:
                 response = f"Your loan includes {points} points. Each point costs 1% of your loan amount and reduces your interest rate by approximately 0.25%."
             else:
-                response = "I don't see information about points in your application records. Please contact your loan officer for details about points and how they"
+                response = "I don't see information about points in your application records. Please contact your loan officer for details about points and how they might impact your interest rate."
+        else:
+            # General rate response
+            response = "Interest rates are a critical component of your mortgage. "
+            
+            if interest_rate:
+                response += f"Your current rate is {interest_rate}%. "
+                if rate_lock_status and rate_lock_status.lower() == "locked":
+                    response += f"This rate is locked until {rate_lock_expiration}. "
+            
+            response += "For specific questions about your rate, rate lock options, or buying points to lower your rate, please contact your loan officer."
+        
+        closing = "\n\nIs there anything else you'd like to know about your interest rate or loan terms?"
+        
+        return greeting + response + closing
+    
+    def _generate_general_response(self, customer_name: str, inquiry_text: str, application_data: Dict[str, Any]) -> str:
+        """Generate a response to a general inquiry."""
+        # Format the response
+        greeting = f"Hi {customer_name},\n\n"
+        
+        # Extract application status if available
+        application_id = application_data.get("application_id", "your application")
+        current_status = application_data.get("status", "under review")
+        
+        # Generate a general response based on the inquiry
+        response = f"Thank you for your inquiry about your mortgage application. Your application (ID: {application_id}) is currently {current_status}. "
+        
+        response += "I'd be happy to help with any specific questions you have about your application, document requirements, timelines, or mortgage terms. "
+        
+        response += "For the most detailed and up-to-date information, you can also contact your loan officer directly."
+        
+        closing = "\n\nIs there anything specific I can help you with regarding your mortgage application?"
+        
+        return greeting + response + closing

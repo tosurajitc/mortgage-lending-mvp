@@ -58,3 +58,47 @@
 2025-04-11 16:05:39,258 - api_endpoints - INFO - Processing document upload for application 41dd1d08-e039-423d-b853-04b5c0116ff8, type: CREDIT_REPORT
 2025-04-11 16:05:39,259 - document_actions - INFO - Processing document upload for application 41dd1d08-e039-423d-b853-04b5c0116ff8: CREDIT_REPORT
 2025-04-11 16:05:39,259 - api_endpoints - INFO - Document upload successful for application 41dd1d08-e039-423d-b853-04b5c0116ff8, type: CREDIT_REPORT
+2025-04-13 19:51:51,010 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-13 19:51:51,011 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-13 19:51:51,012 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-13 19:51:52,061 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-13 19:51:52,062 - agent.document_analysis - INFO - DocumentAnalyzerPlugin registered successfully
+2025-04-13 19:51:52,063 - agent.document_analysis - INFO - Document analysis agent initialized with enhanced analysis capabilities
+2025-04-13 19:51:52,063 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-13 19:51:52,064 - agent.underwriting - INFO - UnderwritingEvaluatorPlugin registered successfully
+2025-04-13 19:51:52,066 - agent.underwriting - INFO - Underwriting agent initialized with enhanced evaluation capabilities
+2025-04-13 19:51:52,066 - agent.compliance - INFO - Initializing compliance agent
+2025-04-13 19:51:52,067 - agent.compliance - INFO - ComplianceCheckerPlugin registered successfully
+2025-04-13 19:51:52,068 - agent.compliance - INFO - Compliance agent initialized with enhanced regulatory assessment capabilities
+2025-04-13 19:51:52,069 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-13 19:51:52,069 - agent.customer_service - INFO - CustomerCommunicatorPlugin registered successfully
+2025-04-13 19:51:52,070 - agent.customer_service - INFO - Customer service agent initialized with enhanced communication capabilities
+2025-04-13 19:51:52,074 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-13 19:51:52,074 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-13 19:51:52,074 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-13 19:51:52,075 - agent.document_analysis - INFO - DocumentAnalyzerPlugin registered successfully
+2025-04-13 19:51:52,075 - agent.document_analysis - INFO - DocumentAnalyzerPlugin registered successfully
+2025-04-13 19:51:52,075 - agent.document_analysis - INFO - Document analysis agent initialized with enhanced analysis capabilities
+2025-04-13 19:51:52,075 - agent.document_analysis - INFO - Document analysis agent initialized with enhanced analysis capabilities
+2025-04-13 19:51:52,738 - agent.orchestrator - INFO - Initializing orchestrator agent
+2025-04-13 19:51:52,739 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-13 19:51:52,739 - semantic_kernel.setup - INFO - Initializing Semantic Kernel
+2025-04-13 19:51:53,153 - semantic_kernel.setup - INFO - Azure OpenAI services added to Semantic Kernel
+2025-04-13 19:51:53,155 - agent.document_analysis - INFO - DocumentAnalyzerPlugin registered successfully
+2025-04-13 19:51:53,155 - agent.document_analysis - INFO - Document analysis agent initialized with enhanced analysis capabilities
+2025-04-13 19:51:53,156 - agent.underwriting - INFO - Initializing underwriting agent
+2025-04-13 19:51:53,156 - agent.underwriting - INFO - UnderwritingEvaluatorPlugin registered successfully
+2025-04-13 19:51:53,158 - agent.underwriting - INFO - Underwriting agent initialized with enhanced evaluation capabilities
+2025-04-13 19:51:53,159 - agent.compliance - INFO - Initializing compliance agent
+2025-04-13 19:51:53,159 - agent.compliance - INFO - ComplianceCheckerPlugin registered successfully
+2025-04-13 19:51:53,161 - agent.compliance - INFO - Compliance agent initialized with enhanced regulatory assessment capabilities
+2025-04-13 19:51:53,161 - agent.customer_service - INFO - Initializing customer_service agent
+2025-04-13 19:51:53,162 - agent.customer_service - INFO - CustomerCommunicatorPlugin registered successfully
+2025-04-13 19:51:53,163 - agent.customer_service - INFO - Customer service agent initialized with enhanced communication capabilities
+2025-04-13 19:51:53,167 - agent.orchestrator - INFO - Orchestrator agent fully initialized
+2025-04-13 19:51:53,167 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-13 19:51:53,167 - agent.document_analysis - INFO - Initializing document_analysis agent
+2025-04-13 19:51:53,168 - agent.document_analysis - INFO - DocumentAnalyzerPlugin registered successfully
+2025-04-13 19:51:53,168 - agent.document_analysis - INFO - DocumentAnalyzerPlugin registered successfully
+2025-04-13 19:51:53,168 - agent.document_analysis - INFO - Document analysis agent initialized with enhanced analysis capabilities
+2025-04-13 19:51:53,168 - agent.document_analysis - INFO - Document analysis agent initialized with enhanced analysis capabilities
