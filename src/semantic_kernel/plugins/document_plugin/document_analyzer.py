@@ -1,10 +1,10 @@
 import os
 import json
 import datetime
-from typing import Dict, List, Any, Optional, Tuple
-import src.semantic_kernel as sk
 import re
+from typing import Dict, List, Any, Optional, Tuple
 
+import src.semantic_kernel as sk
 from src.utils.logging_utils import get_logger
 from src.data.models import Document, DocumentType
 
@@ -27,12 +27,12 @@ class DocumentAnalyzerPlugin:
         self.kernel = kernel
         self.logger = logger
     
-    def extract_w2_information(self, context: sk.SKContext) -> str:
+    def extract_w2_information(self, context: dict) -> str:
         """
         Extract key information from a W-2 tax form.
         
         Args:
-            context: Semantic Kernel context containing document text
+            context: Dictionary containing document text
             
         Returns:
             JSON string with extracted information
@@ -85,12 +85,12 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    def extract_pay_stub_information(self, context: sk.SKContext) -> str:
+    def extract_pay_stub_information(self, context: dict) -> str:
         """
         Extract key information from a pay stub.
         
         Args:
-            context: Semantic Kernel context containing document text
+            context: Dictionary containing document text
             
         Returns:
             JSON string with extracted information
@@ -145,12 +145,12 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    def extract_bank_statement_information(self, context: sk.SKContext) -> str:
+    def extract_bank_statement_information(self, context: dict) -> str:
         """
         Extract key information from a bank statement.
         
         Args:
-            context: Semantic Kernel context containing document text
+            context: Dictionary containing document text
             
         Returns:
             JSON string with extracted information
@@ -204,12 +204,12 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    def validate_document_completeness(self, context: sk.SKContext) -> str:
+    def validate_document_completeness(self, context: dict) -> str:
         """
         Validate the completeness of a document and identify missing information.
         
         Args:
-            context: Semantic Kernel context containing document type and extracted data
+            context: Dictionary containing document type and extracted data
             
         Returns:
             JSON string with validation results
@@ -319,12 +319,12 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    def verify_document_consistency(self, context: sk.SKContext) -> str:
+    def verify_document_consistency(self, context: dict) -> str:
         """
         Verify consistency between multiple documents.
         
         Args:
-            context: Semantic Kernel context containing data from multiple documents
+            context: Dictionary containing data from multiple documents
             
         Returns:
             JSON string with consistency verification results
@@ -409,12 +409,12 @@ class DocumentAnalyzerPlugin:
         
         return json.dumps(result, indent=2)
     
-    def summarize_document_for_review(self, context: sk.SKContext) -> str:
+    def summarize_document_for_review(self, context: dict) -> str:
         """
         Create a human-readable summary of a document for review.
         
         Args:
-            context: Semantic Kernel context containing document type and extracted data
+            context: Dictionary containing document type and extracted data
             
         Returns:
             Human-readable summary of the document
@@ -514,12 +514,12 @@ class DocumentAnalyzerPlugin:
         
         return summary
     
-    def detect_fraud_indicators(self, context: sk.SKContext) -> str:
+    def detect_fraud_indicators(self, context: dict) -> str:
         """
         Detect potential indicators of fraud in a document.
         
         Args:
-            context: Semantic Kernel context containing document type and extracted data
+            context: Dictionary containing document type and extracted data
             
         Returns:
             JSON string with fraud detection results

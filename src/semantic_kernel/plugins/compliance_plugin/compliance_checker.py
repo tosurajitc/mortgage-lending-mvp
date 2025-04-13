@@ -2,7 +2,6 @@ import json
 import datetime
 from typing import Dict, List, Any, Optional, Tuple
 import src.semantic_kernel as sk
-from src.semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 
 from src.utils.logging_utils import get_logger
 
@@ -80,20 +79,12 @@ class ComplianceCheckerPlugin:
             }
         }
     
-    @sk_function(
-        description="Check mortgage application for Ability-to-Repay compliance",
-        name="checkAbilityToRepay"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the mortgage application data"
-    )
-    def check_ability_to_repay(self, context: sk.SKContext) -> str:
+    def check_ability_to_repay(self, context: dict) -> str:
         """
         Check mortgage application for compliance with Ability-to-Repay (ATR) requirements.
         
         Args:
-            context: Semantic Kernel context with application data
+            context: Dictionary with application data
             
         Returns:
             JSON string with ATR compliance results
@@ -208,20 +199,12 @@ class ComplianceCheckerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Check mortgage application for fair lending compliance",
-        name="checkFairLending"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the mortgage application data"
-    )
-    def check_fair_lending(self, context: sk.SKContext) -> str:
+    def check_fair_lending(self, context: dict) -> str:
         """
         Check mortgage application for compliance with fair lending requirements.
         
         Args:
-            context: Semantic Kernel context with application data
+            context: Dictionary with application data
             
         Returns:
             JSON string with fair lending compliance results
@@ -316,20 +299,12 @@ class ComplianceCheckerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Check mortgage application for disclosure compliance",
-        name="checkDisclosureCompliance"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the mortgage application data"
-    )
-    def check_disclosure_compliance(self, context: sk.SKContext) -> str:
+    def check_disclosure_requirements(self, context: dict) -> str:
         """
         Check mortgage application for compliance with disclosure requirements.
         
         Args:
-            context: Semantic Kernel context with application data
+            context: Dictionary with application data
             
         Returns:
             JSON string with disclosure compliance results
@@ -455,34 +430,27 @@ class ComplianceCheckerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Perform comprehensive compliance check on mortgage application",
-        name="performComprehensiveCheck"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the mortgage application data"
-    )
-    def perform_comprehensive_check(self, context: sk.SKContext) -> str:
+    def perform_comprehensive_check(self, context: dict) -> str:
         """
         Perform a comprehensive compliance check covering multiple regulations.
         
         Args:
-            context: Semantic Kernel context with application data
+            context: Dictionary with application data
             
         Returns:
             JSON string with comprehensive compliance results
         """
         application_data = json.loads(context["application_data"])
         
-        # Check all major compliance areas
-        atr_context = sk.SKContext({"application_data": context["application_data"]})
-        fair_lending_context = sk.SKContext({"application_data": context["application_data"]})
-        disclosure_context = sk.SKContext({"application_data": context["application_data"]})
+        # Create context dictionaries for individual checks
+        atr_context = {"application_data": context["application_data"]}
+        fair_lending_context = {"application_data": context["application_data"]}
+        disclosure_context = {"application_data": context["application_data"]}
         
+        # Perform individual checks
         atr_result = json.loads(self.check_ability_to_repay(atr_context))
         fair_lending_result = json.loads(self.check_fair_lending(fair_lending_context))
-        disclosure_result = json.loads(self.check_disclosure_compliance(disclosure_context))
+        disclosure_result = json.loads(self.check_disclosure_requirements(disclosure_context))
         
         # Compile comprehensive results
         all_compliance_issues = (
@@ -534,20 +502,12 @@ class ComplianceCheckerPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Generate regulatory compliance checklist for a mortgage application",
-        name="generateComplianceChecklist"
-    )
-    @sk_function_context_parameter(
-        name="loan_type",
-        description="Type of mortgage loan (e.g., Conventional, FHA, VA)"
-    )
-    def generate_compliance_checklist(self, context: sk.SKContext) -> str:
+    def generate_compliance_checklist(self, context: dict) -> str:
         """
         Generate a compliance checklist for a specific loan type.
         
         Args:
-            context: Semantic Kernel context with loan type
+            context: Dictionary with loan type
             
         Returns:
             Text checklist of compliance requirements
@@ -631,8 +591,9 @@ class ComplianceCheckerPlugin:
         checklist_text += "Additional requirements may apply based on specific loan characteristics and local regulations."
         
         return checklist_text
-    
-    # Helper methods
+        
+
+    # Helper methods implementation
     def _calculate_monthly_payment(self, loan_amount: float, annual_interest_rate: float, loan_term_years: int) -> float:
         """Calculate the monthly mortgage payment."""
         # Convert annual rate to monthly rate
@@ -649,7 +610,7 @@ class ComplianceCheckerPlugin:
         payment = loan_amount * (monthly_rate * pow(1 + monthly_rate, num_payments)) / (pow(1 + monthly_rate, num_payments) - 1)
         
         return payment
-    
+
     def _extract_loan_amount(self, data: Dict[str, Any]) -> float:
         """Extract loan amount from application data."""
         # Try different possible paths to loan amount
@@ -659,7 +620,7 @@ class ComplianceCheckerPlugin:
             return float(data["loan_details"]["loan_amount"])
         else:
             return 0.0
-    
+
     def _extract_property_value(self, data: Dict[str, Any]) -> float:
         """Extract property value from application data."""
         # Try different possible paths to property value
@@ -669,7 +630,7 @@ class ComplianceCheckerPlugin:
             return float(data["property_info"]["estimated_value"])
         else:
             return 0.0
-    
+
     def _extract_monthly_income(self, data: Dict[str, Any]) -> float:
         """Extract monthly income from application data."""
         # Try different possible paths to monthly income
@@ -680,7 +641,7 @@ class ComplianceCheckerPlugin:
             return float(data["primary_applicant"]["annual_income"]) / 12
         else:
             return 0.0
-    
+
     def _extract_monthly_debts(self, data: Dict[str, Any]) -> float:
         """Extract monthly debts from application data."""
         # Try different possible paths to monthly debts
@@ -695,7 +656,7 @@ class ComplianceCheckerPlugin:
             return (dti / 100) * monthly_income
         else:
             return 0.0
-    
+
     def _extract_loan_term(self, data: Dict[str, Any]) -> int:
         """Extract loan term in years from application data."""
         # Try different possible paths to loan term
@@ -705,7 +666,7 @@ class ComplianceCheckerPlugin:
             return int(data["loan_details"]["loan_term_years"])
         else:
             return 30  # Default to 30-year term
-    
+
     def _extract_interest_rate(self, data: Dict[str, Any]) -> float:
         """Extract interest rate from application data."""
         # Try different possible paths to interest rate
@@ -715,7 +676,7 @@ class ComplianceCheckerPlugin:
             return float(data["loan_details"]["interest_rate"])
         else:
             return 0.065  # Default to 6.5%
-    
+
     def _extract_down_payment(self, data: Dict[str, Any]) -> float:
         """Extract down payment from application data."""
         # Try different possible paths to down payment
@@ -730,7 +691,7 @@ class ComplianceCheckerPlugin:
             if property_value > 0 and loan_amount > 0:
                 return property_value - loan_amount
             return 0.0
-    
+
     def _extract_credit_score(self, data: Dict[str, Any]) -> int:
         """Extract credit score from application data."""
         # Try different possible paths to credit score
@@ -740,7 +701,7 @@ class ComplianceCheckerPlugin:
             return int(data["primary_applicant"]["credit_score"])
         else:
             return 0
-    
+
     def _extract_income_verified(self, data: Dict[str, Any]) -> bool:
         """Extract income verification status from application data."""
         # Try different possible paths to income verification
@@ -750,7 +711,7 @@ class ComplianceCheckerPlugin:
             return bool(data["verification"]["income_verified"])
         else:
             return False
-    
+
     def _extract_assets_verified(self, data: Dict[str, Any]) -> bool:
         """Extract assets verification status from application data."""
         # Try different possible paths to assets verification
@@ -760,7 +721,7 @@ class ComplianceCheckerPlugin:
             return bool(data["verification"]["assets_verified"])
         else:
             return False
-    
+
     def _extract_employment_verified(self, data: Dict[str, Any]) -> bool:
         """Extract employment verification status from application data."""
         # Try different possible paths to employment verification
@@ -770,7 +731,7 @@ class ComplianceCheckerPlugin:
             return bool(data["verification"]["employment_verified"])
         else:
             return False
-    
+
     def _is_qualified_mortgage(self, data: Dict[str, Any], dti_ratio: float) -> bool:
         """Determine if the loan is a Qualified Mortgage (QM)."""
         # Simplified QM determination for MVP
@@ -797,7 +758,7 @@ class ComplianceCheckerPlugin:
             
         # If passes all basic checks, consider it a QM
         return True
-    
+
     def _extract_decision(self, data: Dict[str, Any]) -> str:
         """Extract loan decision from application data."""
         # Try different possible paths to decision
@@ -815,7 +776,7 @@ class ComplianceCheckerPlugin:
                 return "Pending"
         else:
             return "Unknown"
-    
+
     def _extract_decision_factors(self, data: Dict[str, Any]) -> List[str]:
         """Extract decision factors from application data."""
         # Try different possible paths to decision factors
@@ -825,7 +786,7 @@ class ComplianceCheckerPlugin:
             return data["denial_reasons"]
         else:
             return []
-    
+
     def _extract_race(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract race from application data."""
         # Try different possible paths to race
@@ -837,7 +798,7 @@ class ComplianceCheckerPlugin:
             return data["demographics"]["race"]
         else:
             return None
-    
+
     def _extract_ethnicity(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract ethnicity from application data."""
         # Try different possible paths to ethnicity
@@ -849,7 +810,7 @@ class ComplianceCheckerPlugin:
             return data["demographics"]["ethnicity"]
         else:
             return None
-    
+
     def _extract_gender(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract gender from application data."""
         # Try different possible paths to gender
@@ -863,7 +824,7 @@ class ComplianceCheckerPlugin:
             return data["primary_applicant"]["sex"]
         else:
             return None
-    
+
     def _extract_age(self, data: Dict[str, Any]) -> Optional[int]:
         """Extract age from application data."""
         # Try different possible paths to age
@@ -886,7 +847,7 @@ class ComplianceCheckerPlugin:
                 return None
         else:
             return None
-    
+
     def _extract_marital_status(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract marital status from application data."""
         # Try different possible paths to marital status
@@ -898,7 +859,7 @@ class ComplianceCheckerPlugin:
             return data["demographics"]["marital_status"]
         else:
             return None
-    
+
     def _extract_dti_ratio(self, data: Dict[str, Any]) -> float:
         """Extract debt-to-income ratio from application data."""
         # Try different possible paths to DTI
@@ -915,7 +876,7 @@ class ComplianceCheckerPlugin:
                 return (monthly_debts / monthly_income) * 100
             else:
                 return 100  # Default to maximum if income is zero
-    
+
     def _extract_ltv_ratio(self, data: Dict[str, Any]) -> float:
         """Extract loan-to-value ratio from application data."""
         # Try different possible paths to LTV
@@ -932,7 +893,7 @@ class ComplianceCheckerPlugin:
                 return (loan_amount / property_value) * 100
             else:
                 return 100  # Default to maximum if property value is zero
-    
+
     def _extract_property_type(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract property type from application data."""
         # Try different possible paths to property type
@@ -942,7 +903,7 @@ class ComplianceCheckerPlugin:
             return data["property_info"]["property_type"]
         else:
             return None
-    
+
     def _extract_property_location(self, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Extract property location information from application data."""
         # Try different possible paths to property location
@@ -954,7 +915,7 @@ class ComplianceCheckerPlugin:
             return {"address": data["property_address"]}
         else:
             return None
-    
+
     def _extract_application_date(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract application date from application data."""
         # Try different possible paths to application date
@@ -964,7 +925,7 @@ class ComplianceCheckerPlugin:
             return data["timeline"]["application_date"]
         else:
             return None
-    
+
     def _extract_loan_estimate_date(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract loan estimate date from application data."""
         # Try different possible paths to loan estimate date
@@ -976,7 +937,7 @@ class ComplianceCheckerPlugin:
             return data["disclosures"]["loan_estimate_date"]
         else:
             return None
-    
+
     def _extract_closing_disclosure_date(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract closing disclosure date from application data."""
         # Try different possible paths to closing disclosure date
@@ -988,7 +949,7 @@ class ComplianceCheckerPlugin:
             return data["disclosures"]["closing_disclosure_date"]
         else:
             return None
-    
+
     def _extract_closing_date(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract closing date from application data."""
         # Try different possible paths to closing date
@@ -998,7 +959,7 @@ class ComplianceCheckerPlugin:
             return data["timeline"]["closing_date"]
         else:
             return None
-    
+
     def _extract_disclosed_apr(self, data: Dict[str, Any]) -> Optional[float]:
         """Extract disclosed APR from application data."""
         # Try different possible paths to disclosed APR
@@ -1010,7 +971,7 @@ class ComplianceCheckerPlugin:
             return float(data["loan_estimate"]["apr"])
         else:
             return None
-    
+
     def _extract_actual_apr(self, data: Dict[str, Any]) -> Optional[float]:
         """Extract actual APR from application data."""
         # Try different possible paths to actual APR
@@ -1020,7 +981,7 @@ class ComplianceCheckerPlugin:
             return float(data["closing_disclosure"]["apr"])
         else:
             return None
-    
+
     def _extract_disclosed_fees(self, data: Dict[str, Any]) -> Optional[float]:
         """Extract disclosed fees from application data."""
         # Try different possible paths to disclosed fees
@@ -1032,7 +993,7 @@ class ComplianceCheckerPlugin:
             return float(data["loan_estimate"]["total_fees"])
         else:
             return None
-    
+
     def _extract_actual_fees(self, data: Dict[str, Any]) -> Optional[float]:
         """Extract actual fees from application data."""
         # Try different possible paths to actual fees
@@ -1042,7 +1003,7 @@ class ComplianceCheckerPlugin:
             return float(data["closing_disclosure"]["total_fees"])
         else:
             return None
-    
+
     def _is_adjustable_rate(self, data: Dict[str, Any]) -> bool:
         """Determine if the loan is an adjustable-rate mortgage."""
         # Try different possible paths to determine if the loan is adjustable
@@ -1058,7 +1019,7 @@ class ComplianceCheckerPlugin:
             return "arm" in loan_type or "adjustable" in loan_type
         else:
             return False
-    
+
     def _calculate_business_days(self, start_date: str, end_date: str) -> int:
         """
         Calculate the number of business days between two dates.
@@ -1096,7 +1057,7 @@ class ComplianceCheckerPlugin:
         except Exception as e:
             self.logger.error(f"Error calculating business days: {str(e)}")
             return 0
-    
+
     def _requires_hmda_reporting(self, data: Dict[str, Any]) -> bool:
         """Determine if the loan requires HMDA reporting."""
         # Simplified check for MVP
@@ -1109,7 +1070,7 @@ class ComplianceCheckerPlugin:
         reportable_purposes = ["purchase", "refinance", "home improvement"]
         
         return any(purpose in loan_purpose for purpose in reportable_purposes) and loan_amount > 0
-    
+
     def _has_hmda_data(self, data: Dict[str, Any]) -> bool:
         """Check if application has required HMDA demographic data."""
         # Check for key HMDA data elements

@@ -4,9 +4,8 @@ import json
 import datetime
 from typing import Dict, List, Any, Optional, Tuple
 import src.semantic_kernel as sk
-from src.semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 
-from utils.logging_utils import get_logger
+from src.utils.logging_utils import get_logger
 
 logger = get_logger("semantic_kernel.plugins.underwriting")
 
@@ -27,24 +26,12 @@ class UnderwritingEvaluatorPlugin:
         self.kernel = kernel
         self.logger = logger
     
-    @sk_function(
-        description="Calculate debt-to-income ratio from financial data",
-        name="calculateDTI"
-    )
-    @sk_function_context_parameter(
-        name="monthly_income",
-        description="Monthly gross income of the applicant"
-    )
-    @sk_function_context_parameter(
-        name="monthly_debts",
-        description="Monthly debt payments including the proposed mortgage payment"
-    )
-    def calculate_dti(self, context: sk.SKContext) -> str:
+    def calculate_dti(self, context: dict) -> str:
         """
         Calculate the debt-to-income ratio.
         
         Args:
-            context: Semantic Kernel context with monthly income and debts
+            context: Dictionary with monthly income and debts
             
         Returns:
             DTI ratio as a percentage string
@@ -58,24 +45,12 @@ class UnderwritingEvaluatorPlugin:
         dti_ratio = (monthly_debts / monthly_income) * 100
         return f"{dti_ratio:.2f}%"
     
-    @sk_function(
-        description="Calculate loan-to-value ratio for a mortgage application",
-        name="calculateLTV"
-    )
-    @sk_function_context_parameter(
-        name="loan_amount",
-        description="Requested mortgage loan amount"
-    )
-    @sk_function_context_parameter(
-        name="property_value",
-        description="Appraised value of the property"
-    )
-    def calculate_ltv(self, context: sk.SKContext) -> str:
+    def calculate_ltv(self, context: dict) -> str:
         """
-        Calculate the loan-to-value ratio.
+        Calculate the loan-to-value ratio for a mortgage application.
         
         Args:
-            context: Semantic Kernel context with loan amount and property value
+            context: Dictionary with loan amount and property value
             
         Returns:
             LTV ratio as a percentage string
@@ -89,20 +64,12 @@ class UnderwritingEvaluatorPlugin:
         ltv_ratio = (loan_amount / property_value) * 100
         return f"{ltv_ratio:.2f}%"
     
-    @sk_function(
-        description="Evaluate loan application against conventional mortgage guidelines",
-        name="evaluateConventionalLoan"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the mortgage application data"
-    )
-    def evaluate_conventional_loan(self, context: sk.SKContext) -> str:
+    def evaluate_conventional_loan(self, context: dict) -> str:
         """
         Evaluate a loan application against conventional mortgage guidelines.
         
         Args:
-            context: Semantic Kernel context with application data
+            context: Dictionary with application data
             
         Returns:
             JSON string with evaluation results
@@ -138,10 +105,10 @@ class UnderwritingEvaluatorPlugin:
         
         # Estimate taxes and insurance
         tax_and_insurance = property_value * 0.015 / 12  # Rough estimate: 1.5% of property value annually
-        piti = monthly_payment + tax_and_insurance
+        total_housing_payment = monthly_payment + tax_and_insurance
         
         if monthly_income > 0:
-            frontend_ratio = (piti / monthly_income) * 100
+            frontend_ratio = (total_housing_payment / monthly_income) * 100
         else:
             frontend_ratio = 100  # Unable to calculate, set to maximum
         
@@ -242,7 +209,7 @@ class UnderwritingEvaluatorPlugin:
             "risk_factors": risk_factors,
             "strengths": strengths,
             "estimated_rate": round(interest_rate + rate_adjustment, 3),
-            "estimated_monthly_payment": round(piti, 2),
+            "estimated_monthly_payment": round(total_housing_payment, 2),
             "conditions": []
         }
         
@@ -258,20 +225,12 @@ class UnderwritingEvaluatorPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Evaluate loan application against FHA mortgage guidelines",
-        name="evaluateFHALoan"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the mortgage application data"
-    )
-    def evaluate_fha_loan(self, context: sk.SKContext) -> str:
+    def evaluate_fha_loan(self, context: dict) -> str:
         """
         Evaluate a loan application against FHA mortgage guidelines.
         
         Args:
-            context: Semantic Kernel context with application data
+            context: Dictionary with application data
             
         Returns:
             JSON string with evaluation results
@@ -416,20 +375,12 @@ class UnderwritingEvaluatorPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Recommend the best loan program based on applicant profile",
-        name="recommendLoanProgram"
-    )
-    @sk_function_context_parameter(
-        name="application_data",
-        description="JSON string containing the mortgage application data"
-    )
-    def recommend_loan_program(self, context: sk.SKContext) -> str:
+    def recommend_loan_program(self, context: dict) -> str:
         """
         Recommend the most suitable loan program based on applicant profile.
         
         Args:
-            context: Semantic Kernel context with application data
+            context: Dictionary with application data
             
         Returns:
             JSON string with loan program recommendations
@@ -642,28 +593,12 @@ class UnderwritingEvaluatorPlugin:
         
         return json.dumps(result, indent=2)
     
-    @sk_function(
-        description="Calculate monthly mortgage payment",
-        name="calculateMonthlyPayment"
-    )
-    @sk_function_context_parameter(
-        name="loan_amount",
-        description="Total loan amount"
-    )
-    @sk_function_context_parameter(
-        name="interest_rate",
-        description="Annual interest rate (as a decimal, e.g., 0.05 for 5%)"
-    )
-    @sk_function_context_parameter(
-        name="loan_term_years",
-        description="Loan term in years"
-    )
-    def calculate_monthly_payment(self, context: sk.SKContext) -> str:
+    def calculate_monthly_payment(self, context: dict) -> str:
         """
         Calculate the monthly mortgage payment.
         
         Args:
-            context: Semantic Kernel context with loan details
+            context: Dictionary with loan details
             
         Returns:
             Monthly payment amount as a string
@@ -675,36 +610,12 @@ class UnderwritingEvaluatorPlugin:
         monthly_payment = self._calculate_monthly_payment(loan_amount, interest_rate, loan_term_years)
         return f"${monthly_payment:.2f}"
     
-    @sk_function(
-        description="Calculate how much house an applicant can afford",
-        name="calculateAffordability"
-    )
-    @sk_function_context_parameter(
-        name="monthly_income",
-        description="Monthly gross income of the applicant"
-    )
-    @sk_function_context_parameter(
-        name="monthly_debts",
-        description="Monthly debt payments excluding housing"
-    )
-    @sk_function_context_parameter(
-        name="down_payment",
-        description="Available down payment amount"
-    )
-    @sk_function_context_parameter(
-        name="interest_rate",
-        description="Annual interest rate (as a decimal, e.g., 0.05 for 5%)"
-    )
-    @sk_function_context_parameter(
-        name="loan_term_years",
-        description="Loan term in years"
-    )
-    def calculate_affordability(self, context: sk.SKContext) -> str:
+    def calculate_affordability(self, context: dict) -> str:
         """
         Calculate how much house an applicant can afford.
         
         Args:
-            context: Semantic Kernel context with applicant financial details
+            context: Dictionary with applicant financial details
             
         Returns:
             JSON string with affordability analysis
@@ -822,7 +733,8 @@ class UnderwritingEvaluatorPlugin:
         
         return json.dumps(result, indent=2)
     
-    # Helper methods
+
+    # Helper methods implementation - Part 2
     def _calculate_monthly_payment(self, loan_amount: float, annual_interest_rate: float, loan_term_years: int) -> float:
         """Calculate the monthly mortgage payment."""
         # Convert annual rate to monthly rate
@@ -839,7 +751,7 @@ class UnderwritingEvaluatorPlugin:
         payment = loan_amount * (monthly_rate * pow(1 + monthly_rate, num_payments)) / (pow(1 + monthly_rate, num_payments) - 1)
         
         return payment
-    
+
     def _extract_loan_amount(self, data: Dict[str, Any]) -> float:
         """Extract loan amount from application data."""
         # Try different possible paths to loan amount
@@ -849,7 +761,7 @@ class UnderwritingEvaluatorPlugin:
             return float(data["loan_details"]["loan_amount"])
         else:
             return 0.0
-    
+
     def _extract_property_value(self, data: Dict[str, Any]) -> float:
         """Extract property value from application data."""
         # Try different possible paths to property value
@@ -859,7 +771,7 @@ class UnderwritingEvaluatorPlugin:
             return float(data["property_info"]["estimated_value"])
         else:
             return 0.0
-    
+
     def _extract_monthly_income(self, data: Dict[str, Any]) -> float:
         """Extract monthly income from application data."""
         # Try different possible paths to monthly income
@@ -870,7 +782,7 @@ class UnderwritingEvaluatorPlugin:
             return float(data["primary_applicant"]["annual_income"]) / 12
         else:
             return 0.0
-    
+
     def _extract_monthly_debts(self, data: Dict[str, Any]) -> float:
         """Extract monthly debts from application data."""
         # Try different possible paths to monthly debts
@@ -885,7 +797,7 @@ class UnderwritingEvaluatorPlugin:
             return (dti / 100) * monthly_income
         else:
             return 0.0
-    
+
     def _extract_credit_score(self, data: Dict[str, Any]) -> int:
         """Extract credit score from application data."""
         # Try different possible paths to credit score
@@ -895,7 +807,7 @@ class UnderwritingEvaluatorPlugin:
             return int(data["primary_applicant"]["credit_score"])
         else:
             return 0
-    
+
     def _extract_loan_term(self, data: Dict[str, Any]) -> int:
         """Extract loan term in years from application data."""
         # Try different possible paths to loan term
@@ -905,7 +817,7 @@ class UnderwritingEvaluatorPlugin:
             return int(data["loan_details"]["loan_term_years"])
         else:
             return 30  # Default to 30-year term
-    
+
     def _extract_down_payment(self, data: Dict[str, Any]) -> float:
         """Extract down payment from application data."""
         # Try different possible paths to down payment
@@ -920,7 +832,7 @@ class UnderwritingEvaluatorPlugin:
             if property_value > 0 and loan_amount > 0:
                 return property_value - loan_amount
             return 0.0
-    
+
     def _extract_property_type(self, data: Dict[str, Any]) -> str:
         """Extract property type from application data."""
         # Try different possible paths to property type
@@ -930,7 +842,11 @@ class UnderwritingEvaluatorPlugin:
             return str(data["property_info"]["property_type"])
         else:
             return "single_family"  # Default
-    
+        
+
+
+    # Helper methods implementation - Part 3
+
     def _extract_first_time_homebuyer(self, data: Dict[str, Any]) -> bool:
         """Extract first-time homebuyer status from application data."""
         # Try different possible paths to first-time homebuyer status
@@ -940,7 +856,7 @@ class UnderwritingEvaluatorPlugin:
             return bool(data["loan_details"]["is_first_time_homebuyer"])
         else:
             return False  # Default
-    
+
     def _extract_is_veteran(self, data: Dict[str, Any]) -> bool:
         """Extract veteran status from application data."""
         # Try different possible paths to veteran status
@@ -950,3 +866,192 @@ class UnderwritingEvaluatorPlugin:
             return bool(data["primary_applicant"]["is_veteran"])
         else:
             return False  # Default
+
+    def _is_eligible_for_va(self, data: Dict[str, Any]) -> bool:
+        """Determine if the applicant is eligible for a VA loan."""
+        # Check veteran status
+        is_veteran = self._extract_is_veteran(data)
+        
+        # Check if they have VA eligibility documentation
+        has_coe = False
+        if "va_eligibility" in data and data["va_eligibility"].get("certificate_of_eligibility", False):
+            has_coe = True
+        
+        return is_veteran and has_coe
+
+    def _is_eligible_for_fha(self, data: Dict[str, Any]) -> bool:
+        """Determine if the applicant is eligible for an FHA loan."""
+        # Extract credit score - FHA minimum is 500
+        credit_score = self._extract_credit_score(data)
+        
+        # Extract down payment percentage
+        property_value = self._extract_property_value(data)
+        down_payment = self._extract_down_payment(data)
+        
+        if property_value > 0:
+            down_payment_percentage = (down_payment / property_value) * 100
+        else:
+            down_payment_percentage = 0
+        
+        # FHA eligibility: Credit score 500+ with 10% down or 580+ with 3.5% down
+        if credit_score >= 580 and down_payment_percentage >= 3.5:
+            return True
+        elif credit_score >= 500 and down_payment_percentage >= 10:
+            return True
+        else:
+            return False
+
+    def _is_eligible_for_usda(self, data: Dict[str, Any]) -> bool:
+        """Determine if the applicant is eligible for a USDA loan."""
+        # Check if property is in rural area
+        is_rural = False
+        if "property_info" in data and data["property_info"].get("is_rural_area", False):
+            is_rural = True
+        
+        # Check income limits
+        income_eligible = False
+        monthly_income = self._extract_monthly_income(data)
+        annual_income = monthly_income * 12
+        
+        # Simplified income limit check (actual limits vary by location and household size)
+        if annual_income <= 90000:  # Example threshold
+            income_eligible = True
+        
+        return is_rural and income_eligible
+
+    def _format_currency(self, amount: float) -> str:
+        """Format an amount as a currency string."""
+        return f"${amount:,.2f}"
+
+    def _calculate_pmi_rate(self, ltv_ratio: float, credit_score: int) -> float:
+        """Calculate approximate PMI rate based on LTV ratio and credit score."""
+        # Base PMI rate
+        base_rate = 0.0055  # 0.55% for standard scenarios
+        
+        # Adjust for LTV
+        if ltv_ratio > 95:
+            base_rate += 0.0020  # Add 0.20% for high LTV
+        elif ltv_ratio > 90:
+            base_rate += 0.0010  # Add 0.10% for moderately high LTV
+        
+        # Adjust for credit score
+        if credit_score < 640:
+            base_rate += 0.0030  # Add 0.30% for poor credit
+        elif credit_score < 680:
+            base_rate += 0.0015  # Add 0.15% for fair credit
+        elif credit_score < 720:
+            base_rate += 0.0005  # Add 0.05% for good credit
+        elif credit_score >= 760:
+            base_rate -= 0.0010  # Subtract 0.10% for excellent credit
+            
+        return base_rate
+
+    def _calculate_fha_mip_rate(self, loan_amount: float, ltv_ratio: float, loan_term_years: int) -> Dict[str, float]:
+        """Calculate FHA mortgage insurance premium rates."""
+        # Upfront MIP rate (currently 1.75% for most FHA loans)
+        upfront_rate = 0.0175
+        
+        # Annual MIP rate based on loan amount, LTV, and term
+        annual_rate = 0.0055  # Default 0.55% for 30-year loans with LTV > 95%
+        
+        if loan_term_years <= 15:
+            if ltv_ratio <= 90:
+                annual_rate = 0.0045  # 0.45% for 15-year loans with LTV <= 90%
+            else:
+                annual_rate = 0.0070  # 0.70% for 15-year loans with LTV > 90%
+        else:  # 30-year loans
+            if ltv_ratio <= 95:
+                annual_rate = 0.0050  # 0.50% for 30-year loans with LTV <= 95%
+                
+        # Calculate actual amounts
+        upfront_mip = loan_amount * upfront_rate
+        annual_mip = loan_amount * annual_rate
+        monthly_mip = annual_mip / 12
+        
+        return {
+            "upfront_rate": upfront_rate,
+            "annual_rate": annual_rate,
+            "upfront_amount": upfront_mip,
+            "monthly_amount": monthly_mip
+        }
+
+    def _calculate_va_funding_fee(self, loan_amount: float, down_payment_percentage: float, is_first_use: bool) -> float:
+        """Calculate VA funding fee based on down payment and first-time use."""
+        # Base rates for first use and subsequent use
+        if is_first_use:
+            if down_payment_percentage < 5:
+                rate = 0.0215  # 2.15% for first use with < 5% down
+            elif down_payment_percentage < 10:
+                rate = 0.0150  # 1.50% for first use with 5-10% down
+            else:
+                rate = 0.0125  # 1.25% for first use with 10%+ down
+        else:
+            if down_payment_percentage < 5:
+                rate = 0.0330  # 3.30% for subsequent use with < 5% down
+            elif down_payment_percentage < 10:
+                rate = 0.0150  # 1.50% for subsequent use with 5-10% down
+            else:
+                rate = 0.0125  # 1.25% for subsequent use with 10%+ down
+        
+        # Calculate funding fee amount
+        funding_fee = loan_amount * rate
+        
+        return funding_fee
+
+    def _generate_decision_explanation(self, context: dict) -> str:
+        """
+        Generate a human-readable explanation for an underwriting decision.
+        
+        Args:
+            context: Dictionary with decision details and factors
+        
+        Returns:
+            String with formatted explanation
+        """
+        # Extract key decision information
+        decision = context.get("decision", "Unknown")
+        factors = context.get("factors", [])
+        conditions = context.get("conditions", [])
+        strengths = context.get("strengths", [])
+        risks = context.get("risks", [])
+        
+        # Start building explanation
+        explanation = f"Underwriting Decision: {decision}\n\n"
+        
+        # Add decision factors
+        if factors:
+            explanation += "This decision was based on the following factors:\n"
+            for factor in factors:
+                explanation += f"- {factor}\n"
+            explanation += "\n"
+        
+        # Add strengths if applicable
+        if strengths:
+            explanation += "Key strengths in your application:\n"
+            for strength in strengths:
+                explanation += f"- {strength}\n"
+            explanation += "\n"
+        
+        # Add risk factors if applicable
+        if risks:
+            explanation += "Areas of concern in your application:\n"
+            for risk in risks:
+                explanation += f"- {risk}\n"
+            explanation += "\n"
+        
+        # Add conditions if applicable
+        if conditions:
+            explanation += "This approval includes the following conditions:\n"
+            for condition in conditions:
+                explanation += f"- {condition}\n"
+            explanation += "\n"
+        
+        # Add general closing
+        if decision.lower() == "approved":
+            explanation += "Congratulations on your loan approval! Please review any conditions listed above, as they will need to be satisfied before closing."
+        elif decision.lower() == "conditionally approved":
+            explanation += "Your loan has been conditionally approved. Please address the conditions listed above to proceed to final approval."
+        else:
+            explanation += "At this time, we are unable to approve your loan application. We encourage you to review the factors mentioned above and consider addressing these areas before reapplying."
+        
+        return explanation
